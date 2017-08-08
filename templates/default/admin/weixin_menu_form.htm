@@ -1,0 +1,70 @@
+<div class="area" style="padding:20px;">
+    <form method="post" id="ajaxMenuForm" action="{echo U()}">
+    <input type="hidden" name="formsubmit" value="yes">
+    <input type="hidden" name="formhash" value="{FORMHASH}">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="formtable">
+        <tbody>
+          <tr><th colspan="2">菜单名称</th></tr>
+          <tr>
+            <td width="320"><input type="text" class="input-text w300" name="menu[name]" value="{$menu[name]}" id="menu_name"></td>
+            <td class="tips">一级菜单不超过4个字，二级不超过7个字</td>
+          </tr>
+          <tr><th colspan="2">响应类型</th></tr>
+          <tr>
+            <td>
+                <select class="select w300" name="menu[type]" id="menu_type">
+                	{loop $lang[weixin_menu_types] $k $v}
+                	<option value="{$k}"{if $k==$menu[type]} selected{/if}>{$v}</option>
+                   {/loop}
+                </select>
+            </td>
+            <td class="tips">点击菜单后所执行的操作</td>
+          </tr>
+      </tbody>
+    </table>
+    <div id="menu-action"></div>
+    </form>
+</div>
+<script type="text/x-template" id="menu_tpl_1">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="formtable">
+<tr><th colspan="2">网页链接</th></tr>
+<tr>
+  <td width="320"><input type="text" class="input-text w300" name="menu[url]" value="{$menu[url]}"></td>
+  <td class="tips">用户点击菜单可打开链接，不超过1024字节</td>
+</tr>
+</table>
+</script>
+<script type="text/x-template" id="menu_tpl_2">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="formtable">
+<tr><th colspan="2">永久素材ID</th></tr>
+<tr>
+  <td width="320"><input type="text" class="input-text w300" name="menu[media_id]" value="{$menu[media_id]}"></td>
+  <td class="tips">填写永久素材的合法media_id</td>
+</tr>
+</table>
+</script>
+<script type="text/x-template" id="menu_tpl_3">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="formtable">
+<tr><th colspan="2">菜单KEY值</th></tr>
+<tr>
+  <td width="320"><input type="text" class="input-text w300" name="menu[key]" value="{$menu[key]}"></td>
+  <td class="tips">用于消息接口推送，不超过128字节</td>
+</tr>
+</table>
+</script>
+<script type="text/javascript">
+function selectMenu(type){
+	if(!type) type = 'view';
+	if(type == 'view') {
+		$("#menu-action").html($("#menu_tpl_1").html());
+	}else if(type == 'media_id' || type == 'view_limited'){
+		$("#menu-action").html($("#menu_tpl_2").html());
+	}else {
+		$("#menu-action").html($("#menu_tpl_3").html());
+	}
+}
+selectMenu('{$menu[type]}');
+$("#menu_type").change(function(e) {
+    selectMenu($(this).val());
+});
+</script>

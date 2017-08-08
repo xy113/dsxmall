@@ -1,0 +1,192 @@
+{template header}
+<div class="console-title">
+    <a href="{U:('c=goods&a=itemlist')}" class="button float-right">出售中的宝贝</a>
+    <h2>{if $G[a]=='edit'}编辑宝贝{else}出售宝贝{/if}</h2>
+</div>
+<div class="content-div">
+    <div class="tab-console">
+        <span class="item cur">基本信息</span>
+        <span class="item">宝贝详情</span>
+    </div>
+    <div class="blank"></div>
+    <form method="post" id="goodsForm" autocomplete="off">
+        <input type="hidden" name="formsubmit" value="yes">
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <div class="formCon">
+            <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+                <tbody>
+                <tr>
+                    <td class="cell-name" width="80">宝贝名称</td>
+                    <td width="320"><input type="text" name="goods[goods_name]" id="goods_name" class="input-text w300" value="{$goods[goods_name]}"></td>
+                    <td class="cell-tips">填写宝贝名称, 30个字以内</td>
+                </tr>
+                <tr>
+                    <td class="cell-name">宝贝分类</td>
+                    <td colspan="2">
+                        <select class="select width-auto" name="goods[catid_1]" id="catid_1"></select>
+                        <select class="select width-auto" name="goods[catid_2]" id="catid_2"></select>
+                        <select class="select width-auto" name="goods[catid_3]" id="catid_3"></select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell-name">宝贝价格</td>
+                    <td><input type="text" name="goods[goods_price]" id="goods_price" class="input-text w300" value="{$goods[goods_price]}"></td>
+                    <td class="cell-tips">填写宝贝价格</td>
+                </tr>
+                <tr>
+                    <td class="cell-name">市场价格</td>
+                    <td><input type="text" name="goods[market_price]" id="market_price" class="input-text w300" value="{$goods[market_price]}"></td>
+                    <td class="cell-tips">请填写市场价格</td>
+                </tr>
+                <tr>
+                    <td class="cell-name">库存数量</td>
+                    <td><input type="text" name="goods[stock]" id="stock" class="input-text w300" value="{$goods[stock]}"></td>
+                    <td class="cell-tips">请填写宝贝库存数量</td>
+                </tr>
+                <tr>
+                    <td class="cell-name">宝贝状态</td>
+                    <td>
+                        <label><input type="radio" class="radio" name="goods[on_sale]" value="1"{if $goods[on_sale]} checked{/if}> 立即上架</label>
+                        <label><input type="radio" class="radio" name="goods[on_sale]" value="0"{if !$goods[on_sale]} checked{/if}> 加入仓库</label>
+                    </td>
+                    <td class="cell-tips"></td>
+                </tr>
+                <tr>
+                    <td class="cell-name">简要说明</td>
+                    <td><textarea class="textarea w300" id="goods_brief" maxlength="50" style="height: 100px;" name="goods[goods_brief]">{$goods[goods_brief]}</textarea></td>
+                    <td class="cell-tips">产品简介, 50字以内</td>
+                </tr>
+                <tr>
+                    <td class="cell-name">宝贝图片</td>
+                    <td colspan="2">
+                        <ul class="image-upload-queue" id="image-upload-queue">
+                            {loop $gallery $ga}
+                            <li>
+                                <input type="hidden" name="gallery[{$ga[id]}][thumb]" value="{$ga[thumb]}">
+                                <input type="hidden" name="gallery[{$ga[id]}][image]" value="{$ga[image]}">
+                                <img src="{img $ga[thumb]}">
+                                <a class="icon delete" onclick="deleteImg(this)">&#xf00b3;</a>
+                            </li>
+                            {/loop}
+                        </ul>
+                        <div class="image-upload-button" id="addImageBtn"></div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="formCon" style="display: none;">
+            <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+                <tbody>
+                <tr>
+                    <td width="80" class="cell-name">产品详情</td>
+                    <td colspan="2">{template editor}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+            <tfoot>
+            <tr>
+                <td width="80"></td>
+                <td colspan="2"><button type="submit" class="button btn-100" id="button-submit">提交</button></td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+<script>var cat_data = {$cat_data};</script>
+<script type="text/javascript">
+    function deleteImg(o) {
+        if (confirm('你确定要删除此图片吗?')){
+            $(o).parent().remove();
+        }
+    }
+    function deleteModel(o) {
+        if (confirm('你确定要删除此产品型号吗?')){
+            $(o).parent().remove();
+        }
+    }
+    $(function () {
+        $(".tab-console .item").on('click',function () {
+            $(this).addClass('cur').siblings().removeClass('cur');
+            $(".formCon").eq($(this).index()).show().siblings('.formCon').hide();
+        });
+        var img_id = 0;
+        $("#addImageBtn").on('click', function () {
+            var picker = DSXUI.showImagePickerView({
+                onPicked:function (data) {
+                    var li = '<li><input type="hidden" name="gallery['+img_id+'][thumb]" value="'+data.thumb+'">'+
+                            '<input type="hidden" name="gallery['+img_id+'][image]" value="'+data.image+'">'+
+                            '<img src="'+data.imageurl+'">'+
+                            '<a class="icon delete" onclick="deleteImg(this)">&#xf00b3;</a></li>';
+                    $("#image-upload-queue").append(li);
+                    img_id--;
+                }
+            });
+        });
+        $("#image-upload-queue").sortable();
+        $("#catid_1").on('change', function () {
+            var fid = $(this).val();
+            if (typeof cat_data[fid] !== 'undefined'){
+                var options = '';
+                $.each(cat_data[fid], function (i, data) {
+                    var selected = data.catid == '{$goods[catid_2]}' ? ' selected' : '';
+                    options+= '<option value="'+data.catid+'"'+selected+'>'+data.name+'</option>';
+                });
+                $("#catid_2").html(options).prop('disabled', false).change();
+            }else {
+                $("#catid_2").empty().prop('disabled', true);
+                $("#catid_3").empty().prop('disabled', true);
+            }
+        });
+        $("#catid_2").on('change', function () {
+            var fid = $(this).val();
+            if (typeof cat_data[fid] !== 'undefined'){
+                var options = '';
+                $.each(cat_data[fid], function (i, data) {
+                    var selected = data.catid == '{$goods[catid_3]}' ? ' selected' : '';
+                    options+= '<option value="'+data.catid+'"'+selected+'>'+data.name+'</option>';
+                });
+                $("#catid_3").html(options).prop('disabled', false).change();
+            }else {
+                $("#catid_3").empty().prop('disabled', true);
+            }
+        });
+        if (typeof cat_data['0'] !== 'undefined'){
+            var options = '';
+            $.each(cat_data['0'], function (i, data) {
+                var selected = data.catid == '{$goods[catid_1]}' ? ' selected' : '';
+                options+= '<option value="'+data.catid+'"'+selected+'>'+data.name+'</option>';
+            });
+            $("#catid_1").html(options).change();
+        }
+        $("#goodsForm").on('submit', function () {
+            var goods_name = $.trim($("#goods_name").val());
+            if (!goods_name) {
+                DSXUI.error('请填写宝贝名称');
+                return false;
+            }
+            var catid_1 = $("#catid_1").val();
+            if(!catid_1) {
+                DSXUI.error('请选择产品分类');
+                return false;
+            }
+            var goods_price = $.trim($("#goods_price").val());
+            if (!goods_price) {
+                DSXUI.error('请填写产品价格');
+                return false;
+            }
+            var stock = $.trim($("#stock").val());
+            if (!stock) {
+                DSXUI.error('请填写产品库存');
+                return false;
+            }
+            if ($("#image-upload-queue li").length == 0){
+                DSXUI.error('请上传产品图片');
+                return false;
+            }
+        });
+    });
+</script>
+{template footer}

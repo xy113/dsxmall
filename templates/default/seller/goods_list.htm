@@ -1,0 +1,87 @@
+{template header}
+<div class="console-title">
+    <a href="{U:('c=goods&a=sell')}" class="button float-right">出售宝贝</a>
+    <h2>出售中的宝贝</h2>
+</div>
+<div class="content-div">
+    <form method="post" id="listForm" autocomplete="off" action="{U:('c=goods&a=batch_update')}">
+        <input type="hidden" name="formsubmit" value="yes">
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable">
+            <thead>
+            <tr>
+                <th width="20"><input type="checkbox" class="checkbox checkall"></th>
+                <th width="80">图片</th>
+                <th>商品名称</th>
+                <th>价格</th>
+                <th>销量</th>
+                <th>上架时间</th>
+                <th>状态</th>
+                <th width="80">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $goods_list $goods}
+            <tr id="row_{$goods[id]}">
+                <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$goods[id]}"></td>
+                <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank"><div class="bg-cover" style="background-image: url({img $goods[goods_thumb]}); width: 80px; height: 80px;"></div></a></td>
+                <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank">{$goods[goods_name]}</a></td>
+                <td>{amount:$goods[goods_price]}</td>
+                <td>{$goods[sold]}</td>
+                <td>{date:$goods[create_time]|'Y-m-d H:i:s'}</td>
+                <td>
+                    {if $goods[on_sale]}
+                    出售中
+                    {else}
+                    已下架
+                    {/if}
+                </td>
+                <td class="actions">
+                    <a href="{U:('c=goods&a=edit&id='.$goods[id])}">编辑</a>
+                    <a rel="delete" data-id="{$goods[id]}">删除</a>
+                </td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="20">
+                    <div class="pagination float-right">{$pages}</div>
+                    <label><input type="checkbox" class="checkbox checkall"> 全选</label>
+                    <label><input type="radio" class="radio" name="option" value="delete"> 删除</label>
+                    <label><input type="radio" class="radio" name="option" value="on_sale" checked> 上架</label>
+                    <label><input type="radio" class="radio" name="option" value="off_sale"> 下架</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="20">
+                    <input type="submit" class="button" toggle-status="true" value="提交" id="submit-button">
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+<iframe id="get_file" style="display: none;"></iframe>
+<script type="text/javascript">
+    $(function () {
+        $("a[rel=delete]").on('click', function (e) {
+            var goods_id = $(this).attr('data-id');
+            DSXUI.confirmDialog({
+                title:'删除商品',
+                text:'你确定要删除此商品吗?',
+                onConfirm:function (dlg) {
+                    $.ajax({
+                        url:"{U:('c=goods&a=del_goods')}",
+                        data:{goods_id:goods_id},
+                        dataType:'json',
+                        success:function (response) {
+                            $("#row_"+goods_id).remove();
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+{template footer}

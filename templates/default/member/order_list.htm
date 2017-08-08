@@ -1,0 +1,287 @@
+{template header}
+<div class="console-title">
+	<div class="float-right">
+    	<form method="get" action="/">
+        <input type="hidden" name="m" value="{$_G[m]}">
+        <input type="hidden" name="c" value="{$_G[c]}">
+        <input type="hidden" name="a" value="{$_G[a]}">
+    	<input type="text" name="q" value="{$q}" class="input-text" placeholder="订单名称，订单号">
+        <input type="submit" class="button" value="搜索">
+        </form>
+    </div>
+	<ul class="tab">
+    	<li{if $tab=='all'} class="on"{/if}><a href="{U:('c=order&a=itemlist&tab=all')}">全部订单</a></li>
+        <li{if $tab=='waitPay'} class="on"{/if}><a href="{U:('c=order&a=itemlist&tab=waitPay')}">待付款</a></li>
+        <li{if $tab=='waitSend'} class="on"{/if}><a href="{U:('c=order&a=itemlist&tab=waitSend')}">待发货</a></li>
+        <li{if $tab=='waitConfirm'} class="on"{/if}><a href="{U:('c=order&a=itemlist&tab=waitConfirm')}">待收货</a></li>
+        <li{if $tab=='waitRate'} class="on"{/if}><a href="{U:('c=order&a=itemlist&tab=waitRate')}">待评价</a></li>
+    </ul>
+</div>
+
+<div class="content-div">
+	<table class="order-title-table" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+            <tr>
+                <td>宝贝</td>
+                <td width="80">单价</td>
+                <td width="60">数量</td>
+                <td width="100">商品操作</td>
+                <td width="100">实付款</td>
+                <td width="100">交易状态</td>
+                <td width="100">交易操作</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="order-item-wrap">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+            <tr>
+                <th>
+                    <span class="wrap-checkbox"><input type="checkbox"></span>
+                    <span class="wrap-time">2017-08-04</span>
+                    <span class="wrap-order-no">20179329489349328498</span>
+                </th>
+                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th></th>
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
+                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    <p><s>￥100.00</s></p>
+                    <p>￥74.32</p>
+                </td>
+                <td class="col3">1</td>
+                <td class="col4">
+                    <p><a>申请售后</a></p>
+                    <p><a>投诉卖家</a></p>
+                </td>
+                <td class="col5">
+                    <p><strong>￥74.32</strong></p>
+                    <p>(含运费:￥10.00)</p>
+                </td>
+                <td class="col6">
+                    <p>交易成功</p>
+                    <p>评价详情</p>
+                </td>
+                <td class="col7">
+                    <a>追加评论</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-item-wrap">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+            <tr>
+                <th>
+                    <span class="wrap-checkbox"><input type="checkbox"></span>
+                    <span class="wrap-time">2017-08-04</span>
+                    <span class="wrap-order-no">20179329489349328498</span>
+                </th>
+                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th></th>
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
+                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    <p><s>￥100.00</s></p>
+                    <p>￥74.32</p>
+                </td>
+                <td class="col3">1</td>
+                <td class="col4">
+                    <p><a>申请售后</a></p>
+                    <p><a>投诉卖家</a></p>
+                </td>
+                <td class="col5">
+                    <p><strong>￥74.32</strong></p>
+                    <p>(含运费:￥10.00)</p>
+                </td>
+                <td class="col6">
+                    <p>交易成功</p>
+                    <p>评价详情</p>
+                </td>
+                <td class="col7">
+                    <a>追加评论</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-item-wrap">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+            <tr>
+                <th>
+                    <span class="wrap-checkbox"><input type="checkbox"></span>
+                    <span class="wrap-time">2017-08-04</span>
+                    <span class="wrap-order-no">20179329489349328498</span>
+                </th>
+                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th></th>
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
+                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    <p><s>￥100.00</s></p>
+                    <p>￥74.32</p>
+                </td>
+                <td class="col3">1</td>
+                <td class="col4">
+                    <p><a>申请售后</a></p>
+                    <p><a>投诉卖家</a></p>
+                </td>
+                <td class="col5">
+                    <p><strong>￥74.32</strong></p>
+                    <p>(含运费:￥10.00)</p>
+                </td>
+                <td class="col6">
+                    <p>交易成功</p>
+                    <p>评价详情</p>
+                </td>
+                <td class="col7">
+                    <a>追加评论</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-item-wrap">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+            <tr>
+                <th>
+                    <span class="wrap-checkbox"><input type="checkbox"></span>
+                    <span class="wrap-time">2017-08-04</span>
+                    <span class="wrap-order-no">20179329489349328498</span>
+                </th>
+                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th></th>
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
+                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    <p><s>￥100.00</s></p>
+                    <p>￥74.32</p>
+                </td>
+                <td class="col3">1</td>
+                <td class="col4">
+                    <p><a>申请售后</a></p>
+                    <p><a>投诉卖家</a></p>
+                </td>
+                <td class="col5">
+                    <p><strong>￥74.32</strong></p>
+                    <p>(含运费:￥10.00)</p>
+                </td>
+                <td class="col6">
+                    <p>交易成功</p>
+                    <p>评价详情</p>
+                </td>
+                <td class="col7">
+                    <a>追加评论</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-item-wrap">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <thead>
+            <tr>
+                <th>
+                    <span class="wrap-checkbox"><input type="checkbox"></span>
+                    <span class="wrap-time">2017-08-04</span>
+                    <span class="wrap-order-no">20179329489349328498</span>
+                </th>
+                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th></th>
+                <th colspan="3"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
+                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    <p><s>￥100.00</s></p>
+                    <p>￥74.32</p>
+                </td>
+                <td class="col3">1</td>
+                <td class="col4">
+                    <p><a>申请售后</a></p>
+                    <p><a>投诉卖家</a></p>
+                </td>
+                <td class="col5">
+                    <p><strong>￥74.32</strong></p>
+                    <p>(含运费:￥10.00)</p>
+                </td>
+                <td class="col6">
+                    <p>交易成功</p>
+                    <p>评价详情</p>
+                </td>
+                <td class="col7">
+                    <a>追加评论</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="pages">{$pages}</div>
+{template footer}

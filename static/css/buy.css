@@ -1,0 +1,61 @@
+@import "common.css";
+.area{width: 996px; display: block; margin: 0 auto; clear: both;}
+.header{display: block;}
+.header .top{
+    background-color: #F7F7F7; height: 35px; line-height: 35px;
+    padding: 0 10px; border-bottom: 1px #CCC solid; font-size: 12px;
+}
+.header .banner{display: block; padding: 20px 0;}
+.header .global-logo{height: 60px; float: left; width: 240px;}
+.header .global-logo img{height: 60px; width: auto; display: block;}
+
+.order-stepbar{background-color: #CCC; border-radius: 3px; height: 26px; line-height: 26px; float: right; overflow: hidden; margin-top: 20px;}
+.order-stepbar li{float: left; width: 150px; border-left: 2px #FFF solid; margin-left: -2px; font-size: 13px;}
+.order-stepbar li.cur{background-color: #FF0000; color: #fff;}
+.order-stepbar li span{display: block; padding: 0 20px;}
+
+.order-address-wrap{display: block;}
+.order-address-wrap .confirm-address{display: block; border-bottom: 2px #F1F1F1 solid; padding: 5px 0;}
+.order-address-wrap .confirm-address .manage-address{float: right; font-size: 12px; font-weight: normal;}
+.order-address-wrap .address-list{display: block; padding: 15px 0;}
+.order-address-wrap .address-list li{height: 25px; line-height: 25px; font-size: 12px; margin-bottom: 5px;}
+.order-address-wrap .address-list .edit-address{float: right; color: #00aaee; display: none;}
+.order-address-wrap .address-list li:hover{background-color: #F1F1F1;}
+.order-address-wrap .address-list li:hover .edit-address{display: block;}
+
+.order-th-title{font-size: 12px; padding: 10px 0;}
+.order-th-table{}
+.order-th-table th{font-weight: normal; font-size: 12px; border-bottom: 3px #B1D0FF solid; padding: 10px; text-align: center;}
+.order-item-table{clear: both;}
+.order-item-table th,.order-item-table td{font-weight: normal; font-size: 12px; padding: 10px 0;}
+.order-item-table thead th{text-align: left; border-bottom: 1px #DDEAFF dotted;}
+.order-item-table .info-img{width: 50px; height: 50px; display: inline-block;}
+.order-item-table .info-img img{width: 100%; height: 100%; display: block;}
+.order-item-table .info-detail{margin-left: 10px; display: inline-block; vertical-align: top;}
+.order-item-table .info-detail .item-name{font-size: 14px; line-height: 1.2;}
+.order-item-table .info-detail .item-attr{color: #999; font-size: 12px; display: block; margin-top: 5px;}
+.order-item-table .cell-price{text-align: center; font-size: 12px;}
+.order-item-table .cell-num{ text-align: center;}
+.order-item-table .cell-num .quantity-inner{display: block; text-align: center;}
+.order-item-table .cell-num .quantity-inner .btn{
+    width: 24px; height: 24px; border: 1px #DDD solid; margin: 0;
+    background-color: #f0f0f0; display: inline-block; vertical-align: middle;
+    text-align: center; font-size: 12px; line-height: 24px; cursor: pointer;
+}
+.order-item-table .cell-num .quantity-inner .text{
+    background-color: #fff; height: 24px; width: 40px; text-align: center; margin: 0;
+    display: inline-block; vertical-align: middle; border-style: solid none; border-color: #DDD; border-width: 1px;
+}
+.order-item-table .cell-simple-price{color: #FF0000; font-weight: bold; font-size: 14px; text-align: right;}
+.order-ext-wrap{background-color: #F2F7FF; padding: 15px 0;}
+.order-ext{display: block; padding: 5px 0;}
+.order-ext .ext-name{width: 80px; text-align: right; display: inline-block; vertical-align: top;}
+.order-ext .ext-info{display: inline-block;  margin-left: 10px; vertical-align: top;}
+.order-ext .textarea{width: 500px; height: 60px;}
+.order-ext .total-fee{font-size: 18px; font-weight: bolder; color: #FF0000;}
+.submit-order{display: block; text-align: right; padding: 10px 0;}
+.submit-order .btn{
+    width: 120px; height: 35px; line-height: 35px; text-align: center;
+    display: inline-block; color: #fff; font-size: 14px; background-color: #FF0000;
+    cursor: pointer;
+}

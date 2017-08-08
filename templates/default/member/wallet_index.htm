@@ -1,0 +1,9 @@
+{template header}
+<div class="console-title">
+	<ul class="tab">
+    	<li class="on"><a>账户余额</a></li>
+        <li><a href="{U:('c=trade&a=itemlist')}">交易明细</a></li>
+    </ul> 
+</div>
+<div class="account-balance-div">当前余额: <span>{echo formatAmount($wallet[balance])}</span></div>
+{template footer}

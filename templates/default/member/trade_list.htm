@@ -1,0 +1,44 @@
+{template header}
+<div class="console-title">
+	<ul class="tab">
+    	<li><a href="{U:('c=wallet&a=index')}">账户余额</a></li>
+        <li class="on"><a>交易明细</a></li>
+    </ul> 
+</div>
+<div class="contect-div">
+	<form method="get" action="/">
+    <input type="hidden" name="m" value="{$_G[m]}">
+    <input type="hidden" name="c" value="{$_G[c]}">
+    <input type="hidden" name="a" value="{$_G[a]}">
+	<span>关键字:</span>
+    <span><input type="text" class="input-text" name="keyword" placeholder="交易名称，流水号"></span>
+    <span><input type="submit" class="button" value="搜索"></span>
+    </form>
+</div>
+<div class="content-div">
+	<table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable trade-list-table">
+    	<thead>
+        	<tr>
+            	<th class="head-time">创建时间</th>
+               <th>名称 | 流水 | 对方账户</th>
+               <th class="amount">金额</th>
+               <th class="status">状态</th>
+            </tr>
+        </thead>
+        <tbody>
+        	{loop $itemlist $trade_id $item}
+        	<tr>
+            	<td class="time"><span>{date:$item[trade_time]|'Y年m月d日'}</span></td>
+               	<td class="name">
+               		<h3>{$item[trade_name]}</h3>
+                   <p>{$item[trade_no]} | {$userlist[$item[payee_uid]][username]}</p>
+               	</td>
+               <td class="amount"><span>{$item[trade_fee]}</span></td>
+               <td class="status">{$item[trade_status_name]}</td>
+            </tr>
+            {/loop}
+        </tbody>
+    </table>
+    <div class="pagination" style="margin-top: 20px;"><div style="float:left;">总计{$totalnum}条记录</div>{$pages}</div>
+</div>
+{template footer}

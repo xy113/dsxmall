@@ -1,0 +1,964 @@
+<?php
+/**
+ * ============================================================================
+ * Copyright (c) 2017 贵州大师兄信息技术有限公司 All rights reserved.
+ * siteַ: http://www.dsxcms.com
+ * ============================================================================
+ * @author:     David Song<songdewei@163.com>
+ * @version:    v1.0.0
+ * ---------------------------------------------
+ * $Date: 2017-07-24
+ * $Id: function.common.php
+ */
+use Core\DB_Mysqli;
+
+/**
+ * 配置全局变量
+ * @param string $name
+ * @param string $value
+ */
+function G($name=null, $value=''){
+	global $_G;
+	if (is_null($name)){
+		return $_G;
+	}else {
+	    if ($value === ''){
+            return isset($_G[$name]) ? $_G[$name] : '';
+        }elseif (is_null($value)) {
+            unset($_G[$name]);
+            return true;
+        }else {
+            $_G[$name] = $value;
+            return $value;
+        }
+	}
+}
+
+/**
+ * 语言设置
+ * @param string $name
+ * @param string $value
+ * @return bool|string
+ * @internal param string $langname
+ */
+function L($name=null, $value=''){
+	global $_lang;
+	if (is_null($name)){
+		return $_lang;
+	}else {
+	    if ($value === ''){
+            return isset($_lang[$name]) ? $_lang[$name] : '';
+        }elseif (is_null($value)){
+            unset($_lang[$name]);
+            return true;
+        }else {
+            $_lang[$name] = $value;
+            return $value;
+        }
+	}
+}
+
+/**
+ * 增加配置
+ * @param string $name
+ * @param string $value
+ * @return bool|string
+ */
+function C($name=null, $value=''){
+	global $_config;
+	if (is_null($name)) {
+		return $_config;
+	}else {
+        if ($value === ''){
+            return isset($_config[$name]) ? $_config[$name] : '';
+        }elseif (is_null($value)){
+            unset($_config[$name]);
+            return true;
+        }else {
+            $_config[$name] = $value;
+            return $value;
+        }
+    }
+}
+
+/**
+ * 初始化模型
+ * @param string $name
+ */
+function M($name){
+	if (is_array($name)){
+		$model = new \Core\Model($name);
+		return $model;
+	}else {
+		$modelclass = ucfirst($name).'Model';
+		if (is_file(MODEL_PATH.ucfirst($name).'/class.'.$modelclass.'.php')){
+			$class = 'Model\\'.ucfirst($name).'\\'.$modelclass;
+		}else {
+            $class = 'Core\\Model';
+		}
+		$model = new $class($name);
+		return $model;
+	}
+}
+
+/**
+ * 创建URL
+ * @param mixed $params
+ */
+function U($params=null){
+	if (is_null($params)) {
+        return curPageURL();
+    }elseif($params == '/'){
+        return getSiteURL();
+	}else {
+		$url = getSiteURL().'/index.php?';
+		$arr = array();
+		if (is_array($params)) {
+			$arr = $params;
+		}elseif (is_string($params)) {
+			parse_str($params, $arr);
+		}
+		$url.= isset($arr['m']) ? 'm='.$arr['m'] : 'm='.G('m');
+		$url.= isset($arr['c']) ? '&c='.$arr['c'] : '&c=index';
+		$url.= isset($arr['a']) ? '&a='.$arr['a'] : '';
+		unset($arr['m'],$arr['c'],$arr['a']);
+		if (!empty($arr)){
+			foreach ($arr as $k=>$v){
+				$url.= '&'.$k.'='.$v;
+			}
+		}
+		return $url;
+	}
+}
+
+/**
+ * 创建URL
+ * @param mixed $params
+ */
+function URL($params=null){
+	return U($params);
+}
+
+/**
+ * 后台配置操作函数
+ * @param string $name
+ * @param string $value
+ */
+function setting($name=null, $value=''){
+	$setting = $GLOBALS['_G']['setting'];
+    if (is_null($name)) {
+        return $setting;
+    }else {
+        if ($value === ''){
+            return isset($setting[$name]) ? $setting[$name] : null;
+        }elseif (is_null($value)){
+            unset($setting[$name]);
+            return true;
+        }else {
+            $setting[$name] = $value;
+            return $value;
+        }
+    }
+}
+
+/**
+ * 获取Mysqli 实例
+ * @return DB_Mysqli
+ */
+function DB(){
+    return \Core\DB_Mysqli::getInstance();
+}
+
+/**
+ * 缓存操作
+ * @param string $name
+ * @param string $value
+ */
+function cache($name, $value=''){
+	$cache = Core\Cache::getInstance();
+	if ($value === ''){
+		return $cache->get($name);
+	}elseif (is_null($value)){
+		return $cache->rm($name);
+	}else {
+		return $cache->set($name,$value);
+	}
+}
+
+/**
+ * Cookie 操作
+ * @param string $name
+ * @param string $value
+ * @param int $expire
+ * @return null
+ */
+function cookie($name='', $value='', $expire=0){
+	// 默认设置
+	$config = array(
+			'prefix'    =>  C('COOKIE_PREFIX'), // cookie 名称前缀
+			'expire'    =>  C('COOKIE_EXPIRE'), // cookie 保存时间
+			'path'      =>  C('COOKIE_PATH'), // cookie 保存路径
+			'domain'    =>  C('COOKIE_DOMAIN'), // cookie 有效域名
+			'secure'    =>  C('COOKIE_SECURE'), //  cookie 启用安全传输
+			'httponly'  =>  C('COOKIE_HTTPONLY'), // httponly设置
+	);
+	$config['expire'] = $expire ? intval($expire) : $config['expire'];
+	// 清除指定前缀的所有cookie
+	if (is_null($name)) {
+		if (empty($_COOKIE))
+			return null;
+			// 要删除的cookie前缀，不指定则删除config设置的指定前缀
+			$prefix = empty($value) ? $config['prefix'] : $value;
+			if (!empty($prefix)) {// 如果前缀为空字符串将不作处理直接返回
+				foreach ($_COOKIE as $key => $val) {
+					if (0 === stripos($key, $prefix)) {
+						setcookie($key, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+						unset($_COOKIE[$key]);
+					}
+				}
+			}
+			return null;
+	}elseif('' === $name){
+		// 获取全部的cookie
+		return $_COOKIE;
+	}
+	
+	$name = $config['prefix'] . str_replace('.', '_', $name);
+	if ('' === $value) {
+		return isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
+	} else {
+		if (is_null($value)) {
+			setcookie($name, '', time() - 3600, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+			unset($_COOKIE[$name]); // 删除指定cookie
+		} else {
+			// 设置cookie
+			if(is_array($value)){
+				$value  = serialize($value);
+			}
+			$expire = !empty($config['expire']) ? time() + intval($config['expire']) : 0;
+			setcookie($name, $value, $expire, $config['path'], $config['domain'],$config['secure'],$config['httponly']);
+			$_COOKIE[$name] = $value;
+		}
+	}
+	return null;
+}
+
+/**
+ * 获取用户头像地址
+ * @param int|number $uid
+ * @param string $size
+ * @param int|number $img
+ * @return string
+ */
+function avatar($uid=0,$size='big',$img=0){
+	if (!$uid) return C('STATICURL').'images/common/avatar_default.png';
+	$size = in_array($size, array('small','middle')) ? $size : 'big';
+	$imgurl = getSiteURL().'/?m=common&c=avatar&uid='.$uid.'&size='.$size;
+    return $img ? '<img src="' . $imgurl . '" border="0"/>' : $imgurl;
+}
+
+/**
+ * 解析素材地址
+ * @param string $file
+ * @param string $type
+ * @return string|unknown
+ */
+function material($file, $type='image'){
+    if (preg_match("/([http|https|ftp]\:\/\/)(.*?)/is", $file)){
+        $url = $file;
+    }else {
+        $url = C('ATTACHURL').$type.'/'.$file;
+    }
+    return $url;
+}
+
+/**
+ * 地址图片解析
+ * @param $file
+ * @param int|number $html
+ * @return string
+ * @internal param string $path
+ */
+function image($file,$html=0){
+	if (preg_match("/([http|https|ftp]\:\/\/)(.*?)/is", $file)){
+		$url = $file;
+	}else {
+		if (is_file(C('ATTACHDIR').'image/'.$file)){
+			$url = C('ATTACHURL').'image/'.$file;
+		}else {
+			$url = C('STATICURL').'images/common/nopic.png';
+		}
+	}
+	if ($html){
+		return '<img src="'.$url.'" />';
+	}else {
+		return $url;
+	}
+}
+
+/**
+ * 解析视频地址
+ * @param $file
+ * @return string|unknown
+ */
+function video($file){
+    return material($file, 'video');
+}
+
+/**
+ * 解析音频地址
+ * @param $file
+ * @return string|unknown
+ */
+function voice($file){
+    return material($file, 'voice');
+}
+
+/**
+ * 格式化距离
+ * @param string $distance
+ * @return string
+ */
+function distance($distance){
+	if (!$distance) return '';
+	if ($distance < 1000){
+		return $distance.'m';
+	}else {
+		return number_format($distance/1000,2).'km';
+	}
+}
+
+/**
+ * 从远程服务器下载数据
+ * @param string $url
+ * @param int|number $ssl
+ * @param int|number $timeout
+ * @return mixed
+ */
+function httpGet($url, $ssl=0, $timeout=500){
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $ssl);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $ssl);
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+	$res = curl_exec($curl);
+	curl_close($curl);
+	return $res;
+}
+
+/**
+ * POST提交数据到远程服务器
+ * @param string $url
+ * @param string $data
+ * @param number $ssl
+ * @param number $timeout
+ * @return mixed
+ */
+function httpPost($url, $data='', $ssl=0, $timeout=500){
+	$curl = curl_init();
+	curl_setopt($curl, CURLOPT_URL, $url);
+	curl_setopt($curl, CURLOPT_POST, true);
+	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $ssl);
+	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $ssl);
+	$res = curl_exec($curl);
+	curl_close($curl);
+	return $res;
+}
+
+
+/**
+ * 高德地理位置编码
+ * @param $address
+ * @param string $city
+ * @return array
+ */
+function amap_geocode($address, $city='', $sig=''){
+	$location = array();
+	$url = "http://restapi.amap.com/v3/geocode/geo?key=".setting('amap_key')."&s=rsv3&address=".$address."&city=".$city."&sig=$sig";
+	$json  = httpGet($url);
+	$data  = json_decode($json,true);
+    if ($data['status'] == 1){
+        $info = $data['geocodes'][0];
+        $coordinate = explode($info['location']);
+        $info['longitude'] = floatval($coordinate[0]);
+        $info['latitude']  = floatval($coordinate[1]);
+        return $info;
+    } else {
+	    return array(
+	        'longitude'=>0,
+            'latitude'=>0
+        );
+    }
+}
+
+/**
+ * 高德逆地理位置编码
+ * @param $lng
+ * @param $lat
+ * @return array
+ */
+function amap_regeocode($lng, $lat){
+    $lng = floatval($lng);
+    $lat = floatval($lat);
+    $point = $lng.','.$lat;
+    $url = 'http://restapi.amap.com/v3/geocode/regeo?key='.setting('amap_key').'&extensions=base&location='.$point;
+    $json = httpGet($url);
+    $data = json_decode($json,true);
+    $location = array();
+    if ($data['status'] == 1){
+        $location = $data['regeocode']['addressComponent'];
+        $location['longitude'] = $lng;
+        $location['latitude'] = $lat;
+        $location['formatted_address'] = $data['regeocode']['formatted_address'];
+        return $location;
+    }else {
+        return array();
+    }
+}
+
+
+/**
+ * 根据IP地址定位地理位置
+ * @param string $ip
+ * @return array
+ */
+function amap_location_by_ip($ip=null){
+	if (is_null($ip)) $ip = getIp();
+    $url = 'http://restapi.amap.com/v3/ip?key='.setting('amap_key').'&ip='.$ip;
+    $json = httpGet($url);
+    $data = json_decode($json,true);
+    if ($data['status'] == 1){
+        $position = explode(';', $data['rectangle']);
+        $coords[0] = explode(',', $position[0]);
+        $coords[1] = explode(',', $position[1]);
+        $location = array(
+            'ip'=>$ip,
+            'province'=>$data['province'],
+            'city'=>$data['city'],
+            'longitude'=>($coords[0][0] + $coords[1][0])/2,
+            'latitude'=>($coords[0][1] + $coords[1][1])/2
+        );
+        return $location;
+    }else {
+        return array();
+    }
+}
+
+/**
+ *  @desc 计算两点之间的距离
+ *  @param float $lat 纬度值
+ *  @param float $lng 经度值
+ *  @param float $lat2 纬度值
+ *  @param float $lng2 经度值
+ */
+function getDistance($lng1,$lat1,$lng2,$lat2){
+	$earthRadius = 6377830;
+	$lat1 = ($lat1 * pi() ) / 180;
+	$lng1 = ($lng1 * pi() ) / 180;
+
+	$lat2 = ($lat2 * pi() ) / 180;
+	$lng2 = ($lng2 * pi() ) / 180;
+	
+	$calcLongitude = $lng2 - $lng1;
+	$calcLatitude  = $lat2 - $lat1;
+	$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);  $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
+	$calculatedDistance = $earthRadius * $stepTwo;
+	return round($calculatedDistance);
+}
+
+/**
+ * discuz 加减密方法
+ * @param string $string
+ * @param number $decode
+ * @param string $key
+ * @param number $expiry
+ * @return string
+ */
+function authcode($string, $decode = 0, $key = '', $expiry = 0) {
+    $ckey_length = 4;
+    $key  = md5($key ? $key : C('AUTHKEY'));
+    $keya = md5(substr($key, 0, 16));
+    $keyb = md5(substr($key, 16, 16));
+    $keyc = $ckey_length ? ($decode ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';
+
+    $cryptkey = $keya.md5($keya.$keyc);
+    $key_length = strlen($cryptkey);
+
+    $string = $decode ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
+    $string_length = strlen($string);
+
+    $result = '';
+    $box = range(0, 255);
+
+    $rndkey = array();
+    for($i = 0; $i <= 255; $i++) {
+        $rndkey[$i] = ord($cryptkey[$i % $key_length]);
+    }
+
+    for($j = $i = 0; $i < 256; $i++) {
+        $j = ($j + $box[$i] + $rndkey[$i]) % 256;
+        $tmp = $box[$i];
+        $box[$i] = $box[$j];
+        $box[$j] = $tmp;
+    }
+
+    for($a = $j = $i = 0; $i < $string_length; $i++) {
+        $a = ($a + 1) % 256;
+        $j = ($j + $box[$a]) % 256;
+        $tmp = $box[$a];
+        $box[$a] = $box[$j];
+        $box[$j] = $tmp;
+        $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
+    }
+
+    if($decode) {
+        if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
+            return substr($result, 26);
+        } else {
+            return '';
+        }
+    } else {
+        return $keyc.str_replace('=', '', base64_encode($result));
+    }
+}
+
+/**
+ * 获取密码密文
+ * @param string $password
+ * @return string
+ */
+function getPassword($password){
+	if ($password) {
+		return sha1(md5($password));
+	}else {
+		return '';
+	}
+}
+
+/**
+ * 产生一个HASH字符串
+ * @return string
+ */
+function formhash() {
+    return md5(substr(time(), 0, -4).C('AUTHKEY'));
+}
+
+function daddslashes($string, $force = 0) {
+    !defined('MAGIC_QUOTES_GPC') && define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
+    if(!MAGIC_QUOTES_GPC || $force) {
+        if(is_array($string)) {
+            foreach($string as $key => $val) {
+                $string[$key] = daddslashes($val, $force);
+            }
+        } else {
+            $string = addslashes($string);
+        }
+    }
+    return $string;
+}
+
+/**
+ * 按长度截取字符串
+ * @param string $string
+ * @param string $length
+ * @param string $dot
+ * @return string
+ */
+function cutstr($string, $length, $dot ='...', $charset='utf8') {
+    if(strlen($string) <= $length) {
+        return $string;
+    }
+    $string = str_replace(array('&amp;', '&quot;', '&lt;', '&gt;'), array('&', '"', '<', '>'), $string);
+    $strcut = '';
+    if(strtolower($charset) == 'utf8') {
+        $n = $tn = $noc = 0;
+        while($n < strlen($string)) {
+            $t = ord($string[$n]);
+            if($t == 9 || $t == 10 || (32 <= $t && $t <= 126)) {
+                $tn = 1; $n++; $noc++;
+            } elseif(194 <= $t && $t <= 223) {
+                $tn = 2; $n += 2; $noc += 2;
+            } elseif(224 <= $t && $t < 239) {
+                $tn = 3; $n += 3; $noc += 2;
+            } elseif(240 <= $t && $t <= 247) {
+                $tn = 4; $n += 4; $noc += 2;
+            } elseif(248 <= $t && $t <= 251) {
+                $tn = 5; $n += 5; $noc += 2;
+            } elseif($t == 252 || $t == 253) {
+                $tn = 6; $n += 6; $noc += 2;
+            } else {
+                $n++;
+            }
+            if($noc >= $length) {
+                break;
+            }
+        }
+        if($noc > $length) {
+            $n -= $tn;
+        }
+        $strcut = substr($string, 0, $n);
+    } else {
+        for($i = 0; $i < $length; $i++) {
+            $strcut .= ord($string[$i]) > 127 ? $string[$i].$string[++$i] : $string[$i];
+        }
+    }
+    $strcut = str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $strcut);
+    return $strcut.$dot;
+}
+
+/**
+ * 去除一些特殊字符
+ * @param string $string
+ * @return mixed
+ */
+function dhtmlspecialchars($string) {
+    if(is_array($string)) {
+        foreach($string as $key => $val) {
+            $string[$key] = dhtmlspecialchars($val);
+        }
+    } else {
+        $string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4}));)/', '&\\1',
+        //$string = preg_replace('/&amp;((#(\d{3,5}|x[a-fA-F0-9]{4})|[a-zA-Z][a-z0-9]{2,5});)/', '&\\1',
+        str_replace(array('&', '"', '<', '>'), array('&amp;', '&quot;', '&lt;', '&gt;'), $string));
+    }
+    return $string;
+}
+
+/**
+ * 生成一个随机字符串
+ * @param number $length
+ * @param number $numeric
+ * @return string
+ */
+function random($length, $numeric = 0) {
+    PHP_VERSION < '4.2.0' ? mt_srand((double)microtime() * 1000000) : mt_srand();
+    $seed = base_convert(md5(print_r($_SERVER, 1).microtime()), 16, $numeric ? 10 : 35);
+    $seed = $numeric ? (str_replace('0', '', $seed).'012340567890') : ($seed.'zZ'.strtoupper($seed));
+    $hash = '';
+    $max = strlen($seed) - 1;
+    for($i = 0; $i < $length; $i++) {
+        $hash .= $seed[mt_rand(0, $max)];
+    }
+    return $hash;
+}
+
+/**
+ * 获取站点URL
+ * @return string
+ */
+function getSiteURL(){
+    if ($_SERVER['SERVER_PORT'] == 443) {
+        return 'https://'.$_SERVER['HTTP_HOST'];
+    }else{
+        return 'http://'.$_SERVER['HTTP_HOST'];
+    }
+}
+
+/**
+ * 去除HTML代码和空格
+ * @param string $str
+ * @return mixed
+ */
+function stripHtml($str){
+    $str = strip_tags($str);
+    $str = str_replace('&amp;', '&', $str);
+    $str = str_replace(array('&ldquo;','&rdquo;'),array('“','”'),$str);
+    $str = preg_replace('/\s|\n\r|　/', '', $str);
+    return $str;
+}
+
+/**
+ * 打印数组
+ * @param array $array
+ */
+function print_array($array){
+    echo '<pre>';
+    print_r($array);
+    echo '</pre>';
+}
+
+/**
+ * 获取模板文件路径
+ * @param string $file
+ * @param string $tpldir 目录
+ * @param string $theme 主题
+ * @return string
+ */
+function template($file, $tpldir = '', $theme='') {
+    global $_G;
+    $tpldir = $tpldir ? $tpldir : $_G['m'];
+    !$tpldir && $tpldir = 'common';
+    if (defined('IN_ADMIN')) $theme = 'default';
+    if (!$theme) {
+    	$theme = defined('THEME') ? THEME : 'default';
+    }
+    
+    $tplfile = TPL_PATH.$theme.'/'.$tpldir.'/'.$file.'.htm';
+    if (!is_file($tplfile)){
+    	$tpldir2 = $tpldir;
+    	$tpldir  = 'common';
+    	$tplfile = TPL_PATH.$theme.'/common/'.$file.'.htm';
+    	if (!is_file($tplfile)){
+    		$tpldir  = $tpldir2;
+    		$theme = 'default';
+    		$tplfile = TPL_PATH.'/default/'.$tpldir.'/'.$file.'.htm';
+    		if (!is_file($tplfile)){
+    			$tpldir  = 'common';
+    			$tplfile = TPL_PATH.'default/common/'.$file.'.htm';
+    		}
+    	}
+    }
+    
+    $objfile = DATA_PATH.'template/'.$theme.'/'.$tpldir.'/'.$file.'.tpl.php';
+    if (!is_file($objfile) || filemtime($tplfile)>filemtime($objfile)){
+    	@mkdir(dirname($objfile),0777,true);
+        \Core\Template::parse_template($tplfile,$tpldir,$objfile);
+    }
+    return $objfile;
+}
+
+/**
+ * 序列号ID
+ * @param string $array
+ * @return string
+ */
+function implodeids($array) {
+    if(!empty($array)) {
+        return "'".implode("','", is_array($array) ? $array : array($array))."'";
+    } else {
+        return '';
+    }
+}
+
+/**
+ * 格式时间
+ * @param string $time
+ * @param string $format
+ * @return boolean
+ */
+function formatTime($time,$format=''){
+    if(!$time) return false;
+    !$format && $format = setting('dateformat');
+    !$format && $format = 'Y-m-d';
+    return @date($format,$time);
+}
+
+/**
+ * 格式化文件尺寸
+ * @param number $size
+ */
+function formatSize($size){
+    $sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
+    if ($size == 0) {
+        return('n/a');
+    } else {
+        return (round($size/pow(1024, ($i = floor(log($size, 1024)))), 2) . $sizes[$i]);
+    }
+}
+
+/**
+ * 金额格式化
+ * @param float $amount
+ * @param number $decimals
+ */
+function formatAmount($amount, $decimals=2){
+	return @number_format($amount, $decimals, '.', '');
+}
+
+/**
+ * 替换字符串
+ * @param string $string
+ * @param string $replacer
+ */
+function stringParser($string,$replacer){
+    $result = str_replace(array_keys($replacer), array_values($replacer),$string);
+    return $result;
+}
+
+/**
+ * 获取当前页面地址
+ * @return string
+ */
+function curPageURL() {
+    $pageURL = 'http';
+    if (!empty($_SERVER['HTTPS'])) {$pageURL .= "s";}
+    $pageURL .= "://";
+    if ($_SERVER["SERVER_PORT"] != "80") {
+        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+    } else {
+        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+    }
+    return $pageURL;
+}
+
+/**
+ * 获取用户真实IP
+ * @return Ambigous <string, unknown>
+ */
+function getIp() {
+    return $_SERVER['REMOTE_ADDR'];
+}
+
+/**
+ * 获取IP地址信息
+ * @param $ip
+ * @return array
+ */
+function getIpInfo($ip){
+    $json = httpGet('service/getIpInfo.php?ip='.$ip);
+    $info = json_decode($json);
+    if ($info['code'] == 1){
+        return $info['data'];
+    }else {
+        return array();
+    }
+}
+
+/**
+ * SQL反注入
+ * @param unknown $sql
+ */
+function injCheck($sql) {
+    $check = preg_match('/select|insert|update|delete|\'|\/\*|\*|\.\.\/|\.\/|union|into|load_file|outfile/', $sql);
+    if ($check) {
+        return false;
+    } else {
+        return $sql;
+    }
+}
+
+/**
+ * 判断是否从移动客户端访问
+ */
+function mobilecheck()
+{
+    // 如果有HTTP_X_WAP_PROFILE则一定是移动设备
+    if (isset ($_SERVER['HTTP_X_WAP_PROFILE']))
+    {
+        return true;
+    }
+    // 如果via信息含有wap则一定是移动设备,部分服务商会屏蔽该信息
+    if (isset ($_SERVER['HTTP_VIA']))
+    {
+        // 找不到为flase,否则为true
+        return stristr($_SERVER['HTTP_VIA'], "wap") ? true : false;
+    }
+    // 脑残法，判断手机发送的客户端标志,兼容性有待提高
+    if (isset ($_SERVER['HTTP_USER_AGENT']))
+    {
+        $clientkeywords = array ('nokia',
+            'sony',
+            'ericsson',
+            'mot',
+            'samsung',
+            'htc',
+            'sgh',
+            'lg',
+            'sharp',
+            'sie-',
+            'philips',
+            'panasonic',
+            'alcatel',
+            'lenovo',
+            'iphone',
+            'ipod',
+            'blackberry',
+            'meizu',
+            'android',
+            'netfront',
+            'symbian',
+            'ucweb',
+            'windowsce',
+            'palm',
+            'operamini',
+            'operamobi',
+            'openwave',
+            'nexusone',
+            'cldc',
+            'midp',
+            'wap',
+            'mobile'
+        );
+        // 从HTTP_USER_AGENT中查找手机浏览器的关键字
+        if (preg_match("/(" . implode('|', $clientkeywords) . ")/i", strtolower($_SERVER['HTTP_USER_AGENT'])))
+        {
+            return true;
+        }
+    }
+    // 协议法，因为有可能不准确，放到最后判断
+    if (isset ($_SERVER['HTTP_ACCEPT']))
+    {
+        // 如果只支持wml并且不支持html那一定是移动设备
+        // 如果支持wml和html但是wml在html之前则是移动设备
+        if ((strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') !== false) && (strpos($_SERVER['HTTP_ACCEPT'], 'text/html') === false || (strpos($_SERVER['HTTP_ACCEPT'], 'vnd.wap.wml') < strpos($_SERVER['HTTP_ACCEPT'], 'text/html'))))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
+ * 清除文档格式
+ */
+function cleanUpStyle($str){
+	$str = preg_replace('/\s*mso-[^:]+:[^;"]+;?/i', "", $str);
+	$str = preg_replace('/\s*margin(.*?)pt\s*;/i', "", $str);
+	$str = preg_replace('/\s*margin(.*?)cm\s*;/i', "", $str);
+	$str = preg_replace('/\s*text-indent:(.*?)\s*;/i', "", $str);
+	$str = preg_replace('/\s*line-height:(.*?)\s*;/i', "", $str);
+	$str = preg_replace('/\s*page-break-before: [^\s;]+;?"/i', "", $str);
+	$str = preg_replace('/\s*font-variant: [^\s;]+;?"/i', "", $str);
+	$str = preg_replace('/\s*tab-stops:[^;"]*;?/i', "", $str);
+	$str = preg_replace('/\s*tab-stops:[^"]*/i', "", $str);
+	$str = preg_replace('/\s*face="[^"]*"/i', "", $str);
+	$str = preg_replace('/\s*face=[^ >]*/i', "", $str);
+	$str = preg_replace('/\s*font:(.*?);/i', "", $str);
+	$str = preg_replace('/\s*font-size:(.*?);/i', "", $str);
+	$str = preg_replace('/\s*font-weight:(.*?);/i', "", $str);
+	$str = preg_replace('/\s*font-family:[^;"]*;?/i', "", $str);
+	$str = preg_replace('/<span style="Times New Roman&quot;">\s\n<\/span>/i', "", $str);
+	return $str;
+}
+
+/**
+ * rewrite 伪静态
+ * @param string $content
+ * @return mixed
+ */
+function rewrite($content){
+	 $content = preg_replace_callback('/\<a(.*?)href=\"(\/|\/index\.php)\?(.*?)\"(.*?)\>/', function($matches){
+		 parse_str($matches[3], $arr);
+		 $str = getSiteURL();
+		 $str.= isset($arr['m']) ? '/'.$arr['m'] : DEFAULT_MODEL;
+		 $str.= isset($arr['c']) ? '/'.$arr['c'] : '/index';
+		 $str.= isset($arr['a']) ? '/'.$arr['a'] : '';
+		 $str.= $str ? '.htm' : '';
+		 unset($arr['m'], $arr['c'], $arr['a']);
+		 if (!empty($arr)) {
+		 	$query = http_build_query($arr);
+		 	$str.= '?'.$query;
+		 }
+		 return '<a'.$matches[1].'href="'.$str.'"'.$matches[4].'>';
+	 }, $content);
+	 return $content;
+}
+
+/**
+ * php生成全球唯一id，php生成随机码，php 生成永不重复字符串
+ * @return string
+ */
+function guid() {
+	$charid = strtoupper(md5(uniqid(mt_rand(), true)));
+	$uuid = substr($charid, 0, 8).
+	substr($charid, 8, 4).
+	substr($charid,12, 4).
+	substr($charid,16, 4).
+	substr($charid,20,12);
+	return $uuid;
+}

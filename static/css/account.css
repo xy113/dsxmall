@@ -1,0 +1,32 @@
+@import url(common.css);
+.area{clear:both; margin:0 auto; width:1000px;}
+.main-body-div{display:block; position:relative; width:860px; margin-top:30px; height: 500px;}
+/*=====登录部分=====*/
+.sign-in-map{background-image:url(../images/cugeng/banner-app.png); background-repeat:no-repeat; width:400px; height:347px; position:absolute; left:0; top:50px; display:block;}
+.sign-in-div{position:absolute; right:0; top:80px; background-color:#FAFCFE; border:1px #ddd solid; padding:10px 0; width:320px; z-index:20;}
+.sign-in-div h3{display:block; padding:10px 30px; font-size:16px; border-bottom:3px #FFF solid;}
+.sign-in-div .sign-content{display:block; padding:0px 30px 20px;}
+.sign-in-div .sign-content .qrcode{width: 200px; height: 200px; display: block; margin: 0 auto; position: relative;}
+.sign-in-div .sign-content .qrcode img{width: 100%; height: 100%; display: block;}
+.sign-in-div .sign-content .loading{
+    position: absolute; width: 100%; height: 100%; left: 0; top: 0; display: none;
+    background-image: url("../images/common/spinner.gif"); background-position: center center;
+    background-size: 50px 50px; background-repeat: no-repeat; background-color: #fff; opacity: 0.9;
+}
+.sign-in-div .input-div{background-color:#fff; border:0; display:block; height:40px; margin-top:20px; position:relative; border:1px #ddd solid; border-radius:2px; box-shadow:0 1px 2px rgba(0, 0, 0, 0.075) inset;}
+.sign-in-div .ico-box{width:36px; height:36px; margin:2px; background-color:#fefefe; text-align:center; line-height:100%; display:block; float:left;}
+.sign-in-div .ico-box .icon{margin:0; line-height:36px; display:block; color:#666; width:100%;}
+.sign-in-div .input-box{height:40px; overflow:hidden;}
+.sign-in-div .input-box .text{padding:5px 10px 5px 0; font-size:13px; box-sizing:border-box; width:100%; height:100%; border:0; background:none;}
+.sign-in-div .captcha{position:absolute; top:0; right:0; height:40px; z-index:10; cursor:pointer;}
+.sign-in-div .sign-button-div{margin-top:20px; display:block;}
+.sign-in-div .sign-button{display:block; width:100%; border:0; font-size:14px; cursor:pointer; height:40px; line-height:40px; text-align:center; background:#0ae; color:#fff; border-radius:2px;}
+.sign-in-div .sign-button:hover{background:#00a3d2;}
+.sign-in-div .sign-link{display:block; margin-top:15px; font-size:12px;}
+.sign-in-div .sign-link span{float:right;}
+.sign-in-div .err-tips{display:block; background-color:#fff2f2; color:#F00; padding:10px; border:1px #C63 solid; border-radius:2px; display:none;}
+
+#footer{clear:both; padding:10px 0; margin-top:30px; color:#333;}
+#footer .bottomNav{text-align:center; color:#f0f0f0;}
+#footer .bottomNav a{color:#333; margin:0 3px;}
+#footer .copyright{color:#999; text-align:center; line-height:30px;}

@@ -1,0 +1,135 @@
+{template header}
+<div class="console-title">
+    <h2>店铺设置</h2>
+</div>
+<div class="content-div">
+    <form method="post" id="shopForm">
+        <input type="hidden" name="formsubmit" value="yes">
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+            <tbody>
+            <tr>
+                <td class="cell-name" width="80">店铺LOGO</td>
+                <td width="320"><img src="{img $myshop[shop_logo]}" width="200"></td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">店铺名称</td>
+                <td id="shop_name">{$myshop[shop_name]}</td>
+                <td class="cell-tips"><a href="javascript:;" id="edit_name">修改</a></td>
+            </tr>
+            <tr>
+                <td class="cell-name">手机号码</td>
+                <td id="shop_phone">{$myshop[phone]}</td>
+                <td class="cell-tips"><a href="javascript:;" id="edit_phone">修改</a></td>
+            </tr>
+            <tr>
+                <td class="cell-name">所在位置</td>
+                <td>{$myshop[province]} {$myshop[city]} {$myshop[county]} {$myshop[street]}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">开店时间</td>
+                <td>{date:$myshop[create_time]|'Y年m月d日'}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">店铺访问</td>
+                <td>{$myshop[viewnum]}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">店主姓名</td>
+                <td>{$owner[owner_name]}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">证件号码</td>
+                <td>{$owner[id_card_no]}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            <tr>
+                <td class="cell-name">证件照片</td>
+                <td colspan="2">
+                    <img src="{img $owner[id_card_pic_1]}" width="200">
+                    <img src="{img $owner[id_card_pic_2]}" width="200">
+                    <img src="{img $owner[id_card_pic_3]}" width="200">
+                </td>
+            </tr>
+            <tr>
+                <td class="cell-name">营业执照</td>
+                <td><img src="{img $shop_info[license_pic]}" width="200"></td>
+                <td class="cell-tips"></td>
+            </tr>
+            {if $shop_info[other_card_pic]}
+            <tr>
+                <td class="cell-name">其他证件</td>
+                <td><img src="{img $shop_info[other_card_pic]}" width="200"></td>
+                <td class="cell-tips"></td>
+            </tr>
+            {/if}
+            <tr>
+                <td class="cell-name">经营范围</td>
+                <td>{$shop_info[business_scope]}</td>
+                <td class="cell-tips"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        function editField(id, callback) {
+            var defaultVal = $(id).html();
+            var input = $("<input/>").attr({
+                type:'text',
+                class:'input-text w300',
+                value:defaultVal,
+                id:'editing-textField'
+            }).blur(function () {
+                var val = $(this).val();
+                if (val == defaultVal){
+                    $(id).html(defaultVal);
+                }else {
+                    $(id).html(val);
+                    if (callback) callback(val);
+                }
+            });
+            if ($("#editing-textField").length > 0){
+                $("#editing-textField").blur();
+                return;
+            }else {
+                $(id).html(input);
+            }
+        }
+        $("#edit_name").on('click', function () {
+            editField('#shop_name', function (val) {
+                $.ajax({
+                    type:'POST',
+                    url:"{U:('c=shop&a=update_shop')}",
+                    data:{shop_name:val},
+                    success:function () {
+
+                    }
+                });
+            });
+        });
+        $("#edit_phone").on('click', function () {
+            editField('#shop_phone', function (val) {
+                if (!DSXValidate.IsMobile(val)){
+                    DSXUI.error('手机号输入错误');
+                    return false;
+                }
+                $.ajax({
+                    type:'POST',
+                    url:"{U:('c=shop&a=update_shop')}",
+                    data:{phone:val},
+                    success:function () {
+
+                    }
+                });
+            });
+        });
+    });
+</script>
+{template footer}
