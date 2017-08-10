@@ -8,8 +8,11 @@
 namespace Model\Home;
 
 class ConvertController extends BaseController{
+    /**
+     *
+     */
     public function index(){
-
+        $this->copyImg();
     }
 
     private function convertMember(){
@@ -97,8 +100,10 @@ class ConvertController extends BaseController{
         $query = $db->query($sql);
         while ($data = $db->fetch_array($query)){
             //print_array($data);
+            goods_delete_item(array('goods_sn'=>$data['goods_sn']));
             goods_delete_item(array('id'=>$data['id']));
             goods_add_item(array(
+                'id'=>$data['id'],
                 'uid'=>$data['uid'],
                 'shop_id'=>$data['shopid'],
                 'catid_1'=>$data['catid'],

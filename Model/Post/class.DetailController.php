@@ -4,7 +4,7 @@ class DetailController extends BaseController{
 	public $id = 0;
 	public $catid = 0;
 	public function index(){
-		global $G,$lang;
+		global $_G,$_lang;
 		$this->id = intval($_GET['id']);
 		post_update_item(array('id'=>$this->id), "viewnum=viewnum+1");
 		$article = post_get_item(array('id'=>$this->id));
@@ -12,26 +12,13 @@ class DetailController extends BaseController{
 		if (!in_array($article['type'], array('image','video','music'))){
 			$article['type'] = 'article';
 		}
-		
-		if (order_get_item_count(array('dataid'=>$this->id, 'datatype'=>'article')) == 0){
-			order_add_item(array(
-					'uid'=>$this->uid,
-					'seller_uid'=>$article['uid'],
-					'dataid'=>$this->id,
-					'datatype'=>'article',
-					'order_no'=>order_create_no($this->uid),
-					'order_name'=>$article['title'],
-					'order_fee'=>$article['price'],
-					'order_time'=>TIMESTAMP
-			));
-		}
-		
+
 		$this->catid = $article['catid'];
 		$category = post_get_category(array('catid'=>$this->catid));
-		$G['title'] = $article['title'].' - '.$category['name'];
+		$_G['title'] = $article['title'].' - '.$category['name'];
 		
-		$G['keywords'] = $article['tags'] ? implode(',', $article['tags']) : $G['keywords'];
-		$G['description'] = $article['summary'] ? $article['summary'] : $G['keywords'];
+		$_G['keywords'] = $article['tags'] ? implode(',', $article['tags']) : $_G['keywords'];
+		$_G['description'] = $article['summary'] ? $article['summary'] : $_G['keywords'];
 		
 		$content['content'] = post_get_content(array('aid'=>$this->id));
 		if ($article['type'] == 'image'){

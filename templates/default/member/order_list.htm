@@ -32,256 +32,124 @@
             </tr>
         </tbody>
     </table>
-
-    <div class="order-item-wrap">
+    {loop $itemlist $order_id $item}
+    <div class="order-item-wrap" id="order-item-{$order_id}">
         <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
             <thead>
             <tr>
                 <th>
                     <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">2017-08-04</span>
-                    <span class="wrap-order-no">20179329489349328498</span>
+                    <span class="wrap-time">{date:$item[create_time]|'Y-m-d'}</span>
+                    <span class="wrap-order-no">{$item[order_no]}</span>
                 </th>
-                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
+                <th colspan="2">
+                    <h3>
+                        <a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank">
+                            {$item[shop_short_name]}</a>
+                    </h3>
+                </th>
                 <th></th>
-                <th colspan="3"></th>
+                <th colspan="3" style="text-align: right;"><a class="icon delete-order" title="删除订单" rel="delete" data-id="{$order_id}">&#xf013f;</a></th>
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <td class="col1">
-                    <div class="goods-pic">
-                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
-                    </div>
-                    <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
-                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
-                    </div>
-                </td>
-                <td class="col2">
-                    <p><s>￥100.00</s></p>
-                    <p>￥74.32</p>
-                </td>
-                <td class="col3">1</td>
-                <td class="col4">
-                    <p><a>申请售后</a></p>
-                    <p><a>投诉卖家</a></p>
-                </td>
-                <td class="col5">
-                    <p><strong>￥74.32</strong></p>
-                    <p>(含运费:￥10.00)</p>
-                </td>
-                <td class="col6">
-                    <p>交易成功</p>
-                    <p>评价详情</p>
-                </td>
-                <td class="col7">
-                    <a>追加评论</a>
-                </td>
-            </tr>
+                {loop $item[goods] $goods_id $goods}
+                <tr>
+                    <td class="col1">
+                        <div class="goods-pic">
+                            <img src="{img $goods[goods_thumb]}">
+                        </div>
+                        <div style="margin-left: 90px; overflow: hidden;">
+                            <div class="goods-name">{$goods[goods_name]}</div>
+                            <div class="goods-attr">颜色:白色 尺码:XXXL</div>
+                        </div>
+                    </td>
+                    <td class="col2">
+                        {if $goods[market_price]}<p><s>￥{amount:$goods[market_price]}</s></p>{/if}
+                        <p>￥{amount:$goods[goods_price]}</p>
+                    </td>
+                    <td class="col3">{$goods[goods_number]}</td>
+                    <td class="col4">
+                        <p><a>申请售后</a></p>
+                        <p><a>投诉卖家</a></p>
+                    </td>
+                    <td class="col5">
+                        <p><strong style="color: #FF0000;">￥{amount:$item[total_fee]}</strong></p>
+                        <p style="font-size: 11px;">(含运费:￥10.00)</p>
+                    </td>
+                    <td class="col6">
+                        {if $item[order_trade_status]==1}
+                        <p>等待买家付款</p>
+                        <p>订单详情</p>
+                        {elseif $item[order_trade_status]==2}
+                        <p>等待卖家发货</p>
+                        <p>订单详情</p>
+                        {elseif $item[order_trade_status]==3}
+                        <p>宝贝运送中</p>
+                        <p>订单详情</p>
+                        <p>查看物流</p>
+                        {elseif $item[order_trade_status]==4||$item[order_trade_status]==5}
+                        <p>交易成功</p>
+                        <p>订单详情</p>
+                        {elseif $item[order_trade_status]==6}
+                        <p>退款中</p>
+                        <p>订单详情</p>
+                        {elseif $item[order_trade_status]==7}
+                        <p>退款完成</p>
+                        <p>订单详情</p>
+                        {/if}
+                    </td>
+                    <td class="col7">
+                        {if $item[order_trade_status]==1}
+                        <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
+                        {elseif $item[order_trade_status]==2}
+                        <a>提醒卖家发货</a>
+                        {elseif $item[order_trade_status]==3}
+                        <a class="button btn">确认收货</a>
+                        {elseif $item[order_trade_status]==4}
+                        <a class="button btn">立即评价</a>
+                        {elseif $item[order_trade_status]==5}
+                        <a>申请退货</a>
+                        {/if}
+                    </td>
+                </tr>
+                {/loop}
             </tbody>
         </table>
     </div>
-
-    <div class="order-item-wrap">
-        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
-            <thead>
-            <tr>
-                <th>
-                    <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">2017-08-04</span>
-                    <span class="wrap-order-no">20179329489349328498</span>
-                </th>
-                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
-                <th></th>
-                <th colspan="3"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="col1">
-                    <div class="goods-pic">
-                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
-                    </div>
-                    <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
-                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
-                    </div>
-                </td>
-                <td class="col2">
-                    <p><s>￥100.00</s></p>
-                    <p>￥74.32</p>
-                </td>
-                <td class="col3">1</td>
-                <td class="col4">
-                    <p><a>申请售后</a></p>
-                    <p><a>投诉卖家</a></p>
-                </td>
-                <td class="col5">
-                    <p><strong>￥74.32</strong></p>
-                    <p>(含运费:￥10.00)</p>
-                </td>
-                <td class="col6">
-                    <p>交易成功</p>
-                    <p>评价详情</p>
-                </td>
-                <td class="col7">
-                    <a>追加评论</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="order-item-wrap">
-        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
-            <thead>
-            <tr>
-                <th>
-                    <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">2017-08-04</span>
-                    <span class="wrap-order-no">20179329489349328498</span>
-                </th>
-                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
-                <th></th>
-                <th colspan="3"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="col1">
-                    <div class="goods-pic">
-                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
-                    </div>
-                    <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
-                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
-                    </div>
-                </td>
-                <td class="col2">
-                    <p><s>￥100.00</s></p>
-                    <p>￥74.32</p>
-                </td>
-                <td class="col3">1</td>
-                <td class="col4">
-                    <p><a>申请售后</a></p>
-                    <p><a>投诉卖家</a></p>
-                </td>
-                <td class="col5">
-                    <p><strong>￥74.32</strong></p>
-                    <p>(含运费:￥10.00)</p>
-                </td>
-                <td class="col6">
-                    <p>交易成功</p>
-                    <p>评价详情</p>
-                </td>
-                <td class="col7">
-                    <a>追加评论</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="order-item-wrap">
-        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
-            <thead>
-            <tr>
-                <th>
-                    <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">2017-08-04</span>
-                    <span class="wrap-order-no">20179329489349328498</span>
-                </th>
-                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
-                <th></th>
-                <th colspan="3"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="col1">
-                    <div class="goods-pic">
-                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
-                    </div>
-                    <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
-                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
-                    </div>
-                </td>
-                <td class="col2">
-                    <p><s>￥100.00</s></p>
-                    <p>￥74.32</p>
-                </td>
-                <td class="col3">1</td>
-                <td class="col4">
-                    <p><a>申请售后</a></p>
-                    <p><a>投诉卖家</a></p>
-                </td>
-                <td class="col5">
-                    <p><strong>￥74.32</strong></p>
-                    <p>(含运费:￥10.00)</p>
-                </td>
-                <td class="col6">
-                    <p>交易成功</p>
-                    <p>评价详情</p>
-                </td>
-                <td class="col7">
-                    <a>追加评论</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="order-item-wrap">
-        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
-            <thead>
-            <tr>
-                <th>
-                    <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">2017-08-04</span>
-                    <span class="wrap-order-no">20179329489349328498</span>
-                </th>
-                <th colspan="2"><h3><i class="icon"></i>大师兄专卖店</h3></th>
-                <th></th>
-                <th colspan="3"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td class="col1">
-                    <div class="goods-pic">
-                        <img src="https://img.alicdn.com/bao/uploaded/i2/2049108827/TB26EYwd3JkpuFjSszcXXXfsFXa_!!2049108827.jpg_80x80.jpg">
-                    </div>
-                    <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">绝对路径啊LDJLASJ啥富兰克林撒娇就撒分离焦虑的卡萨近段时间</div>
-                        <div class="goods-attr">颜色:白色 尺码:XXXL</div>
-                    </div>
-                </td>
-                <td class="col2">
-                    <p><s>￥100.00</s></p>
-                    <p>￥74.32</p>
-                </td>
-                <td class="col3">1</td>
-                <td class="col4">
-                    <p><a>申请售后</a></p>
-                    <p><a>投诉卖家</a></p>
-                </td>
-                <td class="col5">
-                    <p><strong>￥74.32</strong></p>
-                    <p>(含运费:￥10.00)</p>
-                </td>
-                <td class="col6">
-                    <p>交易成功</p>
-                    <p>评价详情</p>
-                </td>
-                <td class="col7">
-                    <a>追加评论</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
+    {/loop}
 </div>
-<div class="pages">{$pages}</div>
+<div class="pagination">{$pages}</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("a[rel=delete]").on('click', function () {
+            var order_id = $(this).attr('data-id');
+            DSXUI.confirmDialog({
+                title:'删除确认',
+                text:'你确定要删除此订单吗?',
+                onConfirm:function (dlg) {
+                    var spinner = null;
+                    $.ajax({
+                        url:"{U:('c=order&a=delete')}",
+                        data:{order_id:order_id},
+                        dataType:'json',
+                        beforeSend:function () {
+                            spinner = DSXUI.showSpinner();
+                        },
+                        success:function (response) {
+                            setTimeout(function () {
+                                spinner.close();
+                                if (response.errcode == 0){
+                                    $("#order-item-"+order_id).remove();
+                                }else {
+                                    DSXUI.error('系统繁忙,请稍后再试');
+                                }
+                            }, 500);
+                        }
+                    });
+                }
+            });
+        });
+    })
+</script>
 {template footer}

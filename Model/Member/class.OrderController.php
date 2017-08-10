@@ -22,35 +22,70 @@ class OrderController extends BaseController{
 		$tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
 		
 		$condition = array('uid'=>$this->uid);
-		if ($tab == 'free'){
-			$condition['order_fee'] = 0;
-		}elseif ($tab == 'not_free') {
-			$condition['order_fee'] = array('>', 0);
-		}
-		
-		if ($keyword) $condition[] = "(order_name LIKE '%$keyword%' OR order_no LIKE '%$keyword%')";
-		
-		$pagesize  = 20;
-		$totalnum  = order_get_item_count($condition);
-		$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-		$itemlist = order_get_item_list($condition, $pagesize, ($_G['page']-1)*$pagesize, 'order_id DESC');
-		$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "tab=$tab&keyword=$keyword", 1);
-		
-		if ($itemlist) {
-			$uids = $datalist = array();
-			foreach ($itemlist as $item){
-				$datalist[$item['order_id']] = $item;
-				array_push($uids, $item['seller_uid']);
-			}
-			$itemlist = $datalist;
-			$uids = $uids ? implodeids($uids) : 0;
-			$userlist = member_get_list(array('uid'=>array('IN', $uids)), 0);
-			unset($uids, $datalist, $item);
-		}
+        if ($tab == 'waitPay'){
+            $condition['pay_status'] = 0;
+        }elseif ($tab == 'waitSend'){
+            $condition['pay_status'] = 1;
+            $condition['shipping_status'] = 0;
+        }elseif ($tab == 'waitConfirm'){
+            $condition['pay_status'] = 1;
+            $condition['shipping_status'] = 1;
+            $condition['order_status'] = 0;
+        }elseif ($tab == 'waitRate'){
+            $condition['pay_status'] = 1;
+            $condition['shipping_status'] = 1;
+            $condition['order_status'] = 1;
+            $condition['evaluate_status'] = 0;
+        }
+
+		$pagesize = 10;
+        $totalnum = order_get_item_count($condition);
+        $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+        $_G['page'] = min(array($_G['page'], $pagecount));
+		$start_limit = ($_G['page'] - 1) * $pagesize;
+        $itemlist = order_get_item_list($condition, $pagesize, $start_limit, 'order_id DESC');
+        $pages = $this->showPages($_G['page'], $pagecount, $start_limit, "", 1);
+
+        if ($itemlist) {
+            $datalist = $order_ids = array();
+            foreach ($itemlist as $item){
+                $item['order_trade_status'] = order_get_trade_status($item);
+                $item['shop_short_name'] = cutstr($item['shop_name'], 12, '..');
+                $datalist[$item['order_id']] = $item;
+                $order_ids[] = $item['order_id'];
+            }
+
+            $itemlist = $datalist;
+            unset($datalist);
+
+            $order_ids = array_unique($order_ids);
+            $order_ids = $order_ids ? implodeids($order_ids) : 0;
+            if ($order_ids) {
+                $goods_list = order_get_goods_list(array('order_id'=>array('IN', $order_ids)));
+                foreach ($goods_list as $goods){
+                    $itemlist[$goods['order_id']]['goods'][$goods['goods_id']] = $goods;
+                }
+            }
+            unset($order_ids, $goods_list, $goods);
+        }
 
 		$_G['title'] = $_lang['order_list'];
 		include template('order_list');
 	}
 
-
+    /**
+     * 删除订单
+     */
+    public function delete(){
+        $order_id = intval($_GET['order_id']);
+        $res = order_delete_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        if ($res) {
+            order_delete_goods(array('order_id'=>$order_id));
+            order_delete_action(array('order_id'=>$order_id));
+            order_delete_shipping(array('order_id'=>$order_id));
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError(1, L('order_delete_fail'));
+        }
+    }
 }

@@ -1,27 +1,33 @@
 {template header_common}
 <div class="area">
+    {eval $cat_list=goods_get_cat_list()}
     <div class="category-panel">
-        <ul class="cat-list">
-            <li><a><span>蔬菜</span></a></li>
-            <li><a><span>水果</span></a></li>
-            <li><a><span>生鲜</span></a></li>
-            <li><a><span>干货</span></a></li>
-            <li><a><span>调料</span></a></li>
-            <li><a><span>矿泉水</span></a></li>
-            <li><a><span>蔬菜</span></a></li>
-            <li><a><span>水果</span></a></li>
-            <li><a><span>生鲜</span></a></li>
-            <li><a><span>干货</span></a></li>
-            <li><a><span>调料</span></a></li>
-            <li><a><span>矿泉水</span></a></li>
+        <ul class="cat-list" id="cat-list">
+            {loop $goods_cat_list[0] $cat}
+            <li><a href="{U:('m=goods&c=search&catid='.$cat[catid])}"><span>{$cat[name]}</span></a></li>
+            {/loop}
         </ul>
+        <div class="childs-panel" id="childs-panel">
+            {loop $goods_cat_list[0] $cat}
+            <div class="cat-group">
+                <h3><a href="{U:('m=goods&c=search&catid='.$cat[catid])}" class="more">更多 >></a> {$cat[name]}</h3>
+                <ul>
+                    {loop $goods_cat_list[$cat[catid]] $child}
+                    <li><a href="{U:('m=goods&c=search&catid='.$child[catid])}">{$child[name]}</a></li>
+                    {/loop}
+                </ul>
+            </div>
+            {/loop}
+        </div>
     </div>
     <div class="home-main">
         <div class="swiper-div" id="swiper-div">
             <div class="swiper" id="swiper">
                 <ul class="swiper-wrapper">
-                    <li class="swiper-slide"><img src="/static/images/cugeng/larou.jpg"></li>
-                    <li class="swiper-slide"><img src="/static/images/cugeng/larou.jpg"></li>
+                    {eval $slide_list=block_get_cache(1)}
+                    {loop $slide_list $sd}
+                    <li class="swiper-slide"><a href="{$sd[url]}" target="_blank"><img src="{img $sd[image]}"></a></li>
+                    {/loop}
                 </ul>
                 <div class="swiper-pagination"></div>
             </div>
@@ -36,27 +42,49 @@
             <div class="content">
                 <h3>农产品资讯</h3>
                 <ul>
-                    {eval $itemlist=post_get_item_list(0,10)}
+                    {eval $itemlist=post_get_item_list(0,13)}
                     {loop $itemlist $item}
-                    <li><a href="/?m=post&c=detail&id={$item[id]}">&bull; {$item[title]}</a></li>
+                    <li><a href="/?m=post&c=detail&id={$item[id]}" target="_blank">&bull; {$item[title]}</a></li>
                     {/loop}
                 </ul>
             </div>
         </div>
         
-        <ul class="best-goods">
-            <li><div class="bd"><img src="/static/images/cugeng/best-goods.jpg"></div></li>
-            <li><div class="bd"><img src="/static/images/cugeng/best-goods.jpg"></div></li>
-            <li><div class="bd"><img src="/static/images/cugeng/best-goods.jpg"></div></li>
-            <li><div class="bd"><img src="/static/images/cugeng/best-goods.jpg"></div></li>
-        </ul>
+        <div class="best-goods-wrap">
+            <ul class="best-goods">
+                {eval $best_list=block_get_cache(2)}
+                {loop $best_list $item}
+                <li><div class="bd"><a href="{$item[url]}"><img src="{img $item[image]}"></a></div></li>
+                {/loop}
+            </ul>
+        </div>
     </div>
 </div>
+<script type="text/javascript">
+$(function () {
+    $("#cat-list li").mouseenter(function (e) {
+        var self = this;
+        $(this).addClass('cur').siblings().removeClass('cur');
+        $("#childs-panel").show();
+        $("#childs-panel .cat-group").eq($(this).index()).show().siblings('.cat-group').hide();
+        $(document).mousemove(function (e) {
+            $("#childs-panel").hide();
+            $(self).removeClass('cur');
+        });
+    }).mousemove(function (e) {
+        DSXUtil.stopPropagation(e);
+    });
+    $("#childs-panel").mousemove(function (e) {
+        DSXUtil.stopPropagation(e);
+    });
+});
+</script>
 <div class="blank10"></div>
 <div class="area">
     <div class="home-tegong">
         <h3>今日特供</h3>
-        <div class="pic"><img src="/static/images/cugeng/tegong.jpg"></div>
+        {eval $tegong=block_get_item(array('id'=>8))}
+        <div class="pic"><a href="{$tegong[url]}"><img src="{img $tegong[image]}"></a></div>
     </div>
     <div class="home-youxuan">
         <ul class="tabs">
@@ -70,14 +98,16 @@
             {loop $goods_list['new'] $goods}
             <li>
                 <div class="bd">
-                    <div class="pic"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"><img src="{img $goods[goods_thumb]}"></a></div>
+                    <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                    </div>
                     <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
                     <div class="price">
                         <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
                         <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
                     </div>
                     <div class="buynow">
-                        <a class="btn">立即购买</a>
+                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
                     </div>
                 </div>
             </li>
@@ -85,5 +115,71 @@
         </ul>
     </div>
 </div>
-<div class="blank10"></div>
+<div class="blank"></div>
+<div class="area home">
+    <div class="yingyangcan-title">
+        <a class="more">更多>></a>
+        <strong>营养餐</strong>
+    </div>
+    <div class="yingyangcan-list">
+        <ul>
+            {loop $goods_list['hot'] $goods}
+            <li>
+                <div class="bd">
+                    <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                        <a></a>
+                    </div>
+                    <div class="name"><a>{$goods[goods_name]}</a></div>
+                    <div class="price">
+                        <span>￥</span>
+                        <strong>{amount:$goods[goods_price]}</strong>
+                        <i>起</i>
+                    </div>
+                </div>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>
+<div class="blank"></div>
+<div class="area home">
+    <div class="qiyedianpu-title">
+        <a class="more">更多>></a>
+        <strong>企业店铺</strong>
+    </div>
+    <div class="qiyedianpu-wrap">
+        <div class="shop-list">
+            <ul>
+                {loop $shop_list $shop}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $shop[shop_logo]}">
+                            <a href="{U:('m=shop&c=viewshop&shop_id='.$shop[shop_id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=shop&c=viewshop&shop_id='.$shop[shop_id])}" target="_blank">{$shop[shop_name]}</a></div>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+
+        <div class="remai">
+            <h3 class="hot-sale">掌柜热卖</h3>
+            <ul>
+                {loop $goods_list['new'] $goods}
+                <li>
+                    <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                    </div>
+                    <div class="g-info">
+                        <p class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></p>
+                        <p class="market-price"><s>￥{amount:$goods[market_price]}</s></p>
+                        <p class="shop-price">￥{amount:$goods[goods_price]}</p>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+    </div>
+</div>
 {template footer_common} 

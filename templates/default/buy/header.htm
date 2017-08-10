@@ -28,8 +28,8 @@
             <img src="/static/images/cugeng/global-logo.png">
         </div>
         <ul class="order-stepbar">
-            <li class="cur"><span>1. 确认订单</span></li>
-            <li><span>2. 支付订单</span></li>
+            <li{if $_G[step]=='confirm_order'} class="cur"{/if}><span>1. 确认订单</span></li>
+            <li{if $_G[step]=='pay_order'} class="cur"{/if}><span>2. 支付订单</span></li>
             <li><span>3. 确认订单</span></li>
             <li><span>4. 双方互评</span></li>
         </ul>

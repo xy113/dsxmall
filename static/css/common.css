@@ -1,12 +1,13 @@
 @charset "UTF-8";
 @import "ui.css";
 @import "swiper.css";
+@import "../iconfont/iconfont.css";
 html,body{
     padding:0; margin:0; height:100%; font-size:13px; background-color:#fff;
     font-family:"Microsoft Yahei","Simsun","微软雅黑",Arial,Helvetica,sans-serif;
     color:#3c3c3c; word-break:break-all; word-wrap:break-word;
 }
-html *{word-wrap:break-word; word-break:break-all;}
+html *{word-wrap:break-word; word-break:break-all; outline: 0 none;}
 ul,li,p,form,dd,dl,dt,h1,h2,h3,h4,h5{padding:0; margin:0; list-style:none;}
 a,a:link,a:visited,a:active{color:#3c3c3c; text-decoration:none; cursor:pointer;}
 a:hover{text-decoration:none; color:#008FBF;}
@@ -14,7 +15,7 @@ img{border:0;}
 div:after,p:after,ul:after,li:after,ol:after,dl:after,dd:after,dt:after,
 h1:after,h2:after,h3:after,h4:after,h5:after{clear: both; content: "."; display: block; height: 0; visibility: hidden;font-size:0;line-height:0;}
 input[type="checkbox"], input[type="radio"],.checkbox,.radio{height:16px; width:16px; display:inline-block; vertical-align:-1px; margin: 0;}
-input,textarea,select{box-sizing:border-box; resize:none;}
+input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
 .input-text,textarea,select{box-sizing:border-box; border:1px #CCC solid; border-radius:1px; width:200px; padding:3px 5px; font-size:12px;}
 .input-text,select{height:28px; line-height:28px; vertical-align:middle;}
 .input-text:hover,textarea:hover,select:hover{border-color:#0086B6; background-color:#EFFAF7;}
@@ -95,7 +96,18 @@ input,textarea,select{box-sizing:border-box; resize:none;}
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    background-image: url("../images/common/placeholder.png");
 }
+
+.top{
+    background-color: #F7F7F7; height: 35px; line-height: 34px;
+    border-bottom: 1px #CCC solid; font-size: 12px;
+}
+.top .right{float: right;}
+.top .right ul{}
+.top .right ul li{float: left;}
+.top .right ul li.pipe{color: #e5e5e5; width: 5px; height: 34px; text-align: center;}
+.top .right ul li a{padding: 0 10px; color: #6c6c6c; display: inline-block;}
 
 .sysmessage{background:#fff; clear:both; border:1px #ccc solid; padding:50px 0; margin:50px auto; border-radius:5px;}
 .sysmessage h3{text-align:center; font-size:16px; font-weight:bold; text-align:center;}

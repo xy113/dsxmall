@@ -16,7 +16,7 @@
 <div class="membercp-header">
     <strong class="logo">卖家中心</strong>
     <div class="right-menu">
-        <a href="{U:('/')}">网站首页</a>
+        <a href="{U:('/')}" target="_blank">网站首页</a>
     </div>
 </div>
 <div class="sidebar">
@@ -46,7 +46,7 @@
                     <dd><a><i class="icon">&#xf0130;</i>交易管理</a></dd>
                     <dt>
                         <ul>
-                            <li><a href="{U:('c=sold')}" id="menu_post">已卖出的宝贝</a></li>
+                            <li><a href="{U:('c=sold')}"{if $_G[menu]=="sold_item"} class="cur"{/if}>已卖出的宝贝</a></li>
                         </ul>
                     </dt>
                 </dl>

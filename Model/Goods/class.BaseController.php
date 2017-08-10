@@ -9,5 +9,12 @@ namespace Model\Goods;
 use Core\Controller;
 
 class BaseController extends Controller{
-
+    /**
+     * BaseController constructor.
+     */
+    function __construct()
+    {
+        parent::__construct();
+        G('nav', 'goods');
+    }
 }

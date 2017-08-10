@@ -1,0 +1,71 @@
+{template header_common}
+<div class="yourpos">
+    <div class="area">
+        <a href="{U:('/')}">首页</a>
+        <span>></span>
+        {if $catid}
+        <a href="{U:('m=goods&c=search&catid='.$catid)}">{$goods_cat[name]}</a>
+        {else}
+        <span>全部分类</span>
+        {/if}
+    </div>
+</div>
+<div class="area item-search-wrap">
+    <div class="main">
+        <div class="search-th">
+            <span class="total-count">总计{$totalnum}件商品</span>
+            <ul class="sort-tab">
+                <li><a class="cur">综合</a></li>
+                <li title="销量从高到低"><a>销量</a></li>
+                <li title="价格从低到高"><a>价格</a></li>
+            </ul>
+        </div>
+        <div class="item-list-wrap">
+            <ul class="item-list">
+                {loop $itemlist $id $item}
+                <li>
+                    <div class="item-img bg-cover" style="background-image: url({img $item[goods_thumb]})">
+                        <a href="{$item[url]}" target="_blank" title="{$item[goods_name]}" style="opacity: 0;"><img src="{img $item[goods_thumb]}"></a>
+                    </div>
+                    <div class="item-info">
+                        <h3><a href="{$item[url]}" target="_blank">{$item[goods_name]}</a></h3>
+                        <div class="shop"><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$item[shop_name]}</a></div>
+                        <div class="dist">{$item[city]} {$item[county]}</div>
+                    </div>
+                    <div class="item-price">
+                        <span>¥</span>
+                        <strong>{amount:$item[goods_price]}</strong>
+                    </div>
+                    <div class="item-sold">
+                        <p>{$item[sold]}人付款</p>
+                        <p><a>199条评论</a></p>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+
+        <div class="pagination" style="text-align: center;">{$pages}</div>
+    </div>
+
+    <div class="frame-right">
+        <div class="inner">
+            <h3 class="hot-sale-title">掌柜热卖</h3>
+            <ul class="hot-item-list">
+                {loop $hot_sale_list $item}
+                <li>
+                    <div class="g-pic bg-cover lazyload" data-original="{img $item[goods_thumb]}">
+                        <div class="g-name"><p>{$item[goods_name]}</p></div>
+                        <a href="{U:('m=goods&c=item&id='.$item[id])}" target="_blank" title="{$item[goods_name]}"></a>
+                    </div>
+                    <div class="line">
+                        <span class="sold">销量:{$item[sold]}</span>
+                        <strong class="price"><span>¥</span>{amount:$item[goods_price]}</strong>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+    </div>
+</div>
+{template footer_common}

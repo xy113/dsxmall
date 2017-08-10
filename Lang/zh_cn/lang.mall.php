@@ -23,6 +23,24 @@ return array(
     'order_list'=> '订单列表',
     'order_manage'=> '订单管理',
     'confirm_order'=>'确认订单',
+    'shipping_type'=>'配送方式',
+    'shipping_type_option'=>array(
+        '1'=>'快递',
+        '2'=>'物流配送',
+        '3'=>'上门自取'
+    ),
+    'pay_type'=>'付款方式',
+    'pay_type_option'=>array(
+        '1'=>'在线支付',
+        '2'=>'货到付款'
+    ),
+    'can_not_buy'=>'抱歉, 不能完成购买',
+    'checkout_success'=>'下单成功',
+    'pay_order'=>'付款',
+    'cannot_complete_payment'=>'无法完成付款',
+    'order_delete_fail'=>'订单删除失败',
 
-    'address_manage'=>'收货地址管理'
+    'address_manage'=>'收货地址管理',
+    'sold_item'=>'已卖出的宝贝',
+    'search_result'=>'搜索结果'
 );

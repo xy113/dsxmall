@@ -38,12 +38,12 @@
             <div id="bigView" style="display:none;"><img width="800" height="800" alt="" src="" /></div>
         </div>
     </div>
-    <form method="post" id="J_Frmbuy" action="{U:('m=buy&c=order&a=confirm_order')}">
-        <input type="hidden" name="formhash" value="{FORMHASH}">
+    <form method="post" id="J_Frmbuy" action="{U:('m=buy&c=order&a=buy_now')}">
         <input type="hidden" name="goods_id" value="{$id}">
         <input type="hidden" name="goods_number" value="1" id="J_goods_number">
         <input type="hidden" name="shipping_type" value="1" id="J_shipping_type">
         <input type="hidden" name="pay_type" value="1" id="J_pay_type">
+        <input type="hidden" name="from" value="item_detail">
     </form>
     <div class="iteminfo-wrap">
         <h1 class="item-name">{$goods[goods_name]}</h1>
@@ -52,7 +52,11 @@
             <div class="item-group" style="padding: 5px 10px;">
                 <div class="label">市 场 价</div>
                 <div class="info">
+                    {if $goods[market_price]}
                     <span style="font-size: 16px; color: #666;"><s>￥{amount:$goods[market_price]}</s></span>
+                    {else}
+                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$goods[goods_price]}</s></span>
+                    {/if}
                 </div>
             </div>
             <div class="item-group" style="padding: 5px 10px;">
@@ -88,9 +92,9 @@
             <div class="label">购买数量</div>
             <div class="info">
                 <div class="buy-num-wrap">
-                    <span class="btn">-</span>
+                    <span class="btn" id="operate-left">-</span>
                     <input type="text" class="buy-num" value="1" id="quantity">
-                    <span class="btn">+</span>
+                    <span class="btn" id="operate-right">+</span>
                 </div>
             </div>
         </div>
@@ -114,7 +118,7 @@
             <img src="/static/images/common/shop-header.png">
         </div>
         <div class="shopinfo">
-            <h3>{$shop[shop_name]}</h3>
+            <h3 title="{$shop[shop_name]}">{$shop[short_shop_name]}</h3>
             <div class="row">
                 <dl>
                     <dt>信誉</dt>
@@ -128,7 +132,7 @@
             <div class="row">
                 <dl>
                     <dt>掌柜</dt>
-                    <dd>{$shop[owner_username]}</dd>
+                    <dd title="{$shop[owner_username]}">{$shop[short_owner_username]}</dd>
                 </dl>
             </div>
             <div class="row">
@@ -139,7 +143,7 @@
             </div>
             <div class="separate"></div>
             <div class="row" style="padding: 10px 0 20px;">
-                <a class="btn" style="margin-right: 10px;">进入店铺</a>
+                <a href="{U:('m=shop&c=viewshop&shop_id='.$goods[shop_id])}" class="btn" style="margin-right: 10px;">进入店铺</a>
                 <a class="btn">收藏店铺</a>
                 <div class="clearfix"></div>
             </div>
@@ -160,6 +164,26 @@
             {$goods_desc[content]}
         </div>
     </div>
+
+    <div class="item-detail-right">
+        <div class="inner">
+            <h3 class="hot-sale-title">掌柜热卖</h3>
+            <ul class="hot-item-list">
+                {loop $hot_sale_list $item}
+                <li>
+                    <div class="g-pic bg-cover lazyload" data-original="{img $item[goods_thumb]}">
+                        <div class="g-name"><p>{$item[goods_name]}</p></div>
+                        <a href="{U:('m=goods&c=item&id='.$item[id])}" target="_blank" title="{$item[goods_name]}"></a>
+                    </div>
+                    <div class="line">
+                        <span class="sold">已售出<span style="color: #f40;">{$item[sold]}</span>件</span>
+                        <strong class="price"><span>¥</span>{amount:$item[goods_price]}</strong>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
     $(function () {
@@ -171,6 +195,20 @@
             $("#J_shipping_type").val(shipping_type);
             $("#J_pay_type").val(pay_type);
             $("#J_Frmbuy").submit();
+        });
+        $("#operate-left").on('click', function () {
+            var goods_number = parseInt($("#quantity").val());
+            if (goods_number <= 1) {
+                return;
+            }else {
+                goods_number--;
+                $("#quantity").val(goods_number);
+            }
+        });
+        $("#operate-right").on('click', function () {
+            var goods_number = parseInt($("#quantity").val());
+            goods_number++;
+            $("#quantity").val(goods_number);
         });
     });
     (function(jQuery){

@@ -139,6 +139,17 @@ function trade_get_list($condition, $count=20, $offset=0, $order=null, $field='*
     return $itemlist ? $itemlist : array();
 }
 
+
+/**
+ * 生成订单号
+ * @param $uid
+ * @param string $type 订单类型
+ * @return string
+ */
+function order_create_no($uid, $type='6'){
+    return $type.time().substr($uid, -5);
+}
+
 /**
  * 添加订单
  * @param $data
@@ -147,7 +158,7 @@ function trade_get_list($condition, $count=20, $offset=0, $order=null, $field='*
  */
 function order_add_item($data, $return=0){
     $order_id = M('order_item')->insert($data, true);
-    return $return ? order_get_item(array('order_id'=>$order_id)) : false;
+    return $return ? order_get_item(array('order_id'=>$order_id)) : $order_id;
 }
 
 /**
@@ -204,6 +215,40 @@ function order_get_item_list($condition, $count=20, $offset=0, $order=null, $fie
     !$order && $order = 'order_id DESC';
     $itemlist = M('order_item')->where($condition)->field($field)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
+}
+
+/**
+ * 获取订单交易状态
+ * @param $order
+ * @return int
+ */
+function order_get_trade_status($order){
+    $trade_status = 0;
+    if ($order['order_status'] == 0 && $order['pay_status'] == 0){
+        //未支付
+        $trade_status = 1;
+    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 1 && $order['shipping_status'] == 0){
+        //已付款,未发货
+        $trade_status = 2;
+    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+        //已发货,待收货
+        $trade_status = 3;
+    }elseif ($order['order_status'] == 1 && $order['pay_status'] == 1 &&
+        $order['shipping_status'] == 1 && $order['evaluate_status'] == 0){
+        //已收货,未评价
+        $trade_status = 4;
+    }elseif ($order['order_status'] == 1 && $order['pay_status'] == 1 &&
+        $order['shipping_status'] == 1 && $order['evaluate_status'] == 1){
+        //已收货,已评价
+        $trade_status = 5;
+    }elseif ($order['order_status'] == 2 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+        //退款中
+        $trade_status = 6;
+    }elseif ($order['order_status'] == 3 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+        //退款完成
+        $trade_status = 7;
+    }
+    return $trade_status;
 }
 
 /**

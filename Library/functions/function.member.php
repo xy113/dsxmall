@@ -128,6 +128,8 @@ function member_login($username, $password, $field='username'){
  */
 function member_logout(){
 	member_update_status(array('uid'=>G('uid')), array('lastactive'=>TIMESTAMP));
+    cookie('uid',null);
+    cookie('username', null);
 	cookie('udata', null);
 }
 
@@ -278,12 +280,13 @@ function member_update_data($condition, $data){
 }
 
 /**
- * 获取用户信息
- * @param mixed $condition
- * @return array
+ * 获取用户资料
+ * @param $condition
+ * @param string $field
+ * @return array|null
  */
-function member_get_data($condition){
-	$data = M('member')->where($condition)->getOne();
+function member_get_data($condition, $field='*'){
+	$data = M('member')->where($condition)->field($field)->getOne();
     return $data ? $data : array();
 }
 

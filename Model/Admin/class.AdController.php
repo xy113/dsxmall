@@ -40,7 +40,8 @@ class AdController extends BaseController{
 			$pagesize  = 30;
 			$totalnum  = ad_get_count(0);
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$adlist = ad_get_page(0, $_G['page'], $pagesize, 'id DESC');
+            $offset = ($_G['page'] - 1) * $pagesize;
+			$adlist = ad_get_list(0, $pagesize, $offset, 'id DESC');
 			$pages = $this->showPages($_G['page'], $pagecount, $totalnum);
 			include template('ad_list');
 		}

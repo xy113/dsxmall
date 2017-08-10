@@ -34,7 +34,8 @@ abstract class Controller{
         }
         $_G['uid'] = &$this->uid;
         $_G['username'] = &$this->username;
-        $_G['member'] = &$this->member;
+        $_G['member']   = &$this->member;
+        $_G['islogin']  = &$this->islogin;
 	}
 	
 	protected function t($tableName) {

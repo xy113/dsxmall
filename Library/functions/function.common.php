@@ -774,6 +774,7 @@ function formatAmount($amount, $decimals=2){
  * 替换字符串
  * @param string $string
  * @param string $replacer
+ * @return mixed
  */
 function stringParser($string,$replacer){
     $result = str_replace(array_keys($replacer), array_values($replacer),$string);
@@ -822,6 +823,7 @@ function getIpInfo($ip){
 /**
  * SQL反注入
  * @param unknown $sql
+ * @return bool|unknown
  */
 function injCheck($sql) {
     $check = preg_match('/select|insert|update|delete|\'|\/\*|\*|\.\.\/|\.\/|union|into|load_file|outfile/', $sql);
@@ -961,4 +963,13 @@ function guid() {
 	substr($charid,16, 4).
 	substr($charid,20,12);
 	return $uuid;
+}
+
+/**
+ * 16位MD5散列值
+ * @param $str
+ * @return string
+ */
+function md5_16($str){
+    return substr(md5($str), 0, 16);
 }

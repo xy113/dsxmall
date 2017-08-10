@@ -76,7 +76,7 @@ class MemberController extends BaseController{
 
 			$totalnum   = member_get_count($condition);
 			$pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$memberlist = member_get_page($condition, $_G['page'], $pagesize, 'uid ASC');
+			$memberlist = member_get_list($condition, $pagesize, ($_G['page'] - 1)*$pagesize, 'uid ASC');
 			$grouplist  = member_get_group_list();
 
 			$uids = array_keys($memberlist);

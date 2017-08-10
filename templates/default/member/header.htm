@@ -1,33 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>{$_G[title]}</title>
-<meta name="keywords" content="{$_G[keywords]}">
-<meta name="description" content="{$_G[description]}">
-<link rel="stylesheet" type="text/css" href="/static/css/member.css">
-<script src="/static/js/jquery.js" type="text/javascript"></script>
-<script src="/static/js/common.js" type="text/javascript"></script>
-<script src="/static/js/jquery.form.js" type="text/javascript"></script>
-<script src="/static/js/jquery.dsxui.js" type="text/javascript"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>{$_G[title]}</title>
+    <meta name="keywords" content="{$_G[keywords]}">
+    <meta name="description" content="{$_G[description]}">
+    <link rel="icon" href="/static/images/common/favicon.png">
+    <link rel="stylesheet" type="text/css" href="/static/css/member.css">
+    <script src="/static/js/jquery.js" type="text/javascript"></script>
+    <script src="/static/js/common.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.form.js" type="text/javascript"></script>
+    <script src="/static/js/jquery.dsxui.js" type="text/javascript"></script>
 </head>
 <body>
-<div class="top">
-    <div class="area">
-        Hi 欢迎回来
-        <a href="{echo U('m=account&c=login')}">[登录]</a>
-        <a href="{echo U('m=account&c=register')}">[免费注册]</a>
-    </div>
-</div>
+{template top_common}
 <div class="membercp-header">
     <div class="area header">
         <strong class="logo"><img src="/static/images/common/grzx_logo.png"></strong>
         <div class="right-menu">
-            <a href="/">网站首页</a>
-            <a href="/?m={$_G[m]}&c=setting">账户中心</a>
-            <a href="/?m={$_G[m]}&c=wallet">财务中心</a>
-            <a href="/?m=seller" target="_blank">我是卖家</a>
-            <a href="/?m=admin">后台管理</a>
+            <a href="{U:('/')}">网站首页</a>
+            <a href="{U:('c=setting')}">账户中心</a>
+            <a href="{U:('c=wallet')}">财务中心</a>
+            <a href="{U:('m=seller&c=index')}" target="_blank">我是卖家</a>
+            <a href="{U:('m=admin&c=index')}">后台管理</a>
         </div>
     </div>
 </div>
@@ -50,9 +45,9 @@
             <dd><a><i class="icon">&#xf013e;</i>我的账户</a></dd>
             <dt>
             <ul>
-                <li><a href="/?m={$_G[m]}&c=setting&a=userinfo" id="menu_userinfo">账户设置</a></li>
-                <li><a href="/?m={$_G[m]}&c=wallet" id="menu_wallet">我的钱包</a></li>
-                <li><a href="/?m={$_G[m]}&c=setting&a=security" id="menu_headimg">安全中心</a></li>
+                <li><a href="{U:('c=setting&a=userinfo')}">账户设置</a></li>
+                <li><a href="{U:('c=wallet&a=index')}">我的钱包</a></li>
+                <li><a href="{U:('c=setting&a=security')}">安全中心</a></li>
                 <li><a href="{U:('c=address&a=index')}"{if $_GET[menu]=="address"} class="cur"{/if}>收货地址</a></li>
             </ul>
             </dt>

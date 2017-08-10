@@ -13,7 +13,9 @@ class BaseController extends Controller{
 			if (G('c') != 'login'){
 				$this->showlogin();
 			}
-		}
+		}else {
+            cookie('_cplogin', 1, 1800);
+        }
 	}
 	
 	/**

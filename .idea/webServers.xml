@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="cfb111bb-6b87-4ea2-ab5f-8f8e0d477cfc" name="NPJS" url="http://npjs.liaidi.com">
+        <fileTransfer host="119.1.96.45" port="21" rootFolder="/www.liaidi.com/npjs" password="df8edfcedfcbdfd9dfc2dfc3dfd2dfc3dfc5dfc4dfcddfeadfcedfcbdfd9dfc2dfc3dfd2dfc3dfc5dfc4dfcddf8e" username="dashixiong">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

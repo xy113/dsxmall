@@ -72,6 +72,11 @@ class Template{
             return Template::stripvtags('<?php echo setting('.$matches[1].'); ?>','');
         }, $template);
 
+        //替换COOCKIE值
+        $template = preg_replace_callback('/{cookie\s+(.+?)\}/is', function($matches){
+            return Template::stripvtags('<?php echo cookie('.$matches[1].'); ?>','');
+        }, $template);
+
         //解析图片URL
         $template = preg_replace_callback('/{img\s+(.+?)\}/is', function($matches){
             return Template::stripvtags('<?php echo image('.$matches[1].'); ?>','');

@@ -21,7 +21,8 @@
     <div class="header">
         <strong class="logo">后台管理中心</strong>
         <div class="right-menu">
-            <a href="{echo U('m=admin&c=logout')}">退出登录</a>
+            <a href="{U:('/')}" target="_blank">网站首页</a>
+            <a href="{U:('m=admin&c=logout')}">退出登录</a>
         </div>
     </div>
 </div>
@@ -57,6 +58,7 @@
                         <ul>
                             <li><a rel="item" href="{echo U('c=menu')}"{if $_GET[menu]=="menu"} class="cur"{/if}>菜单管理</a></li>
                             <li><a rel="item" href="{echo U('c=ad')}"{if $_GET[menu]=="ad"} class="cur"{/if}>广告管理</a></li>
+                            <li><a rel="item" href="{echo U('c=block&a=namelist')}"{if $_G[menu]=="block"} class="cur"{/if}>内容板块</a></li>
                         </ul>
                     </dt>
                 </dl>

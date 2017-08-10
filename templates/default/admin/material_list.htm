@@ -1,13 +1,13 @@
 {template header}
 <div class="console-title">
-	<div class="f-right">
-    	<form name="search" action="/?">
-          <input type="hidden" name="m" value="{$G[m]}">
-          <input type="hidden" name="c" value="{$G[c]}">
-          <input type="hidden" name="a" value="{$G[a]}">
+	<div class="float-right">
+    	<form name="search" action="{U:('/')}">
+          <input type="hidden" name="m" value="{$_G[m]}">
+          <input type="hidden" name="c" value="{$_G[c]}">
+          <input type="hidden" name="a" value="{$_G[a]}">
           <input type="hidden" name="type" value="{$type}">
           <input type="text" class="input-text" name="keyword" value="{$keyword}" placeholder="请输入关键字">
-          <input type="submit" class="submit" value="{$lang[search]}">
+          <input type="submit" class="button" value="{$_lang[search]}">
           <div class="button material-add-button"><span>添加素材</span><div class="swfbutton" id="swfbutton"></div></div>
       </form>
         
@@ -19,15 +19,15 @@
     <a href="{echo U("type=$k")}" class="baritem{if $type==$k} baritem-on{/if}">{$v}</a>
     {/loop}
 </div>
-<div class="table-wrap">
+<div class="content-div">
     <form method="post" autocomplete="off" id="materialForm">
     <input type="hidden" name="formsubmit" value="yes" />
     <input type="hidden" name="formhash" value="{FORMHASH}">
     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="listtable">
     <thead>
       <tr>
-        <th width="20" class="center">选?</th>
-        <th width="50">图片</th>
+        <th width="50" class="center">选?</th>
+        <th width="60">图片</th>
         <th>名称</th>
         <th width="160">所属用户</th>
         <th width="80">大小</th>
@@ -67,9 +67,9 @@
       </tr>
       <tr>
           <td colspan="10">
-              <span class="pages">{$pages}</span>
-              <input type="button" class="button" value="{$lang[submit]}" id="submitButton">
-              <input type="button" class="button cancel" value="{$lang[refresh]}" onclick="window.location.reload()">
+              <span class="pagination float-right">{$pages}</span>
+              <input type="button" class="button" value="{$_lang[submit]}" id="submitButton">
+              <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>
       </tr>
      </tfoot>

@@ -633,6 +633,152 @@ function menu_get_list($condition, $count=20, $offset=0, $order=null){
 }
 
 /**
+ * 添加内容块
+ * @param $data
+ * @param int $return
+ * @return bool|int|mysqli_result|string|void
+ */
+function block_add_data($data, $return=0){
+    $block_id = M('block')->insert($data, true);
+    return $return ? block_get_data(array('block_id'=>$block_id)) : $block_id;
+}
+
+/**
+ * 删除内容块
+ * @param $condition
+ * @return bool|int
+ */
+function block_delete_data($condition){
+    return $condition ? M('block')->where($condition)->delete() : false;
+}
+
+/**
+ * 更新内容块
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function block_update_data($condition, $data){
+    return M('block')->where($condition)->update($data);
+}
+
+/**
+ * 获取块内容
+ * @param $condition
+ * @return array|null
+ */
+function block_get_data($condition){
+    $data = M('block')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * 获取块列表
+ * @param $condition
+ * @return mixed
+ */
+function block_get_count($condition){
+    return M('block')->where($condition)->count();
+}
+
+/**
+ * 获取块列表
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @return array
+ */
+function block_get_list($condition, $count=20, $offset=0){
+    $limit = $count ? "$offset,$count" : ($offset ? $offset : '');
+    $itemlist = M('block')->where($condition)->order('block_id', 'ASC')->limit($limit)->select();
+    return $itemlist ? $itemlist : array();
+}
+
+/**
+ * 更新缓存
+ * @param $block_id
+ * @return bool|mixed
+ */
+function block_set_cache($block_id){
+    $itemlist = block_get_item_list(array('block_id'=>$block_id), 0);
+    return cache('block_items_'.$block_id, $itemlist);
+}
+
+/**
+ * @param $block_id
+ * @return bool|mixed
+ */
+function block_get_cache($block_id){
+    $itemlist = cache('block_items_'.$block_id);
+    if (!is_array($itemlist)) {
+        block_set_cache($block_id);
+        return block_get_cache($block_id);
+    }else {
+        return $itemlist;
+    }
+}
+
+/**
+ * 添加项目
+ * @param $data
+ * @param int $return
+ * @return bool|int|mysqli_result|string|void
+ */
+function block_add_item($data, $return=0){
+    $id = M('block_item')->insert($data, true);
+    return $return ? block_get_item(array('id'=>$id)) : $id;
+}
+
+/**
+ * 删除项
+ * @param $condition
+ * @return bool|int
+ */
+function block_delete_item($condition){
+    return $condition ? M('block_item')->where($condition)->delete() : false;
+}
+
+/**
+ * 更新项
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function block_update_item($condition, $data){
+    return M('block_item')->where($condition)->update($data);
+}
+
+/**
+ * 获取项
+ * @param $condition
+ * @return array|null
+ */
+function block_get_item($condition){
+    $data = M('block_item')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * @param $condition
+ * @return mixed
+ */
+function block_get_item_count($condition){
+    return M('block_item')->where($condition)->count();
+}
+
+/**
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @return array
+ */
+function block_get_item_list($condition, $count=20, $offset=0){
+    $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
+    $itemlist = M('block_item')->where($condition)->order('displayorder ASC,id ASC')->limit($limit)->select();
+    return $itemlist ? $itemlist : array();
+}
+
+/**
  * 添加评论
  * @param array $data
  * @param bool|string $return

@@ -6,6 +6,9 @@
  * Time: 下午2:09
  */
 
+function goods_create_sn(){
+    return time().rand(100,999).rand(100,999);
+}
 /**
  * 添加商品信息
  * @param $data

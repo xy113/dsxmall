@@ -138,5 +138,7 @@ return array(
 
     'app_manage'=>'应用管理',
     'invalid_user_id'=>'无效的用户ID',
-    'invalid_token'=>'无效的token'
+    'invalid_token'=>'无效的token',
+    'block_manage'=>'内容板块管理',
+    'block_item_manage'=>'板块内容管理'
 );

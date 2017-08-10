@@ -53,9 +53,41 @@
 .order-ext .ext-info{display: inline-block;  margin-left: 10px; vertical-align: top;}
 .order-ext .textarea{width: 500px; height: 60px;}
 .order-ext .total-fee{font-size: 18px; font-weight: bolder; color: #FF0000;}
+.order-ext .shop-total{float: right; font-size: 14px; margin: 10px 20px 0 0;}
 .submit-order{display: block; text-align: right; padding: 10px 0;}
 .submit-order .btn{
     width: 120px; height: 35px; line-height: 35px; text-align: center;
     display: inline-block; color: #fff; font-size: 14px; background-color: #FF0000;
     cursor: pointer;
 }
+
+.pay-order-info{display: block; margin: 30px 0;}
+.pay-order-info .item-info{display: block; margin-bottom: 5px; font-size: 13px;}
+.pay-order-info .item-info .order-field{color: #777; width: 60px; display: inline-block;}
+.pay-order-info .item-info .order-info{color: #333; display: inline-block;}
+
+.pay-type-choose{display: block; margin: 30px 0;}
+.pay-type-choose .pay-type-div{display: block; margin-bottom: 30px;}
+.pay-type-choose .pay-type-div .type-radio-box{width: 120px; display: inline-block; vertical-align: top; font-weight: 500;}
+.pay-type-choose .pay-type-div .type-info{display: inline-block; vertical-align: top;}
+.pay-type-choose .pay-type-div .type-info p{display: block; padding: 0 0 10px;}
+.pay-type-choose .pay-type-div .pay-channel{display: inline-block; float: left; margin-right: 20px;}
+.pay-type-choose .pay-type-div .pay-channel dt{height: 36px; line-height: 36px; display: inline-block; margin: 0; padding: 0; vertical-align: top;}
+.pay-type-choose .pay-type-div .pay-channel dd{
+    display: inline-block; margin: 0; font-size: 12px; vertical-align: top;
+    border: 1px #DDD solid; width: 120px; padding:0 10px; height: 36px; line-height: 36px;
+}
+.pay-type-choose .pay-type-div .pay-channel dd .pay-icon{
+    width: 20px; height: 20px; background-size: 100% 100%;
+    display: inline-block; vertical-align: middle;
+    margin-top: -2px; line-height: 1;
+}
+.pay-type-choose .pay-type-div .pay-channel dd .pay-icon-alipay{background-image: url("../images/common/alipay.png");}
+.pay-type-choose .pay-type-div .pay-channel dd .pay-icon-wxpay{background-image: url("../images/common/wxpay.png");}
+.pay-type-choose .pay-type-div .pay-channel dd .pay-name{vertical-align: middle; margin-top: -2px; height: 20px;
+    line-height: 20px; display: inline-block;}
+.pay-type-choose .pay-type-div .confirm-pay-button{
+    height: 40px; width: 200px; background-color: #FE7114; font-weight: 500; display: inline-block;
+    color: #fff; font-size: 16px; text-align: center; line-height: 40px; border-radius: 4px; cursor: pointer;
+}
+
