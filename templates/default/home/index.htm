@@ -118,7 +118,7 @@ $(function () {
 <div class="blank"></div>
 <div class="area home">
     <div class="yingyangcan-title">
-        <a class="more">更多>></a>
+        <a href="{U:('m=goods&c=search')}" class="more">更多>></a>
         <strong>营养餐</strong>
     </div>
     <div class="yingyangcan-list">
@@ -127,7 +127,7 @@ $(function () {
             <li>
                 <div class="bd">
                     <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
-                        <a></a>
+                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
                     </div>
                     <div class="name"><a>{$goods[goods_name]}</a></div>
                     <div class="price">
@@ -144,7 +144,7 @@ $(function () {
 <div class="blank"></div>
 <div class="area home">
     <div class="qiyedianpu-title">
-        <a class="more">更多>></a>
+        <a href="{U:('m=shop&c=index')}" class="more">更多>></a>
         <strong>企业店铺</strong>
     </div>
     <div class="qiyedianpu-wrap">

@@ -3,9 +3,10 @@
  * 显示登录界面
  */
 function member_show_login(){
-	global $G,$lang;
-	$G['m'] = 'member';
-	$G['title'] = $lang['login'];
+	global $_G,$_lang;
+	$_G['m'] = 'account';
+	$_G['title'] = $_lang['login'];
+    $redirect = htmlspecialchars($_GET['redirect']);
 	include template('login','account');
 	exit();
 }
@@ -13,10 +14,10 @@ function member_show_login(){
 /**
  * 显示AJAX登录界面
  */
-function member_show_ajax_login(){
-	global $G,$lang;
-	$G['m'] = 'member';
-	$G['title'] = $lang['login'];
+function member_show_ajaxlogin(){
+	global $_G,$_lang;
+	$_G['m'] = 'account';
+	$_G['title'] = $_lang['login'];
 	include template('ajaxlogin','account');
 	exit();
 }
@@ -25,9 +26,9 @@ function member_show_ajax_login(){
  * 显示注册页面
  */
 function member_show_register(){
-	global $G,$lang;
-	$G['m'] = 'member';
-	$G['title'] = $lang['register'];
+	global $_G,$_lang;
+	$_G['m'] = 'account';
+	$_G['title'] = $_lang['register'];
 	include template('register','account');
 	exit();
 }
@@ -35,10 +36,10 @@ function member_show_register(){
 /**
  * 显示AJAX注册页面
  */
-function member_show_ajax_register(){
-	global $G,$lang;
-	$G['m'] = 'member';
-	$G['title'] = $lang['register'];
+function member_show_ajaxregister(){
+	global $_G,$_lang;
+	$_G['m'] = 'account';
+	$_G['title'] = $_lang['register'];
 	include template('ajaxregister','account');
 	exit();
 }
@@ -72,14 +73,14 @@ function member_update_cookie($uid){
 function member_login($username, $password, $field='username'){
 	if (!$username) {
 		return array(
-				'errno'=>1,
-				'error'=>'account_incorrect'
+				'errcode'=>1,
+				'errmsg'=>'account_incorrect'
 		);
 	}
 	if (!$password) {
 		return array(
-				'errno'=>2,
-				'error'=>'password_incorrect'
+				'errcode'=>2,
+				'errmsg'=>'password_incorrect'
 		);
 	}
 	
@@ -87,24 +88,24 @@ function member_login($username, $password, $field='username'){
 	$member = member_get_data(array($field=>$username));
 	if (!$member){
 		return array(
-				'errno'=>3,
-				'error'=>'account_invalid'
+				'errcode'=>3,
+				'errmsg'=>'account_invalid'
 		);
 	}else  {
 		if ($member['password'] !== getPassword($password)){
 			return array(
-					'errno'=>4,
-					'error'=>'password_incorrect'
+					'errcode'=>4,
+					'errmsg'=>'password_incorrect'
 			);
 		}elseif ($member['status'] == '-1'){
 			return array(
-					'errno'=>5,
-					'error'=>'login_be_forbidden'
+					'errcode'=>5,
+					'errmsg'=>'login_be_forbidden'
 			);
 		}elseif ($member['status'] == '-2'){
 			return array(
-					'errno'=>6,
-					'error'=>'account_unauthorized'
+					'errcode'=>6,
+					'errmsg'=>'account_unauthorized'
 			);
 		}else {
 			member_add_log($member['uid'], 'login');
@@ -115,8 +116,8 @@ function member_login($username, $password, $field='username'){
 			member_update_cookie($member['uid']);
             unset($member['password']);
 			return array(
-					'errno'=>0,
-					'error'=>'success',
+					'errcode'=>0,
+					'errmsg'=>'success',
 					'userinfo'=>$member
 			);
 		}
@@ -137,41 +138,45 @@ function member_logout(){
  * 用户注册
  * @param array $data
  * @param number $login
+ * @return array
  */
 function member_register($data, $login=0){	
 	$newmember = array();
 	if (!$data['username'] && !$data['email'] && !$data['mobile']) {
 		return array(
-				'errno'=>1,
-				'error'=>'invalid_parameter'
+				'errcode'=>1,
+				'errmsg'=>'invalid_parameter'
 		);
 	}else {
 		if ($data['username']) {
-			$newmember['username'] = $data['username'];
 			if (member_get_count(array('username'=>$data['username']))) {
 				//用户名已被人使用
 				return array(
-						'errno'=>2,
-						'error'=>'username_be_occupied'
+						'errcode'=>2,
+						'errmsg'=>'username_be_occupied'
 				);
-			}
-		}
+			}else {
+                $newmember['username'] = $data['username'];
+            }
+		}else {
+            $newmember['username'] = 'u_'.md5_16(time().rand(100, 999));
+        }
 			
 		if ($data['mobile']) {
 		    $ismobile = Core\Validate::ismobile($data['mobile']);
 			if (!$ismobile) {
 				//手机号不合法
 				return array(
-						'errno'=>3,
-						'error'=>'mobile_incorrect'
+						'errcode'=>3,
+						'errmsg'=>'mobile_incorrect'
 				);
 			}
 			
 			if (member_get_count(array('mobile'=>$data['mobile']))) {
 				//手机号已被使用
 				return array(
-						'errno'=>4,
-						'error'=>'mobile_be_occupied'
+						'errcode'=>4,
+						'errmsg'=>'mobile_be_occupied'
 				);
 			}
 			$newmember['mobile'] = $data['mobile'];
@@ -182,16 +187,16 @@ function member_register($data, $login=0){
 			if (!$isemail) {
 				//邮箱格式不合法
 				return array(
-						'errno'=>5,
-						'error'=>'email_be_occupied'
+						'errcode'=>5,
+						'errmsg'=>'email_be_occupied'
 				);
 			}
 			
 			if (member_get_count(array('email'=>$data['email']))) {
 				//邮箱已被人使用
 				return array(
-						'errno'=>6,
-						'error'=>'email_be_occupied'
+						'errcode'=>6,
+						'errmsg'=>'email_be_occupied'
 				);
 			}
 			$newmember['email'] = $data['email'];
@@ -200,8 +205,8 @@ function member_register($data, $login=0){
 	
 	if (!$data['password'] || strlen($data['password']) < 6) {
 		return array(
-				'errno'=>7,
-				'error'=>'password_incorrect'
+				'errcode'=>7,
+				'errmsg'=>'password_incorrect'
 		);
 	}else {
 		$newmember['password'] = getPassword($data['password']);
@@ -214,7 +219,7 @@ function member_register($data, $login=0){
 		->order('creditslower','ASC')->getOne();
 		$newmember['gid'] = $group['gid'];
 	}
-	
+
 	$uid = member_add_data($newmember);
 	member_add_info(array('uid'=>$uid));
 	member_add_status(array(
@@ -225,10 +230,8 @@ function member_register($data, $login=0){
 			'lastvisitip'=>getIp()
 	));
 	member_add_stat(array('uid'=>$uid));
-	if (!$newmember['username']) {
-		$newmember['username'] = 'user_'.$uid;
-		member_update_data(array('uid'=>$uid), array('username'=>$newmember['username']));
-	}
+    M('wallet')->insert(array('uid'=>$uid), false, true);
+
 	if ($login) {
 		return member_login($uid, $data['password'], 'uid');
 	}else {

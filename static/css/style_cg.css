@@ -29,13 +29,14 @@
 
 .global-nav{background-color: #f40; color: #fff; display: block; height: 38px; clear: both;}
 .global-nav .nav{width: 1180px; display: block; height: 38px; position: relative; margin: 0 auto;}
-.global-nav .nav .cat{width: 160px; height: 38px; line-height: 38px; text-align: center; font-size: 14px; float: left; position: relative;}
+.global-nav .nav .cat{width: 160px; height: 38px; line-height: 38px; cursor: pointer; text-align: center; font-size: 14px; float: left; position: relative;}
+.global-nav .nav .cat .iconfont{left: 0; position: absolute; font-size: 18px;}
 .global-nav .nav ul{float: left;}
 .global-nav .nav ul li{height: 38px; float: left;}
 .global-nav .nav ul li a{display: block; padding: 0 20px; line-height: 38px; color: #fff; font-size: 14px;}
 .global-nav .nav ul li a.cur{background-color: #D10025;}
 .global-nav .nav .cart{position: absolute; height: 38px; line-height: 38px; top: 0; right: 0;}
-.global-nav .nav .cart .icon-cart{
+.global-nav .nav .cart .ico{
     width: 24px; height: 24px; float: left; margin: 7px 10px 0 0;
     background-image: url("../images/cugeng/icon-cart.png");
     background-size: 100% 100%;

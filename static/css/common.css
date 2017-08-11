@@ -1,7 +1,6 @@
 @charset "UTF-8";
 @import "ui.css";
 @import "swiper.css";
-@import "../iconfont/iconfont.css";
 html,body{
     padding:0; margin:0; height:100%; font-size:13px; background-color:#fff;
     font-family:"Microsoft Yahei","Simsun","微软雅黑",Arial,Helvetica,sans-serif;
@@ -98,6 +97,7 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
     background-repeat: no-repeat;
     background-image: url("../images/common/placeholder.png");
 }
+.lazyload{}
 
 .top{
     background-color: #F7F7F7; height: 35px; line-height: 34px;
@@ -108,6 +108,8 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
 .top .right ul li{float: left;}
 .top .right ul li.pipe{color: #e5e5e5; width: 5px; height: 34px; text-align: center;}
 .top .right ul li a{padding: 0 10px; color: #6c6c6c; display: inline-block;}
+.top .right .iconfont{font-size: 16px; float: left; margin-right: 3px;}
+.area{display: block; margin: 0 auto; width: 1180px;}
 
 .sysmessage{background:#fff; clear:both; border:1px #ccc solid; padding:50px 0; margin:50px auto; border-radius:5px;}
 .sysmessage h3{text-align:center; font-size:16px; font-weight:bold; text-align:center;}

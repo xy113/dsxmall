@@ -7,9 +7,12 @@
  */
 namespace Model\Account;
 class RegisterController extends BaseController{
+    /**
+     * RegisterController constructor.
+     */
     function __construct(){
         parent::__construct();
-        if ($this->uid) $this->redirect('/?m=home');
+        if ($this->uid) $this->redirect(U('/'));
     }
 
     public function index(){
@@ -29,20 +32,24 @@ class RegisterController extends BaseController{
         $email    = trim($_GET['email_'.FORMHASH]);
         $mobile   = trim($_GET['mobile_'.FORMHASH]);
         $captchacode = trim($_GET['captchacode']);
-        $this->checkCaptchacode($captchacode);
+        $this->checkCaptchacode($captchacode, true);
 
-        $data = array(
-            'username'=>$username,
-            'password'=>$password,
-            'email'=>$email,
-            'mobile'=>$mobile
-        );
+        if ($username && $mobile && $password){
+            $data = array(
+                'username'=>$username,
+                'password'=>$password,
+                'email'=>$email,
+                'mobile'=>$mobile
+            );
 
-        $returns = member_register($data, 1);
-        if ($returns['errno'] == 0 && $returns['userinfo']) {
-            $this->showSuccess('register_success', U('m=account'), array(), '', true);
+            $returns = member_register($data, true);
+            if ($returns['errcode'] == 0 && $returns['userinfo']) {
+                $this->showAjaxReturn($returns['userinfo']);
+            }else {
+                $this->showAjaxError('FAIL', $returns['errmsg']);
+            }
         }else {
-            $this->showError($returns['error']);
+            $this->showAjaxError('FAIL', 'invalid_parameter');
         }
     }
 }

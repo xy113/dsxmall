@@ -42,5 +42,8 @@ return array(
 
     'address_manage'=>'收货地址管理',
     'sold_item'=>'已卖出的宝贝',
-    'search_result'=>'搜索结果'
+    'search_result'=>'搜索结果',
+    'goods_not_exists'=>'商品不存在',
+    'cart'=>'购物车',
+    'trade_name_formater'=>'%s等%d件商品'
 );

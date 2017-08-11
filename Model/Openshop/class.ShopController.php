@@ -46,6 +46,7 @@ class ShopController extends BaseController{
                 $shop['create_time'] = time();
                 $shop['shop_type']   = 2;
                 $shop['auth_status'] = 'PENDING';
+                $shop['shop_status'] = 'CLOSE';
                 $shop_id = shop_add_data($shop);
             }
             if (shop_get_info(array('shop_id'=>$shop_info))){

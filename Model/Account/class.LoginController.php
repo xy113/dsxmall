@@ -23,6 +23,7 @@ class LoginController extends BaseController{
     public function index(){
         global $_G, $_lang;
 
+        $redirect = htmlspecialchars($_GET['redirect']);
         include template('login');
     }
 
@@ -34,6 +35,10 @@ class LoginController extends BaseController{
         $password = trim($_GET['password_'.FORMHASH]);
         $captchacode = trim($_GET['captchacode']);
         $this->checkCaptchacode($captchacode, G('inajax'));
+
+        if ($_GET['formhash'] !== formhash()){
+            $this->showAjaxError('FAIL', L('undefined_action'));
+        }
 
         if (Validate::isemail($account)){
             $returns = member_login($account, $password, 'email');
@@ -61,5 +66,14 @@ class LoginController extends BaseController{
                 $this->showError($returns['error']);
             }
         }
+    }
+
+    /**
+     * AJAX login
+     */
+    public function ajaxlogin(){
+        global $_G,$_lang;
+
+        include template('ajaxlogin');
     }
 }

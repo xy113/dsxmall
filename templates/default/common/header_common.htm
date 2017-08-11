@@ -6,42 +6,13 @@
     <meta name="keywords" content="{$_G[keywords]}">
     <meta name="description" content="{$_G[description]}">
     <link rel="icon" href="/static/images/common/favicon.png">
-    <link rel="stylesheet" type="text/css" href="/static/css/style_cg.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/style_cg.css?{TIMESTAMP}">
     <script src="/static/js/jquery.js" type="text/javascript"></script>
     <script src="/static/js/common.js" type="text/javascript"></script>
-    <script src="/static/js/jquery.form.js" type="text/javascript"></script>
     <script src="/static/js/jquery.dsxui.js" type="text/javascript"></script>
-    <script src="/static/js/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="/static/js/swiper.jquery.min.js" type="text/javascript"></script>
 </head>
 <body>
-<div class="top">
-    <div class="area">
-        <div class="right">
-            <ul>
-                <li><a href="{U:('m=member&c=index')}">我的粗耕</a></li>
-                <li class="pipe">|</li>
-                <li><a>购物车</a></li>
-                <li class="pipe">|</li>
-                <li><a>收藏夹</a></li>
-                <li class="pipe">|</li>
-                <li><a>商品分类</a></li>
-                <li class="pipe">|</li>
-                <li><a>卖家中心</a></li>
-                <li class="pipe">|</li>
-                <li><a>联系客服</a></li>
-            </ul>
-        </div>
-        {if $_G[islogin]}
-        <span>Hi <a href="{U:('m=member&c=index')}" style="color: #f40;">{$_G[username]}</a>, 欢迎回来</span>
-        <a href="{echo U('m=account&c=logout')}">[退出登录]</a>
-        {else}
-        <span>Hi 欢迎回来</span>
-        <a href="{echo U('m=account&c=login')}">[登录]</a>
-        <a href="{echo U('m=account&c=register')}">[免费注册]</a>
-        {/if}
-    </div>
-</div>
+{template top_common}
 <div class="header">
     <div class="area banner">
         <div class="global-logo">
@@ -78,7 +49,7 @@
 
 <div class="global-nav">
     <div class="nav">
-        <div class="cat">全部商品分类</div>
+        <div class="cat"><span class="iconfont icon-sort"></span> 全部商品分类</div>
         <ul>
             <li><a href="{U:('/')}"{if $_G[nav]=="home"} class="cur"{/if}>首页</a></li>
             <li><a href="{U:('m=goods&c=search')}"{if $_G[nav]=="goods"} class="cur"{/if}>营养餐</a></li>
@@ -87,7 +58,7 @@
         </ul>
         <div class="cart">
             <a href="{U:('m=cart&c=index')}">
-            <span class="icon-cart"></span>
+            <span class="ico"></span>
             <span>购物车0件</span>
             <strong>去结算>></strong>
             </a>

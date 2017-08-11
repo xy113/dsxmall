@@ -108,7 +108,7 @@
         <div class="item-group">
             <div class="info">
                 <a class="btn-lg btn-buy-now" id="btn-buy-now">立即购买</a>
-                <a class="btn-lg">加入购物车</a>
+                <a class="btn-lg" id="add-to-cart">加入购物车</a>
             </div>
         </div>
     </div>
@@ -187,15 +187,6 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("#btn-buy-now").on('click', function (e) {
-            var shipping_type = $("input.shipping_type:checked").val();
-            var pay_type = $("input.pay_type:checked").val();
-            var quantity = $("#quantity").val();
-            $("#J_goods_number").val(quantity);
-            $("#J_shipping_type").val(shipping_type);
-            $("#J_pay_type").val(pay_type);
-            $("#J_Frmbuy").submit();
-        });
         $("#operate-left").on('click', function () {
             var goods_number = parseInt($("#quantity").val());
             if (goods_number <= 1) {
@@ -209,6 +200,46 @@
             var goods_number = parseInt($("#quantity").val());
             goods_number++;
             $("#quantity").val(goods_number);
+        });
+        $("#btn-buy-now").on('click', function (e) {
+            var submitForm = function () {
+                var shipping_type = $("input.shipping_type:checked").val();
+                var pay_type = $("input.pay_type:checked").val();
+                var quantity = $("#quantity").val();
+                $("#J_goods_number").val(quantity);
+                $("#J_shipping_type").val(shipping_type);
+                $("#J_pay_type").val(pay_type);
+                $("#J_Frmbuy").submit();
+            }
+            DSXUtil.checkLogin(function () {
+                submitForm();
+            }, function () {
+                DSXUI.showAjaxLogin(function () {
+                    submitForm();
+                });
+            });
+        });
+        $("#add-to-cart").on('click', function () {
+            DSXUtil.checkLogin(function (data) {
+                var goods_id = "{$id}";
+                var goods_number = $("#quantity").val();
+                $.ajax({
+                    url:"{U:('m=cart&c=index&a=add')}",
+                    data:{goods_id:goods_id,goods_number:goods_number},
+                    dataType:'json',
+                    success:function (response) {
+                        if (response.errcode == 0){
+                            DSXUI.success('已成功加入购物车');
+                        }else {
+                            DSXUI.error(response.errmsg);
+                        }
+                    }
+                });
+            }, function () {
+                DSXUI.showAjaxLogin(function () {
+                    DSXUtil.reFresh();
+                });
+            });
         });
     });
     (function(jQuery){

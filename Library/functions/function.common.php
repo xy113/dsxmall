@@ -545,7 +545,7 @@ function getPassword($password){
  * @return string
  */
 function formhash() {
-    return md5(substr(time(), 0, -4).C('AUTHKEY'));
+    return md5_16(substr(time(), 0, -4).C('AUTHKEY'));
 }
 
 function daddslashes($string, $force = 0) {
@@ -691,11 +691,12 @@ function print_array($array){
  */
 function template($file, $tpldir = '', $theme='') {
     global $_G;
-    $tpldir = $tpldir ? $tpldir : $_G['m'];
-    !$tpldir && $tpldir = 'common';
-    if (defined('IN_ADMIN')) $theme = 'default';
-    if (!$theme) {
-    	$theme = defined('THEME') ? THEME : 'default';
+    $tpldir = $tpldir ? $tpldir : ($_G['m'] ? strtolower($_G['m']) : 'common');
+
+    if (defined('IN_ADMIN')) {
+        $theme = 'default';
+    }else {
+        !$theme && $theme = defined('THEME') ? THEME : 'default';
     }
     
     $tplfile = TPL_PATH.$theme.'/'.$tpldir.'/'.$file.'.htm';

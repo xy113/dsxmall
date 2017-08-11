@@ -9,7 +9,8 @@ class BaseController extends Controller{
     {
         parent::__construct();
         if (!$this->islogin) {
-            $this->redirect(U('m=account&c=login&continue='.strval(rawurlencode(curPageURL()))));
+            $redirect = urlencode(urlencode(curPageURL()));
+            $this->redirect(U("m=account&c=login&redirect=$redirect"));
         }
     }
 }

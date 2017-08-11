@@ -105,9 +105,9 @@ class Application{
         if(!preg_match('/^[a-zA-Z0-9_]+$/i',$this->var['a'])){
             die('Wrong parameters, a must be a charactor form a-zA-Z0-9!');
         }
+        $this->var['BASEURL'] = curPageURL();
 		$this->var['page'] = isset($_GET['page']) ? max(array(intval($_GET['page']), 1)) : 1;
-		$this->var['BASEURL'] = curPageURL();
-		$this->var['inajax']  = isset($_GET['inajax']) ? intval($_GET['inajax']) : 0;
+		$this->var['inajax'] = isset($_GET['inajax']) ? intval($_GET['inajax']) : 0;
 		
 		define('FORMHASH', formhash());
 		define('TIMESTAMP', time());

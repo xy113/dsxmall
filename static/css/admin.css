@@ -42,7 +42,7 @@
 .sidebar dl dd{font-size:12px; font-weight:500;}
 .sidebar dl dd a{display:block; padding:8px 25px; font-size:14px;}
 .sidebar dl dd a:hover{color:#000;}
-.sidebar dl dd .icon{display:inline-block; margin:2px 3px 0 0; font-size:14px; float:left; width:auto; height:auto;}
+.sidebar dl dd .iconfont{display:inline-block; font-size:16px; margin-right: 3px; vertical-align: -1px;}
 .sidebar dl dt{display: none;}
 .sidebar dl ul{}
 .sidebar dl li{display:block;}

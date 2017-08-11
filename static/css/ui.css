@@ -1,13 +1,6 @@
-@font-face {font-family: 'iconfont';
-    src: url('../font/iconfont.eot'); /* IE9*/
-    src: url('../font/iconfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('../font/iconfont.woff') format('woff'), /* chrome、firefox */
-    url('../font/iconfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url('../font/iconfont.svg#uxiconfont') format('svg'); /* iOS 4.1- */
-}
+@import "../iconfont/iconfont.css";
 a{cursor:pointer;}
 *{box-sizing: border-box;}
-.icon{vertical-align:0; margin-right:3px; display:inline-block; font-family:iconfont; font-style:normal; position:relative; font-size:16px;}
 .ui-checkbox,.ui-radio{height:16px; width:16px; display:inline-block; vertical-align:0; margin:0;}
 .ui-textfield,.ui-textarea,.ui-select{box-sizing:border-box; resize:none; border:1px #CCC solid; border-radius:1px; width:200px; padding:3px 5px; font-size:13px;}
 .ui-textfield,.ui-select{height:28px; line-height:28px; vertical-align:middle;}
@@ -22,7 +15,10 @@ a{cursor:pointer;}
 .ui-overlayer{position:fixed; left:0; top:0; z-index:999; opacity:0.4; background:#000; width:100%; height:100%;}
 .ui-dialog {width:400px; background:#fff; box-shadow:3px 3px 7px #999; border-radius:3px; position:fixed; z-index:9999; overflow:hidden; border:1px #999 solid;}
 .ui-dialog .dialog-title {font-size:16px; position:relative; padding:10px 15px; border-bottom:1px #ddd solid; background-image:linear-gradient(#fff, #eee); background-color:#f9f9f9; font-weight:400;}
-.ui-dialog .dialog-title .close{font-size:16px; position:absolute; right:15px; top:14px; cursor:pointer; width:auto; height:auto; margin:0; padding:0; color:#666; font-weight:200;}
+.ui-dialog .dialog-title .close{
+    font-size:20px; position:absolute; top: 0; right:0; cursor:pointer; text-align: center;
+    width:42px; height:42px; line-height: 42px; margin:0; padding:0; color:#666; font-weight:900;
+}
 .ui-dialog .dialog-title .close:hover{color:#930;}
 .ui-dialog .dialog-title strong{font-weight:500;}
 .ui-dialog .dialog-content {padding:0; box-sizing:border-box; clear:both; overflow-wrap: break-word;}
@@ -38,7 +34,7 @@ a{cursor:pointer;}
 .ui-message-box{display:block; position:fixed; z-index:99999; border-radius:3px; box-shadow:2px 2px 5px #999;}
 .ui-message-box .message-div{padding:15px 20px; border-radius:3px; color:#fff; white-space:nowrap;}
 .ui-message-box .message-success {background-color:#70B46E;}
-.ui-message-box .message-error {background-color:#CB5B52;}
+.ui-message-box .message-error {background-color:#FF002D}
 .ui-message-box .message-warning {background-color:#FAA722;}
 .ui-message-box .message-infomation {background-color:#53A9C2;}
 .ui-message-box .message-text{font-size:15px; display:inline;}
@@ -59,7 +55,14 @@ a{cursor:pointer;}
 
 .ui-loading-box{position:absolute; z-index:9999; background:#fff; border:2px #999 solid; border-radius:20px; padding:10px 20px; font-size:14px; text-align:center;}
 .ui-loading-box .ico{margin-right:5px; vertical-align:-2px; background:url(../images/common/loading16.gif) no-repeat; width:16px; height:16px; display:inline-block;}
-.ui-spinner{position:fixed; z-index:1000; width:80px; height:80px; display:block; border-radius:10px; background-color:#EFEFEF; background-image:url(../images/common/spinner.gif); background-repeat:no-repeat; background-size:70% 70%; background-position:center center;}
+.ui-spinner{
+    position:fixed; z-index:1000; width:80px; height:80px; display:block;
+    border-radius:10px; background-color:#f5f5f5;
+    background-image:url(../images/common/spinner.gif);
+    background-repeat:no-repeat; background-size:70% 70%;
+    background-position:center center;
+    animation: 1s linear 0s normal none infinite running spin;
+}
 
 .ui-message-warp{width:980px; margin:40px auto 20px; clear:both; background:#fff; border:1px #ddd solid; border-radius:5px; min-height:300px; height:auto;}
 .ui-message-warp .message-content{margin:0 auto; min-height:200px; padding:50px 0;}
@@ -99,14 +102,14 @@ a{cursor:pointer;}
 .ui-pickerview .image-list dl.checked dd div{display:block;}
 .ui-pickerview .filedata{position:absolute; left:0; top:0; width:100%; height:100%; opacity:0;}
 .ui-pickerview .ajax-loader{
-	display:block; position:absolute; top:0; 
-	right:0px; width:228px; height:33px; 
-	border:1px #DDD solid; background-color:#f8f8f8;
-	background-image:url(../images/common/ajax_loader.gif);
-	background-repeat:no-repeat;
-	background-position:center;
-	display:none;
-	border-radius:5px;
+    position:absolute; top:0;
+    right:0px; width:228px; height:33px;
+    border:1px #DDD solid; background-color:#f8f8f8;
+    background-image:url(../images/common/ajax_loader.gif);
+    background-repeat:no-repeat;
+    background-position:center;
+    display:none;
+    border-radius:5px;
 }
 
 /**文件选择器**/

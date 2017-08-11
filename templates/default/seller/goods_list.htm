@@ -25,7 +25,10 @@
             <tr id="row_{$goods[id]}">
                 <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$goods[id]}"></td>
                 <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank"><div class="bg-cover" style="background-image: url({img $goods[goods_thumb]}); width: 80px; height: 80px;"></div></a></td>
-                <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank">{$goods[goods_name]}</a></td>
+                <td>
+                    <h3 style="font-size: 12px;"><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank">{$goods[goods_name]}</a></h3>
+                    <p style="margin-top: 5px; color: #888; font-size: 11px;">{$goods[goods_brief]}</p>
+                </td>
                 <td>{amount:$goods[goods_price]}</td>
                 <td>{$goods[sold]}</td>
                 <td>{date:$goods[create_time]|'Y-m-d H:i:s'}</td>

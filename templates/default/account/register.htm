@@ -1,0 +1,141 @@
+{template header}
+<div class="sign-top">
+    <div class="inner">
+        <div class="logo"><a href="{U:('/')}"><img src="/static/images/cugeng/global-logo.png"></a></div>
+        <div class="right">
+            <ul>
+                <li><a href="{U:('m=member&c=index')}">我的粗耕</a></li>
+                <li class="pipe">|</li>
+                <li>
+                    <a href="{U:('m=cart&c=index')}">
+                        <span class="iconfont icon-cartfill"></span>
+                        <span>购物车</span>
+                    </a>
+                </li>
+                <li class="pipe">|</li>
+                <li><a><span class="iconfont icon-favorfill"></span> <span>收藏夹</span></a></li>
+                <li class="pipe">|</li>
+                <li>
+                    <a>
+                        <span>商品分类</span>
+                    </a>
+                </li>
+                <li class="pipe">|</li>
+                <li><a href="{U:('m=seller&c=index')}">卖家中心</a></li>
+                <li class="pipe">|</li>
+                <li><a>联系客服</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="sign-body">
+    <div class="sign-box-div">
+        <h3>快速注册</h3>
+        <div class="sign-content">
+            <form method="post" action="{U:('m=account&c=register')}" id="registerForm" autocomplete="off">
+                <input type="hidden" name="formsubmit" value="yes">
+                <input type="hidden" name="formhash" value="{FORMHASH}">
+                <div class="err-tips" id="err-tips"></div>
+                <div class="input-div">
+                    <div class="ico-box"><i class="iconfont icon-my"></i></div>
+                    <div class="input-box"><input type="text" class="text" id="username" name="username_{FORMHASH}" placeholder="昵称,怎么称呼你"></div>
+                </div>
+                <div class="input-div">
+                    <div class="ico-box"><i class="iconfont icon-mobile"></i></div>
+                    <div class="input-box"><input type="text" class="text" id="mobile" name="mobile_{FORMHASH}" placeholder="请填写11手机号码"></div>
+                </div>
+                <div class="input-div">
+                    <div class="ico-box"><i class="iconfont icon-lock"></i></div>
+                    <div class="input-box"><input type="password" class="text" id="password" name="password_{FORMHASH}" placeholder="密码,6-20位"></div>
+                </div>
+                <div class="input-div">
+                    <div class="ico-box"><i class="iconfont icon-attention_light"></i></div>
+                    <div class="input-box">
+                        <input type="text" name="captchacode" class="text" id="captcha" placeholder="验证码">
+                        <img src="/?m=common&c=captcha" onclick="this.src='/?m=common&c=captcha&'+Math.random()" title="点击更换图片" class="captcha">
+                    </div>
+                </div>
+                <div class="sign-button-div"><button type="submit" class="sign-button">注册</button></div>
+                <div class="sign-link" style="text-align:center;">
+                    <a href="{U:('m=account&c=login')}">已有账号, 点此登录</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#registerForm").submit(function(e) {
+        var username = $.trim($("#username").val());
+        var mobile   = $.trim($("#mobile").val());
+        var password = $.trim($("#password").val());
+        var showTips = function (text) {
+            $("#err-tips").text(text).show();
+        }
+        if(!DSXValidate.IsUserName(username)){
+            showTips('{lang username_incorrect}');
+            return false;
+        }
+        if(!DSXValidate.IsMobile(mobile)){
+            showTips('{lang mobile_incorrect}');
+            return false;
+        }
+        if(!DSXValidate.IsPassword(password)){
+            showTips('{lang password_incorrect}')
+            return false;
+        }
+        var checkflag = true;
+        $.ajax({
+            url:"{U:('m=account&c=register&a=checkusername')}",
+            data:{username:username},
+            dataType:"json",
+            async:false,
+            success: function(response){
+                if(response.errcode != 0){
+                    checkflag = false;
+                    showTips('{lang username_be_occupied}');
+                }
+            }
+        });
+        if (!checkflag) return;
+
+        $.ajax({
+            url:"{U:('m=account&c=register&a=checkmobile')}",
+            data:{mobile:mobile},
+            dataType:"json",
+            async:false,
+            success: function(response){
+                if(response.errcode != 0){
+                    checkflag = false;
+                    showTips('{lang mobile_be_occupied}');
+                }
+            }
+        });
+        if (!checkflag) return;
+
+        var captcha = $("#captcha").val();
+        if(captcha.length != 4){
+            showTips('{lang captchacode_incorrect}');
+            return false;
+        }
+        var spinner = null;
+        $("#registerForm").ajaxSubmit({
+            dataType:'json',
+            beforeSend:function () {
+                spinner = DSXUI.showSpinner();
+            },
+            success:function (response) {
+                setTimeout(function () {
+                    spinner.close();
+                    if (response.errcode == 0){
+                        window.location.href = "{U:('m=member&c=index')}";
+                    }else {
+                        showTips(response.errmsg);
+                    }
+                }, 500);
+            }
+        });
+        return false;
+    });
+</script>
+{template footer}

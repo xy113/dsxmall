@@ -56,7 +56,7 @@ abstract class Controller{
 		$code = strtolower($code);
 		if (!$code || ($code != cookie('captchacode'))){
 			if ($inajax) {
-				$this->showAjaxError(1001, L('captchacode_incorrect'), array('captchacode'=>$code));
+				$this->showAjaxError(1001, 'captchacode_incorrect');
 			}else {
 				$this->showError('captchacode_incorrect');
 			}
@@ -200,7 +200,7 @@ abstract class Controller{
 	 */
 	protected function showAjaxError($errcode, $errmsg='', $data=null){
 		@header('Content-type: application/json');
-		$return = array('errcode'=>$errcode,'errmsg'=>$errmsg);
+		$return = array('errcode'=>$errcode,'errmsg'=>L($errmsg));
 		if (!is_null($data)) $return['data'] = $data;
 		echo json_encode($return);
 		exit();
@@ -214,15 +214,16 @@ abstract class Controller{
 		@header('location:'.$url);
 		exit();
 	}
-	
-	/**
-	 * Discuz 风格分页
-	 * @param int $curr_page 当前页
-	 * @param int $page_count 总页数
-	 * @param int $total_count 总记录
-	 * @param string $extra 附加参数
-	 * @param boolean $show_total 是否显总数目
-	 */
+
+    /**
+     * Discuz 风格分页
+     * @param int $curr_page 当前页
+     * @param int $page_count 总页数
+     * @param int $total_count 总记录
+     * @param string $extra 附加参数
+     * @param boolean $show_total 是否显总数目
+     * @return string
+     */
 	protected function showPages($curr_page, $page_count, $total_count, $extra='', $show_total=FALSE){
 		global $_G,$_lang;
 		$multipage = '';

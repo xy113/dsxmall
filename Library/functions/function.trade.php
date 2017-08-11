@@ -385,3 +385,68 @@ function order_get_shipping($condition){
     $data = M('order_shipping')->where($condition)->getOne();
     return $data ? $data : array();
 }
+
+/**
+ * 添加购物车信息
+ * @param $data
+ * @param int $return
+ * @return array|bool|int|mysqli_result|null|string
+ */
+function cart_add_data($data, $return=0){
+    $id = M('cart')->insert($data, true);
+    return $return ? cart_get_data(array('id'=>$id)) : $id;
+}
+
+/**
+ * 删除购物车信息
+ * @param $condition
+ * @return bool|int
+ */
+function cart_delete_data($condition){
+    return $condition ? M('cart')->where($condition)->delete() : false;
+}
+
+/**
+ * 更新购物车信息
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function cart_update_data($condition, $data){
+    return M('cart')->where($condition)->update($data);
+}
+
+/**
+ * 获取购物车信息
+ * @param $condition
+ * @return array|null
+ */
+function cart_get_data($condition){
+    $data = M('cart')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * 获取购物车商品数目
+ * @param $condition
+ * @param string $field
+ * @return mixed
+ */
+function cart_get_count($condition, $field='*'){
+    return M('cart')->where($condition)->count($field);
+}
+
+/**
+ * 获取购物车商品列表
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @param null $order
+ * @return array
+ */
+function cart_get_list($condition, $count=20, $offset=0, $order=null){
+    $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
+    !$order && $order = 'id DESC';
+    $itemlist = M('cart')->where($condition)->order($order)->limit($limit)->select();
+    return $itemlist ? $itemlist : array();
+}

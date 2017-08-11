@@ -17,9 +17,9 @@
 .sidebar .menus{display: block; padding: 10px 0 20px 0;}
 .sidebar dl{display:block;}
 .sidebar dl dd{font-size:12px; font-weight:500;}
-.sidebar dl dd a{display:block; padding:8px 35px; font-size:14px;}
+.sidebar dl dd a{display:block; padding:8px 32px; font-size:14px;}
 .sidebar dl dd a:hover{color:#000;}
-.sidebar dl dd .icon{display:inline-block; margin:2px 3px 0 0; font-size:14px; float:left; width:auto; height:auto;}
+.sidebar dl dd .iconfont{display: inline-block; vertical-align: -1px; font-size: 16px; margin-right: 3px;}
 .sidebar dl dt{}
 .sidebar dl ul{}
 .sidebar dl li{display:block;}
@@ -142,8 +142,8 @@
 .order-item-table tbody td{padding: 15px 0; font-size: 12px; color: #666; font-weight: 400;}
 .order-item-table tbody .goods-pic{width: 80px; float: left;}
 .order-item-table tbody .goods-pic img{width: 80px; height: 80px; display: block;}
-.order-item-table tbody .goods-name{line-height: 1; font-size: 12px; padding: 8px 0; height: auto; color: #333;}
-.order-item-table tbody .goods-attr{font-size: 13px; color: #999; line-height: 1;}
+.order-item-table tbody .goods-name{line-height: 1; font-size: 13px; padding: 8px 0; height: auto; color: #333;}
+.order-item-table tbody .goods-attr{font-size: 12px; color: #999; line-height: 1;}
 .order-item-table tbody .col1{padding: 15px; text-align: left;}
 .order-item-table tbody .col2{width: 80px; vertical-align: top; text-align: center; font-size: 12px;}
 .order-item-table tbody .col3{width: 60px; vertical-align: top; text-align: center; font-size: 14px;}

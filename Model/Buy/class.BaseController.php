@@ -9,5 +9,15 @@ namespace Model\Buy;
 use Core\Controller;
 
 class BaseController extends Controller{
-
+    /**
+     * BaseController constructor.
+     */
+    function __construct()
+    {
+        parent::__construct();
+        if (!$this->isLogin()) {
+            $redirect = urlencode(urlencode(curPageURL()));
+            $this->redirect(U('m=account&c=login&redirect='.$redirect));
+        }
+    }
 }

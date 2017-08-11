@@ -2,7 +2,7 @@
 @import "common.css";
 .membercp-header{background-color:#0098CE; color:#fff; height:40px; display:block; padding: 0 20px; margin: 0;}
 .membercp-header .logo{font-size:20px; line-height:40px; float:left; margin-right:50px;}
-.membercp-header .right-menu{font-size:12px; overflow:hidden; padding-left:2px;}
+.membercp-header .right-menu{font-size:12px; overflow:hidden; padding-left:2px; float: right;}
 .membercp-header .right-menu a{
     display:inline-block; padding:0 20px; float:left;
     font-size:14px; color:#fff; height:40px;
@@ -15,9 +15,9 @@
 .sidebar .menus{display: block; padding: 10px 0 20px 0;}
 .sidebar dl{display:block;}
 .sidebar dl dd{font-size:12px; font-weight:500;}
-.sidebar dl dd a{display:block; padding:8px 25px; font-size:14px;}
+.sidebar dl dd a{display:block; padding:8px 22px; font-size:14px;}
 .sidebar dl dd a:hover{color:#000;}
-.sidebar dl dd .icon{display:inline-block; margin:2px 3px 0 0; font-size:14px; float:left; width:auto; height:auto;}
+.sidebar dl dd .iconfont{display:inline-block; margin-right: 3px; vertical-align: -2px;}
 .sidebar dl dt{}
 .sidebar dl ul{}
 .sidebar dl li{display:block;}
