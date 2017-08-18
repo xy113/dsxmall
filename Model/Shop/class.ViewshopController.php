@@ -18,7 +18,7 @@ class ViewshopController extends BaseController{
         if (!$shop) {
 
         }else {
-            shop_update_data(array('shop_id'=>$shop_id), 'viewnum=viewnum+1');
+            shop_update_data(array('shop_id'=>$shop_id), '`view_num`=`view_num`+1');
             //掌柜热卖
             $hot_item_list = goods_get_item_list(array('on_sale'=>1, 'shop_id'=>$shop_id), 5, 0, 'sold DESC');
 

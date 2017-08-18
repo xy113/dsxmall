@@ -39,11 +39,17 @@ return array(
     'pay_order'=>'付款',
     'cannot_complete_payment'=>'无法完成付款',
     'order_delete_fail'=>'订单删除失败',
+    'order_have_been_paid'=>'订单已支付',
+    'balance_no_enough'=>'账户余额不足',
 
     'address_manage'=>'收货地址管理',
     'sold_item'=>'已卖出的宝贝',
     'search_result'=>'搜索结果',
     'goods_not_exists'=>'商品不存在',
     'cart'=>'购物车',
-    'trade_name_formater'=>'%s等%d件商品'
+    'trade_name_formater'=>'%s等%d件商品',
+    'pay_result'=>'支付结果',
+    'goods_collection'=>'商品收藏',
+    'shop_collection'=>'店铺收藏',
+    'article_collection'=>'文章收藏'
 );

@@ -12,7 +12,7 @@ class ConvertController extends BaseController{
      *
      */
     public function index(){
-        $this->copyImg();
+        //$this->convertPostContent();
     }
 
     private function convertMember(){
@@ -217,6 +217,47 @@ class ConvertController extends BaseController{
         echo 'complete!';
     }
 
+    public function convertPostCat(){
+        $db = $this->getDB();
+        $sql = "SELECT * FROM ".$db->table('post_cat')." ORDER BY catid ASC";
+        $query = $db->query($sql);
+        while ($data = $db->fetch_array($query)){
+            post_delete_category(array('catid'=>$data['catid']));
+            post_add_category($data);
+        }
+
+        echo 'complete!';
+    }
+
+    private function convertPostTitle(){
+        $db = $this->getDB();
+        $sql = "SELECT * FROM ".$db->table('post_title')." ORDER BY id ASC";
+        $query = $db->query($sql);
+        while ($data = $db->fetch_array($query)){
+            post_delete_item(array('id'=>$data['id']));
+            post_add_item($data);
+        }
+
+        echo 'complete!';
+    }
+
+    private function convertPostContent(){
+        $db = $this->getDB();
+        $sql = "SELECT * FROM ".$db->table('post_content')." ORDER BY aid ASC";
+        $query = $db->query($sql);
+        while ($data = $db->fetch_array($query)){
+            post_delete_content(array('aid'=>$data['aid']));
+            post_add_content(array(
+                'aid'=>$data['aid'],
+                'uid'=>$data['uid'],
+                'pageorder'=>1,
+                'content'=>addslashes($data['content'])
+            ));
+        }
+
+        echo 'complete!';
+    }
+
     /**
      * @return \Core\DB_Mysqli
      */
@@ -227,7 +268,4 @@ class ConvertController extends BaseController{
             'db_pwd' =>'bkTzT0njDeRDseRJ'
         ));
     }
-
-
-
 }

@@ -633,7 +633,14 @@ function imagePickerView(settings){
                 var top = parseInt((position.top+$(this).outerHeight())) + 7;
                 $(document.body).append(div);
                 div.css({"top":top+"px","display":"none",'position':'absolute'}).fadeIn("fast");
+                /*
                 if((position.left + div.width()) > $(document).width()){
+                    div.css({'right':$(document).width() - (position.left+$(this).outerWidth())+'px'});
+                }else {
+                    div.css({'left':position.left+'px'});
+                }
+                */
+                if(position.left > $(document).width()/2){
                     div.css({'right':$(document).width() - (position.left+$(this).outerWidth())+'px'});
                 }else {
                     div.css({'left':position.left+'px'});

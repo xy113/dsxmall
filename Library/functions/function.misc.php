@@ -329,7 +329,7 @@ function link_get_list($condition, $count=20, $offset=0, $order=null){
 
 /**
  * =============================
- * 添加关注
+ * 订阅关注操作
  * =============================
  */
 
@@ -339,13 +339,9 @@ function link_get_list($condition, $count=20, $offset=0, $order=null){
  * @param string $return
  * @return array|bool|int|mysqli_result|null|string
  */
-function follow_add_data($data, $return=false){
-	$id = M('follow')->insert($data, true);
-	if ($return) {
-		return follow_get_data(array('id'=>$id));
-	}else {
-		return $id;
-	}
+function subscribe_add_data($data, $return=false){
+	$id = M('subscribe')->insert($data, true);
+    return $return ? subscribe_get_data(array('id'=>$id)) : $id;
 }
 
 /**
@@ -353,12 +349,8 @@ function follow_add_data($data, $return=false){
  * @param mixed $condition
  * @return bool|int
  */
-function follow_delete_data($condition){
-	if (!$condition) {
-		return false;
-	}else {
-		return M('follow')->where($condition)->delete();
-	}
+function subscribe_delete_data($condition){
+    return $condition ? M('subscribe')->where($condition)->delete() : false;
 }
 
 /**
@@ -367,8 +359,8 @@ function follow_delete_data($condition){
  * @param array $data
  * @return bool|int
  */
-function follow_update_data($condition, $data){
-	return M('follow')->where($condition)->update($data);
+function subscribe_update_data($condition, $data){
+	return M('subscribe')->where($condition)->update($data);
 }
 
 /**
@@ -376,8 +368,8 @@ function follow_update_data($condition, $data){
  * @param mixed $condition
  * @return array|null
  */
-function follow_get_data($condition){
-	return M('follow')->where($condition)->getOne();
+function subscribe_get_data($condition){
+	return M('subscribe')->where($condition)->getOne();
 }
 
 /**
@@ -385,8 +377,8 @@ function follow_get_data($condition){
  * @param mixed $condition
  * @return mixed
  */
-function follow_get_count($condition){
-	return M('follow')->where($condition)->count();
+function subscribe_get_count($condition){
+	return M('subscribe')->where($condition)->count();
 }
 
 /**
@@ -397,9 +389,10 @@ function follow_get_count($condition){
  * @param mixed $order
  * @return array
  */
-function follow_get_list($condition, $count=20, $offset=0, $order=null){
+function subscribe_get_list($condition, $count=20, $offset=0, $order=null){
 	$limit = $count ? "$offset, $count" : ($offset ? $offset : '');
-	$itemlist = M('follow')->where($condition)->limit($limit)->order($order)->select();
+    !$order && $order = 'id DESC';
+	$itemlist = M('subscribe')->where($condition)->limit($limit)->order($order)->select();
     return $itemlist ? $itemlist : array();
 }
 
@@ -415,9 +408,9 @@ function follow_get_list($condition, $count=20, $offset=0, $order=null){
  * @param bool|string $return
  * @return array|bool|int|mysqli_result|null|string
  */
-function favorite_add_data($data, $return=false){
-	$id = M('favorite')->insert($data, true, true);
-    return $return ? favorite_get_data(array('id' => $id)) : $id;
+function collection_add_data($data, $return=false){
+	$id = M('collection')->insert($data, true, true);
+    return $return ? collection_get_data(array('id' => $id)) : $id;
 }
 
 /**
@@ -425,8 +418,8 @@ function favorite_add_data($data, $return=false){
  * @param mixed $condition
  * @return bool|int
  */
-function favorite_delete_data($condition){
-    return $condition ? M('favorite')->where($condition)->delete() : false;
+function collection_delete_data($condition){
+    return $condition ? M('collection')->where($condition)->delete() : false;
 }
 
 /**
@@ -435,8 +428,8 @@ function favorite_delete_data($condition){
  * @param array $data
  * @return bool|int
  */
-function favorite_update_data($condition,$data){
-	return M('favorite')->where($condition)->update($data);
+function collection_update_data($condition,$data){
+	return M('collection')->where($condition)->update($data);
 }
 
 /**
@@ -444,8 +437,8 @@ function favorite_update_data($condition,$data){
  * @param mixed $condition
  * @return array|null
  */
-function favorite_get_data($condition){
-	return M('favorite')->where($condition)->getOne();
+function collection_get_data($condition){
+	return M('collection')->where($condition)->getOne();
 }
 
 /**
@@ -453,8 +446,8 @@ function favorite_get_data($condition){
  * @param mixed $condition
  * @return mixed
  */
-function favorite_get_count($condition){
-	return M('favorite')->where($condition)->count();
+function collection_get_count($condition){
+	return M('collection')->where($condition)->count();
 }
 
 /**
@@ -465,10 +458,10 @@ function favorite_get_count($condition){
  * @param string $order
  * @return array
  */
-function favorite_get_list($condition, $count=20, $offset=0, $order=null){
+function collection_get_list($condition, $count=20, $offset=0, $order=null, $field='*'){
 	$limit = $count ? "$offset, $count" : ($offset ? $offset : '');
-	!$order && $order = 'favid DESC';
-	$itemlist = M('favorite')->where($condition)->limit($limit)->order($order)->select();
+	!$order && $order = 'id DESC';
+	$itemlist = M('collection')->field($field)->where($condition)->limit($limit)->order($order)->select();
     return $itemlist ? $itemlist : array();
 }
 

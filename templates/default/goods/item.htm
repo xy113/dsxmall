@@ -108,8 +108,12 @@
         <div class="item-group">
             <div class="info">
                 <a class="btn-lg btn-buy-now" id="btn-buy-now">立即购买</a>
-                <a class="btn-lg" id="add-to-cart">加入购物车</a>
+                <a class="btn-lg" id="add-to-cart"><i class="iconfont icon-cartfill"></i> <span>加入购物车</span></a>
             </div>
+        </div>
+        <div class="item-group">
+            <div class="share"><i class="iconfont icon-share"></i><span>分享</span></div>
+            <div class="favorite" collection="true" data-id="{$goods[id]}" data-type="goods"><i class="iconfont icon-favor_fill_light"></i><span>收藏商品({$goods[collection_num]})</span></div>
         </div>
     </div>
     <!--goodsinfo end-->
@@ -144,7 +148,7 @@
             <div class="separate"></div>
             <div class="row" style="padding: 10px 0 20px;">
                 <a href="{U:('m=shop&c=viewshop&shop_id='.$goods[shop_id])}" class="btn" style="margin-right: 10px;">进入店铺</a>
-                <a class="btn">收藏店铺</a>
+                <a class="btn" collection="true" data-id="{$goods[shop_id]}" data-type="shop">收藏店铺</a>
                 <div class="clearfix"></div>
             </div>
         </div>

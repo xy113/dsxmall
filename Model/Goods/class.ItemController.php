@@ -19,7 +19,7 @@ class ItemController extends BaseController{
 
         }else {
             $goods['short_name'] = cutstr($goods['goods_name'], 20, '...');
-            goods_update_item(array('id'=>$id), 'viewnum=viewnum+1');
+            goods_update_item(array('id'=>$id), '`view_num`=`view_num`+1');
             $goods_desc = goods_get_desc(array('goods_id'=>$id));
             $gallery = goods_get_image_list(array('goods_id'=>$id));
             if (!$gallery) {

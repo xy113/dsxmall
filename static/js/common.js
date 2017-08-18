@@ -624,6 +624,7 @@ var DSXUI = {
             width:350,
             height:365,
             hideBottom:true,
+            title:'会员登录',
             iframe:'/?m=account&c=login&a=ajaxlogin',
             afterShow:function (dlg) {
                 window.afterLogin = function (data) {
@@ -664,4 +665,28 @@ var DSXUI = {
         }
     });
     $(".sortable").sortable();
+    $("[collection]").on('click', function (e) {
+        var dataid = $(this).attr('data-id');
+        var datatype = $(this).attr('data-type');
+        var add_collection = function () {
+            $.ajax({
+                type:'POST',
+                url:'/index.php?m=member&c=collection&a=add',
+                dataType:'json',
+                data:{dataid:dataid, datatype:datatype},
+                success:function (response) {
+                    if (response.errcode == 0){
+                        DSXUI.success('已成功加入收藏');
+                    }
+                }
+            });
+        }
+        DSXUtil.checkLogin(function () {
+            add_collection();
+        }, function () {
+            DSXUI.showAjaxLogin(function () {
+                add_collection();
+            });
+        });
+    });
 });

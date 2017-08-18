@@ -38,9 +38,10 @@ function post_update_item($condition,$data){
 /**
  * 获取文章信息
  * @param mixed $condition
+ * @return array|null
  */
-function post_get_item($condition){
-	$data = M('post_title')->where($condition)->getOne();
+function post_get_item($condition, $field='*'){
+	$data = M('post_title')->field($field)->where($condition)->getOne();
 	if ($data) {
 		return $data;
 	}else {

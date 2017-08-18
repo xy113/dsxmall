@@ -7,6 +7,12 @@
  */
 namespace Model\Member;
 class AddressController extends BaseController{
+    function __construct()
+    {
+        parent::__construct();
+        G('menu', 'address');
+    }
+
     /**
      * 收货地址管理
      */

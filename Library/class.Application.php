@@ -19,7 +19,7 @@ class Application{
      * Application constructor.
      */
     function __construct(){
-		spl_autoload_register('Application::autoload');
+		spl_autoload_register('Application::autoload', true);
 		$this->timezone_set(8);
 		if(version_compare(PHP_VERSION,'5.4.0','<')) {
 			@ini_set('magic_quotes_runtime',0);
@@ -171,10 +171,8 @@ class Application{
 	 */
 	public static function autoload($class){
 		if (false !== strpos($class, '\\')){
-			//$namespace  = strstr($class, '\\', true);
-            //$namespace  = str_replace('\\','/',$namespace);
             $classname  = substr($class, strrpos($class, '\\')+1);
-            $namespace  = str_replace($classname, '', $class);
+            $namespace  = substr($class, 0, strrpos($class, '\\')+1);
             $namespace  = str_replace('\\','/',$namespace);
 			$name_array = explode('\\', $class);
             if (strtolower($name_array[0]) == 'model'){
@@ -182,19 +180,14 @@ class Application{
             }else {
                 $path = LIB_PATH.$namespace;
             }
+
             //echo $path.'class.'.$classname.'.php<br>';
 			if (is_file($path.'class.'.$classname.'.php')){
 				require $path.'class.'.$classname.'.php';
-			}else {
-				//die('Class "'.$class.'" does not exists.');
-                //throw new  \Exception('Class "'.$class.'" does not exists.');
 			}
 		}else {
 			if (is_file(LIB_PATH.'Core/class.'.$class.'.php')){
 				require LIB_PATH.'Core/class.'.$class.'.php';
-			}else {
-				//die('Class "'.$class.'" does not exists.');
-                //throw new  \Exception('Class "'.$class.'" does not exists.');
 			}
 		}
 	}

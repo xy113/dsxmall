@@ -188,7 +188,7 @@ abstract class Controller{
 		@header('Content-type: application/json');
 		$return = array('errcode'=>0,'errmsg'=>'success');
 		if (!is_null($data)) $return['data'] = $data;
-		echo json_encode($return);
+		echo json_encode($return, JSON_UNESCAPED_UNICODE);
 		exit();
 	}
 	
@@ -202,7 +202,7 @@ abstract class Controller{
 		@header('Content-type: application/json');
 		$return = array('errcode'=>$errcode,'errmsg'=>L($errmsg));
 		if (!is_null($data)) $return['data'] = $data;
-		echo json_encode($return);
+		echo json_encode($return, JSON_UNESCAPED_UNICODE);
 		exit();
 	}
 	

@@ -106,7 +106,8 @@ class OrderController extends BaseController{
                 'trade_fee'=>$total_fee,
                 'trade_type'=>'SHOPPING',
                 'trade_status'=>'UNPAID',
-                'trade_time'=>time()
+                'trade_time'=>time(),
+                'out_trade_no'=>$trade_no
             ));
             goods_update_item(array('id'=>$goods_id), "`sold`=`sold`+$goods_number");
             shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$goods_number");
@@ -252,7 +253,8 @@ class OrderController extends BaseController{
                     'trade_fee'=>$total_fee,
                     'trade_type'=>'SHOPPING',
                     'trade_status'=>'UNPAID',
-                    'trade_time'=>time()
+                    'trade_time'=>time(),
+                    'out_trade_no'=>$trade_no
                 ));
             }
             $itemids = implodeids($items);

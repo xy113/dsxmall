@@ -16,6 +16,7 @@ use Core\DB_Mysqli;
  * 配置全局变量
  * @param string $name
  * @param string $value
+ * @return bool|string
  */
 function G($name=null, $value=''){
 	global $_G;

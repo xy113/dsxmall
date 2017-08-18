@@ -42,7 +42,7 @@
             <div class="content">
                 <h3>农产品资讯</h3>
                 <ul>
-                    {eval $itemlist=post_get_item_list(0,13)}
+                    {eval $itemlist=post_get_item_list(0,12)}
                     {loop $itemlist $item}
                     <li><a href="/?m=post&c=detail&id={$item[id]}" target="_blank">&bull; {$item[title]}</a></li>
                     {/loop}
@@ -87,34 +87,120 @@ $(function () {
         <div class="pic"><a href="{$tegong[url]}"><img src="{img $tegong[image]}"></a></div>
     </div>
     <div class="home-youxuan">
-        <ul class="tabs">
+        <ul class="tabs" id="tabs">
             <li class="cur">爆品抢购</li>
             <li>优选推荐</li>
             <li>精品速递</li>
             <li>好评单品</li>
             <li>猜你喜欢</li>
         </ul>
-        <ul class="glist">
-            {loop $goods_list['new'] $goods}
-            <li>
-                <div class="bd">
-                    <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
-                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+        <div id="glist-wrap">
+            <ul class="glist" style="display: block;">
+                {loop $goods_list['baopin'] $goods}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="price">
+                            <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
+                            <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                        </div>
+                        <div class="buynow">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                        </div>
                     </div>
-                    <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
-                    <div class="price">
-                        <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
-                        <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                </li>
+                {/loop}
+            </ul>
+            <ul class="glist">
+                {loop $goods_list['youxuan'] $goods}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="price">
+                            <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
+                            <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                        </div>
+                        <div class="buynow">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                        </div>
                     </div>
-                    <div class="buynow">
-                        <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                </li>
+                {/loop}
+            </ul>
+            <ul class="glist">
+                {loop $goods_list['jingpin'] $goods}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="price">
+                            <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
+                            <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                        </div>
+                        <div class="buynow">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                        </div>
                     </div>
-                </div>
-            </li>
-            {/loop}
-        </ul>
+                </li>
+                {/loop}
+            </ul>
+            <ul class="glist">
+                {loop $goods_list['haoping'] $goods}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="price">
+                            <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
+                            <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                        </div>
+                        <div class="buynow">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                        </div>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+            <ul class="glist">
+                {loop $goods_list['xihuan'] $goods}
+                <li>
+                    <div class="bd">
+                        <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>
+                        </div>
+                        <div class="name"><a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="price">
+                            <strong class="shop-price">￥:{amount:$goods[goods_price]}</strong>
+                            <span class="market-price"><s>市场价:{amount:$goods[market_price]}</s></span>
+                        </div>
+                        <div class="buynow">
+                            <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank" class="btn">立即购买</a>
+                        </div>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
     </div>
 </div>
+<script type="text/javascript">
+   $(function () {
+        $("#tabs li").on('mouseenter', function () {
+            $(this).addClass('cur').siblings().removeClass();
+            $("#glist-wrap ul").eq($(this).index()).show().siblings('ul').hide();
+        });
+   });
+</script>
 <div class="blank"></div>
 <div class="area home">
     <div class="yingyangcan-title">
@@ -123,7 +209,7 @@ $(function () {
     </div>
     <div class="yingyangcan-list">
         <ul>
-            {loop $goods_list['hot'] $goods}
+            {loop $goods_list['new'] $goods}
             <li>
                 <div class="bd">
                     <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
@@ -166,7 +252,7 @@ $(function () {
         <div class="remai">
             <h3 class="hot-sale">掌柜热卖</h3>
             <ul>
-                {loop $goods_list['new'] $goods}
+                {loop $goods_list['hot'] $goods}
                 <li>
                     <div class="pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
                         <a href="{U:('m=goods&c=item&id='.$goods[id])}" target="_blank"></a>

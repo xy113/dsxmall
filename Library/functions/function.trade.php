@@ -12,6 +12,7 @@
  * @return array|null
  */
 function wallet_get_data($uid){
+    if (!$uid) return false;
     $data = M('wallet')->where(array('uid'=>$uid))->getOne();
     if ($data) {
         return $data;
@@ -62,6 +63,38 @@ function wallet_get_list($condition, $count=20, $offset=0, $order=null){
     !$order && $order = 'balance DESC,id ASC';
     $itemlist = M('wallet')->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
+}
+
+/**
+ * 花费
+ * @param $uid
+ * @param $amount
+ * @return bool|int
+ */
+function wallet_cost($uid, $amount){
+    if (!$uid || !$amount) return false;
+    $wallet = wallet_get_data($uid);
+    if ($wallet['balance'] < $amount){
+        return false;
+    }else {
+        $balance = $wallet['balance'] - floatval($amount);
+        $total_cost = $wallet['total_cost'] + floatval($amount);
+        return wallet_update_data(array('uid'=>$uid), array('balance'=>$balance, 'total_cost'=>$total_cost));
+    }
+}
+
+/**
+ * 收入
+ * @param $uid
+ * @param $amount
+ * @return bool|int
+ */
+function wallet_income($uid, $amount){
+    if (!$uid || !$amount) return false;
+    $wallet = wallet_get_data($uid);
+    $balance = $wallet['balance'] + floatval($amount);
+    $total_income = $wallet['total_income'] + floatval($amount);
+    return wallet_update_data(array('uid'=>$uid), array('balance'=>$balance, 'total_income'=>$total_income));
 }
 
 /**

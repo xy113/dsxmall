@@ -14,7 +14,7 @@
     <h2>交易记录</h2>
 </div>
 
-<div class="table-wrap">
+<div class="content-div">
     <form method="post">
     <input type="hidden" name="formsubmit" value="yes" />
     <input type="hidden" name="formhash" value="{FORMHASH}">
@@ -24,7 +24,7 @@
         <th width="40" class="center">选?</th>
         <th width="50">头像</th>
         <th>名称 | 流水 | 对方账户</th>
-        <th width="100">用户</th>
+        <th>用户</th>
         <th width="100">金额</th>
         <th width="140">时间</th>
         <th width="60">状态</th>
@@ -37,7 +37,7 @@
         <td><img src="{echo avatar($item[uid])}" width="30" height="30"></td>
         <th>
         	<a>{$item[trade_name]}</a>
-            <p>{$item[trade_no]}|{$userlist[$item[recip_uid]][username]}</p>
+            <p>{$item[trade_no]}|{$item[payee_name]}</p>
         </th>
         <td>{$userlist[$item[uid]][username]}</td>
         <td>{echo formatAmount($item[trade_fee])}</td>
@@ -55,7 +55,7 @@
       </tr>
       <tr>
           <td colspan="10">
-              <span class="pages">{$pages}</span>
+              <span class="pagination float-right">{$pages}</span>
               <input type="submit" class="button" value="{$_lang[submit]}">
               <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>

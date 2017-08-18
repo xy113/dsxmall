@@ -44,7 +44,7 @@ a{cursor:pointer;}
 .ui-confirm-box dl{clear:both;}
 .ui-confirm-box dl dt{padding:20px 15px 0; font-size:12px; line-height:1.0; margin:0; text-align:center;}
 .ui-confirm-box dl dd{padding:15px; clear:both; text-align:center; margin:0;}
-.ui-confirm-box dl dd .btn{display:inline-block; cursor:pointer; height:22px; line-height:22px; padding:0 10px; border-radius:3px;}
+.ui-confirm-box dl dd .btn{display:inline-block; cursor:pointer; height:22px; line-height:20px; padding:0 10px; border-radius:3px; font-size: 12px;}
 .ui-confirm-box dl dd .btn-yes{background:#80BF1D; color:#fff; border:1px #80BF1D solid;}
 .ui-confirm-box dl dd .btn-yes:hover{background:#64A402; border:1px #64A402 solid;}
 .ui-confirm-box dl dd .btn-no{margin-left:10px; background-color:#fefefe; color:#333; border:1px #E2E2E2 solid;}

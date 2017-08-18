@@ -15,7 +15,7 @@
 }
 .header .global-search-box .btn{
     background-color: #f40; color: #fff; position: absolute; border: none; width: 60px; cursor: pointer;
-    top: 0; right: 0; bottom: 0; font-size: 16px; font-weight: bold; text-align: center;
+    top: 0; right: 0; bottom: 0; font-size: 16px; font-weight: bold; text-align: center; -webkit-appearance: none;
 }
 .header .global-search-box .hot{display: block; padding-top: 10px; font-size: 12px; line-height: 1.0; color: #666;}
 .header .phone{height: 60px; overflow: hidden; padding-top: 12px;}
@@ -96,9 +96,9 @@
 /*===首页优选===*/
 .home-youxuan{display: block; width: 990px; float: left;}
 .home-youxuan .tabs{display: block;}
-.home-youxuan .tabs li{width: 20%; float: left; padding: 10px 0; text-align: center; font-size: 16px; border-bottom: 2px #9A9A9A solid;}
+.home-youxuan .tabs li{width: 20%; float: left; padding: 10px 0; text-align: center; font-size: 16px; border-bottom: 2px #9A9A9A solid; cursor: pointer;}
 .home-youxuan .tabs li.cur{border-color: #FF0000; color: #FF0000;}
-.home-youxuan .glist{display: block; border: 1px #CCC solid; border-top: none; padding: 20px 0; height: 296px;}
+.home-youxuan .glist{display: none; border: 1px #CCC solid; border-top: none; padding: 20px 0; height: 296px;}
 .home-youxuan .glist li{width: 20%; float: left; overflow: hidden;}
 .home-youxuan .glist li .bd{display: block; margin: 0 20px;}
 .home-youxuan .glist li .pic{display: block; padding-top: 100%; position: relative;}
@@ -172,7 +172,7 @@
 .home .qiyedianpu-wrap .remai ul li .pic img,.home .qiyedianpu-wrap .remai ul li .pic a{
     width: 100%; height: 100%; display: block; position: absolute; left: 0; top: 0;
 }
-.home .qiyedianpu-wrap .remai ul li .g-info{display: inline-block;}
+.home .qiyedianpu-wrap .remai ul li .g-info{margin-left: 70px; overflow: hidden;}
 .home .qiyedianpu-wrap .remai ul li .g-info .name{height: 20px; line-height: 20px; overflow: hidden;}
 .home .qiyedianpu-wrap .remai ul li .g-info .market-price{color: #888; font-size: 11px; padding: 3px 0;}
 .home .qiyedianpu-wrap .remai ul li .g-info .shop-price{color: #f40;}
@@ -238,6 +238,9 @@
 .iteminfo-wrap .p-stat li{display: block; padding: 10px; float: left;}
 .iteminfo-wrap .p-stat li h3{font-size: 14px; text-align: center;}
 .iteminfo-wrap .p-stat li p{font-size: 12px; text-align: center; display: block; padding-top: 7px;}
+.iteminfo-wrap .share{color: #888; float: left; margin-right: 30px; cursor: pointer;}
+.iteminfo-wrap .favorite{color: #888; cursor: pointer;}
+.iteminfo-wrap .iconfont{margin-right: 3px;}
 
 .shopinfo-wrap{width: 200px; float: right; border: 1px solid #ffe2a3;}
 .shopinfo-wrap .shop-header{display: block;}
@@ -310,9 +313,10 @@
 }
 .item-search-wrap .item-list li .item-img img{width: 100%; height: 100%; display: block; border-radius: 1px;}
 .item-search-wrap .item-list li .item-info{
-    height: 80px; width: 380px; display: inline-block; position: relative; vertical-align: top;
+    height: 80px; width: 380px; display: inline-block; position: relative; vertical-align: top; margin-right: 20px;
 }
 .item-search-wrap .item-list li .item-info h3{font-size: 14px; line-height: 1.2; font-weight: 400; display: block; padding: 5px 0;}
+.item-search-wrap .item-list li .item-info .brief{color: #888; font-size: 12px;}
 .item-search-wrap .item-list li .item-info .shop{
     position: absolute; left: 0; bottom: 0; font-size: 12px; color: #888; text-decoration: underline;
 }

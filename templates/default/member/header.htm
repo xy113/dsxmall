@@ -33,9 +33,9 @@
             <dd><a><i class="iconfont icon-formfill"></i>{lang order_manage}</a></dd>
             <dt>
             <ul>
-                <li><a href="{U:('c=order')}"{if $_GET[menu]=="order_manage"} class="cur"{/if}>订单列表</a></li>
-                <li><a href="{U:('c=favorite')}" id="menu_favorite">我的收藏</a></li>
-                <li><a href="{U:('c=comment')}" id="menu_comment">我的评论</a></li>
+                <li><a href="{U:('c=order')}"{if $_G[menu]=="order_manage"} class="cur"{/if}>订单列表</a></li>
+                <li><a href="{U:('c=collection')}"{if $_G[menu]=="collection"} class="cur"{/if}>我的收藏</a></li>
+                <li><a href="{U:('c=comment')}"{if $_G[menu]=="comment"} class="cur"{/if}>我的评论</a></li>
             </ul>
             </dt>
         </dl>
@@ -47,7 +47,7 @@
                 <li><a href="{U:('c=setting&a=userinfo')}">账户设置</a></li>
                 <li><a href="{U:('c=wallet&a=index')}">我的钱包</a></li>
                 <li><a href="{U:('c=setting&a=security')}">安全中心</a></li>
-                <li><a href="{U:('c=address&a=index')}"{if $_GET[menu]=="address"} class="cur"{/if}>收货地址</a></li>
+                <li><a href="{U:('c=address&a=index')}"{if $_G[menu]=="address"} class="cur"{/if}>收货地址</a></li>
             </ul>
             </dt>
         </dl>

@@ -7,7 +7,7 @@ class OrderController extends BaseController{
     function __construct()
     {
         parent::__construct();
-        $_GET['menu'] = 'order_manage';
+        G('menu', 'order_manage');
     }
 
     public function index(){
@@ -78,11 +78,13 @@ class OrderController extends BaseController{
      */
     public function delete(){
         $order_id = intval($_GET['order_id']);
-        $res = order_delete_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
-        if ($res) {
+        $order = order_get_item(array('order_id'=>$order_id));
+        if ($order) {
+            order_delete_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
             order_delete_goods(array('order_id'=>$order_id));
             order_delete_action(array('order_id'=>$order_id));
             order_delete_shipping(array('order_id'=>$order_id));
+            trade_delete_data(array('trade_no'=>$order['trade_no']));
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError(1, L('order_delete_fail'));

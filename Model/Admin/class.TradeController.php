@@ -38,7 +38,7 @@ class TradeController extends BaseController{
 			$pagesize = 20;
 			$totalnum = trade_get_count($condition);
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$itemlist = trade_get_page($condition, $_G['page'], $pagesize, 'trade_id DESC');
+			$itemlist = trade_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize, 'trade_id DESC');
 			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "keyword=$keyword", 1);
 			
 			if ($itemlist) {
