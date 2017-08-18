@@ -9,7 +9,7 @@
             <span class="amount">支付金额:<i>￥{amount:$order[total_fee]}</i></span>
         </p>
         <p class="links">
-            <a style="margin-right: 50px;">订单详情</a>
+            <a href="{U:('m=member&c=order')}" style="margin-right: 50px;">订单详情</a>
             <a href="{U:('/')}">继续购物</a>
         </p>
         {else}
@@ -21,7 +21,7 @@
         </p>
         <p class="links">
             <a href="{U:('c=pay&a=index&order_id='.$order_id)}" style="margin-right: 50px;">立即支付</a>
-            <a style="margin-right: 50px;">订单详情</a>
+            <a href="{U:('m=member&c=order')}"git style="margin-right: 50px;">订单详情</a>
             <a href="{U:('/')}">继续购物</a>
         </p>
         {/if}
