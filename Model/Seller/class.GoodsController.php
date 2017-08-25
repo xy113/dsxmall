@@ -90,6 +90,7 @@ class GoodsController extends BaseController{
             $goods = $_GET['goods'];
             if ($goods['goods_name'] && $goods['goods_price']){
                 //添加产品信息
+                $goods['goods_sn'] = goods_create_sn();
                 $goods['goods_price'] = floatval($goods['goods_price']);
                 $goods['stock'] = intval($goods['stock']);
                 $goods['uid'] = $this->uid;

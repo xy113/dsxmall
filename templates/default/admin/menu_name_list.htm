@@ -2,11 +2,11 @@
 <div class="console-title">
 	<h2>菜单管理</h2>
 </div>
-<div class="content-div">
+<div class="table-wrap">
 	<form method="post" id="menuForm" autocomplete="off">
     <input type="hidden" name="formsubmit" value="yes">
     <input type="hidden" name="formhash" value="{FORMHASH}">
-    <table cellpadding="0" cellspacing="0" width="100%" class="listtable">
+    <table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
     	<thead>
         	<tr>
             	<th width="40">删?</th>
@@ -18,7 +18,7 @@
      <div class="menu-list" data-id="0">
      {loop $menulist $menu}
      {eval $id=$menu[id]}
-     <table cellpadding="0" cellspacing="0" width="100%" class="listtable">
+     <table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
         <tbody>
             <tr>
                 <td width="20"><input type="checkbox" class="checkbox checkmark" name="delete[]" value="{$id}"></td>
@@ -30,12 +30,12 @@
      {/loop}
     </div>
     <div class="menu-div" id="menu-new"></div>
-    <table cellpadding="0" cellspacing="0" width="100%" class="listtable">
+    <table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
     	<tfoot>
         	<tr>
             	<td>
                 	<label><input type="checkbox" class="checkbox checkall"> 全选</label>
-                    <label><a href="javascript:;" id="addnew"><i class="icon">&#xf0154;</i>添加菜单</a></label>
+                    <label><a href="javascript:;" id="addnew"><i class="iconfont icon-roundaddfill"></i>添加菜单</a></label>
                 </td>
             </tr>
             <tr>
@@ -49,7 +49,7 @@
     </form>
 </div>
 <script type="text/x-template" id="J-menu-item-tpl">
-<table cellpadding="0" cellspacing="0" width="100%" class="listtable">
+<table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
 	<tbody>
 		<tr>
 			<td width="20"></td>

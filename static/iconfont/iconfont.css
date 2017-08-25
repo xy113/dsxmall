@@ -13,6 +13,7 @@
   font-style:normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  vertical-align: -1px; margin-right: 3px;
 }
 
 .icon-appreciate:before { content: "\e644"; }

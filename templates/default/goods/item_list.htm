@@ -24,8 +24,8 @@
             <ul class="item-list">
                 {loop $itemlist $id $item}
                 <li>
-                    <div class="item-img bg-cover" style="background-image: url({img $item[goods_thumb]})">
-                        <a href="{$item[url]}" target="_blank" title="{$item[goods_name]}" style="opacity: 0;"><img src="{img $item[goods_thumb]}"></a>
+                    <div class="item-img bg-cover lazyload" data-original="{img $item[goods_thumb]}">
+                        <a href="{$item[url]}" target="_blank" title="{$item[goods_name]}"></a>
                     </div>
                     <div class="item-info">
                         <h3><a href="{$item[url]}" target="_blank">{$item[goods_name]}</a></h3>

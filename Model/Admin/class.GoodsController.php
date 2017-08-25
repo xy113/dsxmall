@@ -71,6 +71,27 @@ class GoodsController extends BaseController{
             $goods_list = goods_get_item_list($condition, $pagesize, $start_limit);
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", true);
 
+            $shop_list = array();
+            if ($goods_list) {
+                $datalist = $shop_ids = array();
+                foreach ($goods_list as $goods){
+                    $datalist[$goods['id']] = $goods;
+                    $shop_ids[] = $goods['shop_id'];
+                }
+                $goods_list = $datalist;
+
+                $shop_ids = $shop_ids ? implodeids($shop_ids) : 0;
+                if ($shop_ids) {
+                    $shop_list = shop_get_list(array('shop_id'=>array('IN', $shop_ids)), 0, 0, null, 'shop_id,shop_name');
+                    $datalist = array();
+                    foreach ($shop_list as $shop){
+                        $datalist[$shop['shop_id']] = $shop;
+                    }
+                    $shop_list = $datalist;
+                }
+                unset($datalist, $goods, $shop);
+            }
+
             $_G['title'] = $_lang['goods_manage'];
             include template('goods_list');
         }

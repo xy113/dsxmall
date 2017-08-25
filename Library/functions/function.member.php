@@ -668,6 +668,44 @@ function member_get_connect_list($condition, $count=20, $offset=0, $order=null){
 }
 
 /**
+ * 新增token
+ * @param $data
+ * @return bool|int|mysqli_result|string
+ */
+function member_add_token($data){
+    return M('member_token')->insert($data, true, true);
+}
+
+/**
+ * 删除TOKEN
+ * @param $uid
+ * @return bool|int
+ */
+function member_delete_token($uid){
+    return M('member_token')->where(array('uid'=>$uid))->delete();
+}
+
+/**
+ * 更新用户TOKEN
+ * @param $uid
+ * @param $token
+ * @param $expire_time
+ * @return bool|int
+ */
+function member_update_token($uid, $token, $expire_time){
+    return M('member_token')->where(array('uid'=>$uid))->update(array('token'=>$token,'expire_time'=>$expire_time));
+}
+
+/**
+ * 获取用户TOKEN
+ * @param $uid
+ * @return array|null
+ */
+function member_get_token($uid) {
+    return M('member_token')->where(array('uid'=>$uid))->getOne();
+}
+
+/**
  * =====================
  * 日志操作
  * =====================
@@ -802,6 +840,7 @@ function member_add_group($data, $return=FALSE){
 /**
  * 删除用户组
  * @param mixed $condition
+ * @return bool|int
  */
 function member_delete_group($condition){
     return $condition ? M('member_group')->where($condition)->delete() : false;
@@ -811,6 +850,7 @@ function member_delete_group($condition){
  * 更新用户组信息
  * @param mixed $condition
  * @param array $data
+ * @return bool|int
  */
 function member_update_group($condition,$data){
 	return M('member_group')->where($condition)->update($data);
@@ -819,6 +859,7 @@ function member_update_group($condition,$data){
 /**
  * 获取用户组信息
  * @param mixed $condition
+ * @return array|null
  */
 function member_get_group($condition, $field='*'){
 	$data =  M('member_group')->where($condition)->field($field)->getOne();
@@ -829,6 +870,7 @@ function member_get_group($condition, $field='*'){
  * 获取用户分组列表
  * @param mixed $condition
  * @param string $order
+ * @return array
  */
 function member_get_group_list($usecache=1){
     if ($usecache) {

@@ -84,7 +84,7 @@ class PayController extends BaseController{
 //        }
 
         if (wallet_cost($this->uid, $order['total_fee'])){
-            order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_time'=>time()));
+            order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
             trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'trade_type'=>'balance'));
             $this->showAjaxReturn();
         }else {
@@ -143,7 +143,7 @@ class PayController extends BaseController{
             $orderQuery->setOut_trade_no($trade['out_trade_no']);
             $res = WxPayApi::orderQuery($orderQuery);
             if ($res['trade_state'] == 'SUCCESS'){
-                order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_time'=>time()));
+                order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
                 trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'pay_type'=>'wxpay'));
             }
         }
@@ -162,7 +162,7 @@ class PayController extends BaseController{
                 if ($this->alipayCheckOrder($out_trade_no, $trade_no)){
                     //支付成功
                     $out_trade_no = htmlspecialchars($_GET['out_trade_no']);
-                    order_update_item(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_time'=>time()));
+                    order_update_item(array('trade_no'=>$out_trade_no), array('pay_status'=>1,'pay_type'=>2, 'pay_time'=>time()));
                     trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
                     $this->redirect(U('c=pay&a=order_query&order_id='.$order['order_id']));
                 }
@@ -211,7 +211,7 @@ class PayController extends BaseController{
         if ($order['pay_status'] == 0){
             if ($this->alipayCheckOrder($out_trade_no)){
                 //支付成功
-                order_update_item(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_time'=>time()));
+                order_update_item(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
                 trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
             }
         }
@@ -240,5 +240,14 @@ class PayController extends BaseController{
         }else {
             return false;
         }
+    }
+
+    /**
+     * 货到付款
+     */
+    public function daofu(){
+        $order_id = intval($_GET['order_id']);
+        order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>3, 'pay_time'=>time()));
+        $this->redirect(U('c=pay&a=order_query&order_id='.$order_id));
     }
 }

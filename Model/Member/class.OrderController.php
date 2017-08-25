@@ -49,7 +49,8 @@ class OrderController extends BaseController{
         if ($itemlist) {
             $datalist = $order_ids = array();
             foreach ($itemlist as $item){
-                $item['order_trade_status'] = order_get_trade_status($item);
+                $item['trade_status'] = order_get_trade_status($item);
+                $item['trade_status_tips'] = $_lang['order_trade_status'][$item['trade_status']];
                 $item['shop_short_name'] = cutstr($item['shop_name'], 12, '..');
                 $datalist[$item['order_id']] = $item;
                 $order_ids[] = $item['order_id'];
@@ -78,9 +79,9 @@ class OrderController extends BaseController{
      */
     public function delete(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_item(array('order_id'=>$order_id));
+        $order = order_get_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
         if ($order) {
-            order_delete_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
+            order_delete_item(array('order_id'=>$order_id));
             order_delete_goods(array('order_id'=>$order_id));
             order_delete_action(array('order_id'=>$order_id));
             order_delete_shipping(array('order_id'=>$order_id));
@@ -88,6 +89,53 @@ class OrderController extends BaseController{
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError(1, L('order_delete_fail'));
+        }
+    }
+
+    /**
+     * 查看订单详情
+     */
+    public function detail(){
+        global $_G,$_lang;
+
+        $order_id = intval($_GET['order_id']);
+        $order = order_get_item(array('order_id'=>$order_id));
+        $itemlist = order_get_goods_list(array('order_id'=>$order_id));
+        $trade_status = order_get_trade_status($order);
+        $trade_status_tips = $_lang['order_trade_status'][$trade_status];
+        if ($trade_status == 3) $shipping = order_get_shipping(array('order_id'=>$order_id));
+
+        $_G['title'] = '订单详情';
+        include template('order_detail');
+    }
+
+    /**
+     * 确认收货
+     */
+    public function receipt(){
+        $order_id = intval($_GET['order_id']);
+        $password = trim($_GET['password']);
+        $order = order_get_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        if ($order) {
+            //验证密码
+            $member = member_get_data(array('uid'=>$this->uid), 'password');
+            if ($member['password'] !== getPassword($password)){
+                $this->showAjaxError('FAIL', 'password_incorrect');
+            }
+            //验证订单状态
+            if (order_get_trade_status($order) == 3){
+                //更新订单状态
+                order_update_item(array('order_id'=>$order_id),
+                    array(
+                        'order_status'=>1,
+                        'deal_time'=>time()
+                    ));
+                //打款给卖家
+                wallet_income($order['seller_uid'], $order['total_fee']);
+            }
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError('FAIL', 'order_not_exists');
         }
     }
 }

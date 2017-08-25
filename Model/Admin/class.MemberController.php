@@ -10,6 +10,8 @@ class MemberController extends BaseController{
 	 */
 	public function memberlist(){
 		global $_G, $_lang;
+		G('menu', 'memberlist');
+
 		if ($this->checkFormSubmit()){
 			$uids = $_GET['uid'];
 			if ($uids && is_array($uids)){
@@ -181,6 +183,8 @@ class MemberController extends BaseController{
 
 	public function grouplist(){
 		global $_G,$_lang;
+        G('menu', 'membergroup');
+
 		if($this->checkFormSubmit()){
 			$delete = $_GET['delete'];
 			if ($delete && is_array($delete)) {

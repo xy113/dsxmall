@@ -28,4 +28,10 @@ class IndexController extends BaseController{
         $_G['nav'] = 'home';
 		include template('index');
 	}
+
+	public function app(){
+        echo md5_16(random(10));
+        echo '<br>';
+        echo md5(random(10));
+    }
 }

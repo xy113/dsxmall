@@ -33,12 +33,13 @@
                     <dd><a><i class="iconfont icon-radioboxfill"></i>系统设置</a></dd>
                     <dt>
                         <ul>
-                            <li><a rel="item" href="{echo U('c=setting&a=basic')}"{if $_GET[menu]=="setting_basic"} class="cur"{/if}>基本设置</a></li>
-                            <li><a rel="item" href="{echo U('c=setting&a=optimiz')}"{if $_GET[menu]=="setting_optimiz"} class="cur"{/if}>优化设置</a></li>
-                            <li><a rel="item" href="{echo U('c=setting&a=register')}"{if $_GET[menu]=="setting_register"} class="cur"{/if}>注册设置</a></li>
-                            <li><a rel="item" href="{echo U('c=setting&a=attach')}"{if $_GET[menu]=="setting_attach"} class="cur"{/if}>附件设置</a></li>
-                            <li><a rel="item" href="{echo U('c=setting&a=water')}"{if $_GET[menu]=="setting_water"} class="cur"{/if}>图片水印</a></li>
-                            <li><a rel="item" href="{echo U('c=setting&a=alipay')}"{if $_GET[menu]=="setting_alipay"} class="cur"{/if}>支付宝设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=basic')}"{if $_G[menu]=="setting_basic"} class="cur"{/if}>基本设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=optimiz')}"{if $_G[menu]=="setting_optimiz"} class="cur"{/if}>优化设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=register')}"{if $_G[menu]=="setting_register"} class="cur"{/if}>注册设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=attach')}"{if $_G[menu]=="setting_attach"} class="cur"{/if}>附件设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=water')}"{if $_G[menu]=="setting_water"} class="cur"{/if}>图片水印</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=weixin')}"{if $_G[menu]=="setting_weixin"} class="cur"{/if}>微信设置</a></li>
+                            <li><a rel="item" href="{echo U('c=setting&a=alipay')}"{if $_G[menu]=="setting_alipay"} class="cur"{/if}>支付宝设置</a></li>
                             <li><a rel="item" href="{echo U('c=app')}"{if $_GET[menu]=="app"} class="cur"{/if}>应用管理</a></li>
                         </ul>
                     </dt>
@@ -47,8 +48,8 @@
                     <dd><a><i class="iconfont icon-peoplefill"></i>用户管理</a></dd>
                     <dt>
                     <ul>
-                        <li><a rel="item" href="{echo U('c=member&a=memberlist')}"{if $_GET[menu]=="memberlist"} class="cur"{/if}>会员列表</a></li>
-                        <li><a rel="item" href="{echo U('c=member&a=grouplist')}"{if $_GET[menu]=="membergroup"} class="cur"{/if}>分组管理</a></li>
+                        <li><a rel="item" href="{echo U('c=member&a=memberlist')}"{if $_G[menu]=="memberlist"} class="cur"{/if}>会员列表</a></li>
+                        <li><a rel="item" href="{echo U('c=member&a=grouplist')}"{if $_G[menu]=="membergroup"} class="cur"{/if}>分组管理</a></li>
                     </ul>
                     </dt>
                 </dl>
@@ -72,10 +73,11 @@
                     </dt>
                 </dl>
                 <dl>
-                    <dd><a><i class="iconfont icon-shopfill"></i>商铺管理</a></dd>
+                    <dd><a><i class="iconfont icon-shopfill"></i>店铺管理</a></dd>
                     <dt>
                     <ul>
-                        <li><a rel="item" href="{U:('c=shop&a=itemlist')}"{if $_GET[menu]=="shop"} class="cur"{/if}>商品列表</a></li>
+                        <li><a rel="item" href="{U:('c=shop&a=itemlist')}"{if $_G[menu]=="shop"} class="cur"{/if}>店铺列表</a></li>
+                        <li><a rel="item" href="{U:('c=shop&a=pending')}"{if $_G[menu]=="shop_pending"} class="cur"{/if}>等待审核</a></li>
                     </ul>
                     </dt>
                 </dl>
@@ -92,10 +94,9 @@
                 </dl>
 
                 <dl>
-                    <dd><a><i class="iconfont icon-messagefill"></i>微信设置</a></dd>
+                    <dd><a><i class="iconfont icon-messagefill"></i>微信管理</a></dd>
                     <dt>
                     <ul>
-                        <li><a rel="item" href="{echo U('c=setting&a=weixin')}"{if $_GET[menu]=="setting_weixin"} class="cur"{/if}>参数设置</a></li>
                         <li><a rel="item" href="{echo U('c=wxmenu')}"{if $_GET[menu]=="wxmenu"} class="cur"{/if}>菜单设置</a></li>
                         <li><a rel="item" href="{echo U('c=wxmaterial')}"{if $_GET[menu]=="wxmaterial"} class="cur"{/if}>素材管理</a></li>
                         <li><a rel="item" href="{echo U('c=wxnews')}"{if $_GET[menu]=="wxnews"} class="cur"{/if}>图文消息</a></li>
@@ -104,11 +105,11 @@
                 </dl>
 
                 <dl>
-                    <dd><a><i class="iconfont icon-rechargefill"></i>财务管理</a></dd>
+                    <dd><a><i class="iconfont icon-rechargefill"></i>交易管理</a></dd>
                     <dt>
                     <ul>
-                        <li><a rel="item" href="{echo U('c=trade&a=itemlist')}"{if $_GET[menu]=="trade"} class="cur"{/if}>交易记录</a></li>
                         <li><a rel="item" href="{echo U('c=order&a=itemlist')}"{if $_GET[menu]=="order"} class="cur"{/if}>订单记录</a></li>
+                        <li><a rel="item" href="{echo U('c=trade&a=itemlist')}"{if $_GET[menu]=="trade"} class="cur"{/if}>交易记录</a></li>
                     </ul>
                     </dt>
                 </dl>

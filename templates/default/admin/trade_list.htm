@@ -35,10 +35,13 @@
       <tr>
         <td class="center"><input type="checkbox" class="checkbox checkmark" name="trade_id[]" value="{$trade_id}"></td>
         <td><img src="{echo avatar($item[uid])}" width="30" height="30"></td>
-        <th>
-        	<a>{$item[trade_name]}</a>
-            <p>{$item[trade_no]}|{$item[payee_name]}</p>
-        </th>
+        <td>
+        	<h3 class="title">{$item[trade_name]}</h3>
+            <p class="subtitle">
+                <span>{$item[trade_no]} |</span>
+                <a href="{U:('m=shop&c=viewshop&uid='.$item['payee_uid'])}" target="_blank">{$item[payee_name]}</a>
+            </p>
+        </td>
         <td>{$userlist[$item[uid]][username]}</td>
         <td>{echo formatAmount($item[trade_fee])}</td>
         <td>{echo @date('Y-m-d H:i:s',$item[trade_time])}</td>
@@ -57,7 +60,7 @@
           <td colspan="10">
               <span class="pagination float-right">{$pages}</span>
               <input type="submit" class="button" value="{$_lang[submit]}">
-              <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
+              <input type="button" class="button button-cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>
       </tr>
      </tfoot>

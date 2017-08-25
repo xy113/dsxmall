@@ -184,8 +184,9 @@ class WxJsApiPay {
 
     /**
      * 构造获取open和access_toke的url地址
-     * @param string $code，微信跳转带回的code
+     * @param $code
      * @return 请求的url
+     * @internal param string $code，微信跳转带回的code
      */
     private function __CreateOauthUrlForOpenid($code)
     {

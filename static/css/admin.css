@@ -95,6 +95,10 @@
 }
 .listtable .cat-level-2{padding-left: 30px;}
 .listtable .cat-level-3{padding-left: 60px;}
+.listtable h3.title{font-size: 14px; display: block; margin-bottom: 5px;}
+.listtable .subtitle{font-size: 12px; display: block; color: #777;}
+.listtable .subtitle a{color: #777;}
+.listtable .subtitle a:hover{text-decoration: underline;}
 
 .formtable{}
 .formtable td,.formtable th{padding:10px 0; font-size:12px; text-align:left;}

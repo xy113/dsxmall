@@ -33,9 +33,7 @@
             <dd><a><i class="iconfont icon-formfill"></i>{lang order_manage}</a></dd>
             <dt>
             <ul>
-                <li><a href="{U:('c=order')}"{if $_G[menu]=="order_manage"} class="cur"{/if}>订单列表</a></li>
-                <li><a href="{U:('c=collection')}"{if $_G[menu]=="collection"} class="cur"{/if}>我的收藏</a></li>
-                <li><a href="{U:('c=comment')}"{if $_G[menu]=="comment"} class="cur"{/if}>我的评论</a></li>
+                <li><a href="{U:('c=order')}"{if $_G[menu]=="order_manage"} class="cur"{/if}>已买到的宝贝</a></li>
             </ul>
             </dt>
         </dl>
@@ -44,10 +42,12 @@
             <dd><a><i class="iconfont icon-peoplefill"></i>我的账户</a></dd>
             <dt>
             <ul>
-                <li><a href="{U:('c=setting&a=userinfo')}">账户设置</a></li>
-                <li><a href="{U:('c=wallet&a=index')}">我的钱包</a></li>
-                <li><a href="{U:('c=setting&a=security')}">安全中心</a></li>
+                <li><a href="{U:('c=setting&a=userinfo')}"{if $_G[menu]=="userinfo"} class="cur"{/if}>账户设置</a></li>
+                <li><a href="{U:('c=setting&a=security')}"{if $_G[menu]=="security"} class="cur"{/if}>安全中心</a></li>
+                <li><a href="{U:('c=wallet&a=index')}"{if $_G[menu]=="wallet"} class="cur"{/if}>我的钱包</a></li>
                 <li><a href="{U:('c=address&a=index')}"{if $_G[menu]=="address"} class="cur"{/if}>收货地址</a></li>
+                <li><a href="{U:('c=collection')}"{if $_G[menu]=="collection"} class="cur"{/if}>我的收藏</a></li>
+                <!--<li><a href="{U:('c=comment')}"{if $_G[menu]=="comment"} class="cur"{/if}>我的评论</a></li>-->
             </ul>
             </dt>
         </dl>

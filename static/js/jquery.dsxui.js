@@ -323,7 +323,7 @@ function imagePickerView(settings){
     },settings);
     var html = '<div class="ui-pickerview">';
     html+= '<div class="sider"><ul class="group-list" id="dialog-album-list"></ul>';
-    html+= '<ul class="group-list"><li><a id="dialog-add-album"><i class="icon">&#xf0175;</i>创建分组</a></li></ul></div>';
+    html+= '<ul class="group-list"><li><a id="dialog-add-album"><i class="iconfont icon-roundaddfill"></i>创建分组</a></li></ul></div>';
     html+= '<div class="pickerview-content"><div class="title-bar">';
     html+= '<form method="post" autocomplete="off" enctype="multipart/form-data" id="dialog-upload-form">';
     html+= '<a class="ui-button btn">上传图片<input type="file" name="filedata" class="filedata" id="dialog-filedata"></a></form></div>'

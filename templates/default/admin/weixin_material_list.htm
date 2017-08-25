@@ -17,7 +17,7 @@
     <a href="{echo U('type='.$k)}" class="baritem{if $type==$k} baritem-on{/if}">{$v}</a>
     {/loop}
 </div>
-<div class="table-wrap">
+<div class="content-div">
     <form method="post" autocomplete="off">
     <input type="hidden" name="formsubmit" value="yes" />
     <input type="hidden" name="formhash" value="{FORMHASH}">
@@ -37,7 +37,7 @@
         <td class="center"><input type="checkbox" class="checkbox checkmark" name="media_id[]" value="{$item[media_id]}"></td>
         <td>
         	{if $type=='image'}
-        	<img src="{echo U('a=viewimage&media_id='.$item[media_id])}" width="50" height="50">
+            <div class="bg-cover lazyload" data-original="{U:('c=wxmaterial&a=viewimage&media_id='.$item[media_id])}" style="width: 50px; height: 50px;"></div>
             {elseif $type=='video'}
             <img src="/static/images/common/video.png" width="50" height="50">
             {else}
@@ -59,9 +59,9 @@
       </tr>
       <tr>
           <td colspan="10">
-              <span class="pages">{$pages}</span>
+              <div class="pagination float-right">{$pages}</div>
               <input type="submit" class="button" value="{$_lang[submit]}">
-              <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
+              <input type="button" class="button button-cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>
       </tr>
      </tfoot>

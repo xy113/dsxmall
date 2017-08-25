@@ -13,6 +13,7 @@ class IndexController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
+        $wallet = wallet_get_data($this->uid);
         $_G['title'] = '卖家中心';
         include template('index');
     }

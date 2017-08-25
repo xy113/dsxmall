@@ -18,11 +18,8 @@
     </div>
     <h2>文章管理->文章列表</h2>
 </div>
-<div class="toolbar">
-	<div class="f-right"><span class="pages">{$pages}</span></div>
 
-</div>
-<div class="table-wrap">
+<div class="content-div">
     <form method="post" id="postForm">
     <input type="hidden" name="formsubmit" value="yes" />
     <input type="hidden" name="formhash" value="{FORMHASH}">
@@ -67,9 +64,9 @@
       </tr>
       <tr>
           <td colspan="10">
-              <span class="pages">{$pages}</span>
+              <div class="pagination float-right">{$pages}</div>
               <input type="button" class="button" value="{$_lang[submit]}" id="submitButton">
-              <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
+              <input type="button" class="button button-cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>
       </tr>
      </tfoot>

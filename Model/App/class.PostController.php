@@ -1,5 +1,5 @@
 <?php
-namespace App;
+namespace Model\App;
 class PostController extends BaseController{
 	public function index(){
 		

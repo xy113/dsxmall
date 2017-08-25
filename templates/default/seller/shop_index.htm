@@ -9,8 +9,8 @@
         <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
             <tbody>
             <tr>
-                <td class="cell-name" width="80">店铺LOGO</td>
-                <td width="320"><img src="{img $myshop[shop_logo]}" width="200"></td>
+                <td class="cell-name" width="80">LOGO</td>
+                <td width="320"><img src="{img $myshop[shop_logo]}" width="150"></td>
                 <td class="cell-tips"></td>
             </tr>
             <tr>
@@ -35,7 +35,7 @@
             </tr>
             <tr>
                 <td class="cell-name">店铺访问</td>
-                <td>{$myshop[viewnum]}</td>
+                <td>{$myshop[view_num]}</td>
                 <td class="cell-tips"></td>
             </tr>
             <tr>
@@ -51,20 +51,20 @@
             <tr>
                 <td class="cell-name">证件照片</td>
                 <td colspan="2">
-                    <img src="{img $owner[id_card_pic_1]}" width="200">
-                    <img src="{img $owner[id_card_pic_2]}" width="200">
-                    <img src="{img $owner[id_card_pic_3]}" width="200">
+                    <img src="{img $owner[id_card_pic_1]}" width="150">
+                    <img src="{img $owner[id_card_pic_2]}" width="150">
+                    <img src="{img $owner[id_card_pic_3]}" width="150">
                 </td>
             </tr>
             <tr>
                 <td class="cell-name">营业执照</td>
-                <td><img src="{img $shop_info[license_pic]}" width="200"></td>
+                <td><img src="{img $shop_info[license_pic]}" width="150"></td>
                 <td class="cell-tips"></td>
             </tr>
             {if $shop_info[other_card_pic]}
             <tr>
                 <td class="cell-name">其他证件</td>
-                <td><img src="{img $shop_info[other_card_pic]}" width="200"></td>
+                <td><img src="{img $shop_info[other_card_pic]}" width="150"></td>
                 <td class="cell-tips"></td>
             </tr>
             {/if}

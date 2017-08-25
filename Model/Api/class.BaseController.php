@@ -12,18 +12,11 @@ class BaseController extends Controller{
     /**
      * BaseController constructor.
      */
-    function __construct()
-    {
-        parent::__construct();
-        $uid = intval($_GET['uid']);
-        $token = trim($_GET['token']);
 
-        !$uid && $uid = $this->uid;
-        if (!$uid) $this->showAjaxError('FAIL', L('invalid_user_id'));
-        if (!$token || $token !== md5($uid.formhash())){
-            $this->showAjaxError('FAIL', L('invalid_token'));
-        }else {
-            $this->uid = $uid;
+    protected function checkToken($uid, $token){
+        $data = member_get_token($uid);
+        if ($data['token'] !== $token) {
+            $this->showAjaxError('1002', 'invalid_token');
         }
     }
 }

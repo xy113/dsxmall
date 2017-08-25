@@ -59,10 +59,10 @@
                 <tr>
                     <td class="col1">
                         <div class="goods-pic">
-                            <img src="{img $goods[goods_thumb]}">
+                            <a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank"><img src="{img $goods[goods_thumb]}"></a>
                         </div>
                         <div style="margin-left: 90px; overflow: hidden;">
-                            <div class="goods-name">{$goods[goods_name]}</div>
+                            <div class="goods-name"><a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank">{$goods[goods_name]}</a></div>
                             <div class="goods-attr">产品属性</div>
                         </div>
                     </td>
@@ -85,40 +85,29 @@
                     </td>
                     <td class="col6">
                         {if $index==1}
-                        {if $item[order_trade_status]==1}
-                        <p>等待买家付款</p>
-                        <p>订单详情</p>
-                        {elseif $item[order_trade_status]==2}
-                        <p>等待卖家发货</p>
-                        <p>订单详情</p>
-                        {elseif $item[order_trade_status]==3}
-                        <p>宝贝运送中</p>
-                        <p>订单详情</p>
-                        <p>查看物流</p>
-                        {elseif $item[order_trade_status]==4||$item[order_trade_status]==5}
+                        {if $item[trade_status]==4||$item[trade_status]==5}
                         <p>交易成功</p>
-                        <p>订单详情</p>
-                        {elseif $item[order_trade_status]==6}
-                        <p>退款中</p>
-                        <p>订单详情</p>
-                        {elseif $item[order_trade_status]==7}
-                        <p>退款完成</p>
-                        <p>订单详情</p>
+                        {else}
+                        <p>{$item[trade_status_tips]}</p>
+                        {/if}
+                        <p><a href="{U:('c=order&a=detail&order_id='.$item['order_id'])}" target="_blank">订单详情</a></p>
+                        {if $item[shipping_status]}
+                        <p>查看物流</p>
                         {/if}
                         {/if}
                     </td>
                     <td class="col7">
                         {if $index==1}
-                        {if $item[order_trade_status]==1}
+                        {if $item[trade_status]==1}
                         <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
-                        {elseif $item[order_trade_status]==2}
+                        {elseif $item[trade_status]==2}
                         <a>提醒卖家发货</a>
-                        {elseif $item[order_trade_status]==3}
-                        <a class="button btn">确认收货</a>
-                        {elseif $item[order_trade_status]==4}
-                        <a class="button btn">立即评价</a>
-                        {elseif $item[order_trade_status]==5}
-                        <a>申请退货</a>
+                        {elseif $item[trade_status]==3}
+                        <a href="{U:('c=order&a=detail&order_id='.$item['order_id'].'#receipt')}" class="button btn" target="_blank">确认收货</a>
+                        {elseif $item[trade_status]==4}
+                        <p><a>立即评价</a></p>
+                        {elseif $item[trade_status]==5}
+                        <p><a>申请退货</a></p>
                         {/if}
                         {/if}
                     </td>

@@ -1,7 +1,13 @@
 <?php
 namespace Model\Member;
 class SettingController extends BaseController{
-	public function index(){
+    function __construct()
+    {
+        parent::__construct();
+        G('menu', 'userinfo');
+    }
+
+    public function index(){
 		$this->userinfo();
 	}
 	
@@ -147,6 +153,7 @@ class SettingController extends BaseController{
 	
 	public function security(){
 		global $_G,$_lang;
+        G('menu', 'security');
 		
 		$userinfo = member_get_data(array('uid'=>$this->uid));
 		if ($userinfo['mobile']) {

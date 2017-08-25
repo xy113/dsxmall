@@ -35,7 +35,7 @@ class SettingController extends BaseController{
 		$setting = $this->getSettings();
 
         $_G['title'] = '系统配置';
-        $_GET['menu'] = 'setting_'.$name;
+        $_G['menu'] = 'setting_'.$name;
 		include template('setting_'.$name);
 	}
 

@@ -13,8 +13,15 @@ class ViewshopController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
+        $shop = array();
         $shop_id = intval($_GET['shop_id']);
-        $shop = shop_get_data(array('shop_id'=>$shop_id));
+        if ($shop_id) {
+            $shop = shop_get_data(array('shop_id'=>$shop_id));
+        }elseif ($_GET['uid']) {
+            $shop = shop_get_data(array('owner_uid'=>intval($_GET['uid'])));
+            $shop_id = $shop['shop_id'];
+        }
+
         if (!$shop) {
 
         }else {

@@ -1,0 +1,75 @@
+{template header}
+<div class="console-title">
+    <div class="float-right">
+        <form name="search" action="/?">
+            <input type="hidden" name="m" value="{$_G[m]}">
+            <input type="hidden" name="c" value="{$_G[c]}">
+            <input type="hidden" name="a" value="{$_G[a]}">
+            <input type="text" class="input-text" name="q" value="{$q}" placeholder="店铺名称">
+            <input type="submit" class="button" value="{$_lang[search]}">
+        </form>
+    </div>
+    <h2>店铺管理->等待审核的店铺</h2>
+</div>
+<div class="content-div">
+    <form method="post" id="listForm" autocomplete="off" action="{U:('c=goods&a=batch_update')}">
+        <input type="hidden" name="formsubmit" value="yes">
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable">
+            <thead>
+            <tr>
+                <th width="20"><input type="checkbox" class="checkbox checkall checkmark"></th>
+                <th width="70">LOGO</th>
+                <th>店铺名称</th>
+                <th>店主账号</th>
+                <th>电话</th>
+                <th width="80">状态</th>
+                <th width="120">开店时间</th>
+                <th width="60">详情</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $itemlist $item}
+            <tr id="row_{$goods[id]}">
+                <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$item[shop_id]}"></td>
+                <td>
+                    <a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">
+                        <div class="bg-cover lazyload" data-original="{img $item[shop_logo]}" style="width: 50px; height: 50px;"></div>
+                    </a>
+                </td>
+                <td><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$item[shop_name]}</a></td>
+                <td>{$item[owner_username]}</td>
+                <td>{$item[phone]}</td>
+                <td>
+                    {if $item[auth_status]=='FAIL'}
+                    <span>审核失败</span>
+                    {else}
+                    <span>等待审核</span>
+                    {/if}
+                </td>
+                <td>{date:$item[create_time]|'Y年m月d日'}</td>
+                <td><a href="{U:('c=shop&a=detail&shop_id='.$item[shop_id])}" target="_blank">查看</a></td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="20">
+                    <div class="pagination float-right">{$pages}</div>
+                    <label><input type="checkbox" class="checkbox checkall checkmark"> 全选</label>
+                    <label><input type="radio" class="radio" name="option" value="delete"> 删除</label>
+                    <label><input type="radio" class="radio" name="option" value="auth_success" checked> 审核通过</label>
+                    <label><input type="radio" class="radio" name="option" value="auth_fail"> 审核不过</label>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="20">
+                    <input type="submit" class="button" toggle-status="true" value="提交" id="submit-button">
+                    <input type="button" class="button button-cancel" value="刷新" onclick="DSXUtil.reFresh()">
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+{template footer}

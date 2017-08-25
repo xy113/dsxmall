@@ -20,7 +20,7 @@
             <tr>
                 <th width="20"><input type="checkbox" class="checkbox checkall"></th>
                 <th width="80">图片</th>
-                <th>商品名称</th>
+                <th>商品名称|卖家</th>
                 <th>价格</th>
                 <th>销量</th>
                 <th width="80">状态</th>
@@ -32,8 +32,14 @@
             <tr id="row_{$goods[id]}">
                 <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$goods[id]}"></td>
                 <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank"><div class="bg-cover" style="background-image: url({img $goods[goods_thumb]}); width: 80px; height: 80px;"></div></a></td>
-                <td><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank">{$goods[goods_name]}</a></td>
-                <td>{amount:$goods[goods_price]}</td>
+                <td>
+                    <h3 class="title"><a href="{U:('m=goods&c=item&id='.$goods['id'])}" target="_blank">{$goods[goods_name]}</a></h3>
+                    <p class="subtitle"><a href="{U:('m=shop&c=viewshop&shop_id='.$goods['shop_id'])}" target="_blank">{$shop_list[$goods[shop_id]][shop_name]}</a></p>
+                </td>
+                <td>
+                    {if $goods[market_price]}<p>{amount:$goods[market_price]}</p>{/if}
+                    <p><strong>{amount:$goods[goods_price]}</strong></p>
+                </td>
                 <td>{$goods[sold]}</td>
                 <td>
                     {if $goods[on_sale]}

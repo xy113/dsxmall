@@ -96,6 +96,8 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
     background-position: center;
     background-repeat: no-repeat;
     background-image: url("../images/common/placeholder.png");
+    -ms-behavior: url(../images/common/backgroundsize.min.htc);
+    behavior: url(../images/common/backgroundsize.min.htc);
 }
 .lazyload{}
 

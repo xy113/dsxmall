@@ -78,6 +78,8 @@
     margin-top: 5px; border-left: 3px #86B6E2 solid; padding-left: 6px; float: left;
 }
 
+.section-title{padding: 10px; font-size: 14px; display: block;}
+
 .avatar-div{width:300px; float:left; margin-right:50px;}
 .avatar-div .avatar{width:240px; height:240px; margin:0 auto; display:block;}
 .avatar-div .avatar img{width:100%; height:100%; display:block;}
@@ -109,16 +111,21 @@
 .mcenter-task-box .con h3{font-size:16px; padding-top:5px;}
 .mcenter-task-box .con p{display:block; margin-top:3px; font-size:10px;}
 
-.account-balance-div{display:block; margin:20px 0; font-size:16px; font-weight:600; line-height:1.0;}
-.account-balance-div span{color:#f40; font-size:18px; font-weight:bolder;}
+.trade-filter-div{display: block;}
+.trade-filter-div .row{display: block; padding: 5px; font-size: 12px;}
+.trade-filter-div .row .label{width: 60px; float: left; padding-right: 5px; color: #777; line-height: 24px;}
+.trade-filter-div .row .content{margin-left: 60px;}
+.trade-filter-div .row .content a{display: inline-block; margin-right: 5px; padding: 0 10px; border-radius: 3px; height: 24px; line-height: 24px;}
+.trade-filter-div .row .content a:hover{background-color: #f0f0f0;}
+.trade-filter-div .row .content a.cur{background-color: #0097D0; color: #fff;}
 
 .trade-list-table{}
 .trade-list-table thead th{border-bottom:1px #CCC solid;}
 .trade-list-table thead .head-time{padding-left:10px;}
-.trade-list-table .time{width:120px;}
+.trade-list-table .time{width:140px;}
 .trade-list-table .time span{font-size:14px; color:#666; font-family:Arial; font-weight:400;}
 .trade-list-table .name h3{font-size:12px; font-weight:400;}
-.trade-list-table .name p{display:block; margin-top:5px; color:#999; font-size:10px;}
+.trade-list-table .name p{display:block; margin-top:5px; color:#777; font-size:10px;}
 .trade-list-table .amount{text-align:right; width:100px;}
 .trade-list-table .amount span{font-weight:500; font-size:16px;}
 .trade-list-table .status{text-align:right;}

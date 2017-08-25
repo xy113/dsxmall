@@ -1,0 +1,174 @@
+{template header}
+<style type="text/css">
+    /*===订单列表===*/
+    .order-title-table{background-color: #F2F2F2; font-size: 13px; border: 1px #e5e5e5 solid; clear: both;}
+    .order-title-table td{padding: 10px 0; text-align: center; color: #777;}
+
+    .order-item-wrap{display: block; margin-top: 10px;}
+    .order-item-table{border: 1px #e5e5e5 solid;}
+    .order-item-table:hover{border-color: #999;}
+    .order-item-table thead th{background-color: #F2F2F2; padding: 10px 15px; font-weight: normal; text-align: left; font-size: 12px; color: #666; border-bottom: 1px #e5e5e5 solid;}
+    .order-item-table thead .wrap-checkbox{margin-right: 3px;}
+    .order-item-table thead .wrap-time{font-weight: bold; margin-right: 5px; color: #222;}
+    .order-item-table thead .wrap-order-no{color: #666;}
+    .order-item-table thead h3{font-size: 12px; color: #222;}
+    .order-item-table thead .delete-order{color: #888;}
+    .order-item-table thead .delete-order:hover{color: #222;}
+    .order-item-table tbody td{padding: 15px 0; font-size: 12px; color: #666; font-weight: 400;}
+    .order-item-table tbody .goods-pic{width: 80px; float: left;}
+    .order-item-table tbody .goods-pic img{width: 80px; height: 80px; display: block;}
+    .order-item-table tbody .goods-name{line-height: 1; font-size: 12px; padding: 8px 0; height: auto; color: #333;}
+    .order-item-table tbody .goods-attr{font-size: 13px; color: #999; line-height: 1;}
+    .order-item-table tbody .col1{padding: 15px; text-align: left;}
+    .order-item-table tbody .col2{width: 100px; vertical-align: top; text-align: center; font-size: 12px;}
+    .order-item-table tbody .col3{width: 80px; vertical-align: top; text-align: center; font-size: 14px;}
+    .order-item-table tbody .col4{width: 100px; vertical-align: top; text-align: center;}
+    .order-item-table tbody .col5,.order-item-table tbody .col6,.order-item-table tbody .col7{
+        border-left: #e5e5e5 solid 1px; vertical-align: top; width: 100px; text-align: center;
+    }
+    .order-item-table tbody .col7 .btn{
+        height: 26px; line-height: 26px; border-radius: 3px;
+    }
+    .order-item-table tbody td p{display: block; padding-bottom: 3px;}
+    .h3-title{font-size: 14px; padding: 15px 0; display: block;}
+</style>
+<div class="console-title">
+    <h2>已卖出的宝贝->订单详情</h2>
+</div>
+<div class="content-div">
+    <h3 class="h3-title">订单信息</h3>
+    <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+        <tbody>
+        <tr>
+            <td class="cell-name" width="80">订单编号</td>
+            <td>{$order[order_no]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">下单时间</td>
+            <td>{date:$order[create_time]|'Y-m-d H:i::s'}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">订单金额</td>
+            <td>{amount:$order[total_fee]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">付款方式</td>
+            <td>{$_lang[pay_types][$order[pay_type]]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">支付状态</td>
+            <td>{if $order[pay_status]}已支付{else}未支付{/if}</td>
+        </tr>
+        {if $order[pay_time]}
+        <tr>
+            <td class="cell-name">付款时间</td>
+            <td>{date:$order[pay_time]|'Y-m-d H:i::s'}</td>
+        </tr>
+        {/if}
+        <tr>
+            <td class="cell-name">交易流水</td>
+            <td>{$order[trade_no]}</td>
+        </tr>
+        {if $order[shipping_status]}
+        <tr>
+            <td class="cell-name">发货状态</td>
+            <td>已发货</td>
+        </tr>
+        <tr>
+            <td class="cell-name">发货时间</td>
+            <td>{date:$order[shipping_time]|'Y-m-d H:i::s'}</td>
+        </tr>
+        {/if}
+        </tbody>
+    </table>
+    <h3 class="h3-title">收货人信息</h3>
+    <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+        <tbody>
+        <tr>
+            <td class="cell-name" width="80">收货人</td>
+            <td>{$order[consignee]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">联系电话</td>
+            <td>{$order[phone]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">收货地址</td>
+            <td>{$order[address]}</td>
+        </tr>
+        </tbody>
+    </table>
+    {if $order[shipping_status]}
+    <h3 class="h3-title">发货信息</h3>
+    <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+        <tbody>
+        {if $shipping[shipping_type]==1}
+        <tr>
+            <td class="cell-name" width="80">发货方式</td>
+            <td>快递</td>
+        </tr>
+        <tr>
+            <td class="cell-name">快递公司</td>
+            <td>{$shipping[express_name]}</td>
+        </tr>
+        <tr>
+            <td class="cell-name">快递单号</td>
+            <td>
+                <span>{$shipping[express_no]}</span>
+            </td>
+        </tr>
+        {else}
+        <tr>
+            <td class="cell-name" width="80">发货方式</td>
+            <td>虚拟商品，无需物流</td>
+        </tr>
+        {/if}
+        <tr>
+            <td class="cell-name">发货时间</td>
+            <td>{date:$shipping[shipping_time]|'Y-m-d H:i::s'}</td>
+        </tr>
+        </tbody>
+    </table>
+    {/if}
+    <h3 class="h3-title">商品信息</h3>
+    <table class="order-title-table" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+            <tr>
+                <td>宝贝</td>
+                <td width="100">单价</td>
+                <td width="80">数量</td>
+                <td width="100">实付款</td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="order-item-wrap" id="order-item-{$order_id}">
+        <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
+            <tbody>
+            {loop $itemlist $goods}
+            <tr>
+                <td class="col1">
+                    <div class="goods-pic">
+                        <img src="{img $goods[goods_thumb]}">
+                    </div>
+                    <div style="margin-left: 90px; overflow: hidden;">
+                        <div class="goods-name">{$goods[goods_name]}</div>
+                        <div class="goods-attr">商品属性</div>
+                    </div>
+                </td>
+                <td class="col2">
+                    {if $goods[market_price]}<p><s>￥{amount:$goods[market_price]}</s></p>{/if}
+                    <p>￥{amount:$goods[goods_price]}</p>
+                </td>
+                <td class="col3">{$goods[goods_number]}</td>
+                <td class="col5">
+                    <p><strong style="color: #FF0000;">￥{amount:$item[total_fee]}</strong></p>
+                    <p style="font-size: 11px;">(含运费:￥10.00)</p>
+                </td>
+            </tr>
+            {/loop}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div style="clear: both; height: 50px;"></div>
+{template footer}

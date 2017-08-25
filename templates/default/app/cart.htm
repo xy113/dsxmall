@@ -1,0 +1,41 @@
+{template header}
+<div class="cart">
+    <div class="cart-list">
+        {loop $itemlist $shop_id $item}
+        <div class="cart-item">
+            <div class="console-bar">
+                <span class="edit">编辑</span>
+                <label class="iconfont icon-round"><input type="radio"></label>
+                <div class="shop-name">{$item[shop_name]}</div>
+            </div>
+
+            {loop $item[goods] $goods_id $goods}
+            <div class="item-box">
+                <div class="item-div">
+                    <label class="iconfont icon-round"><input type="radio" style="display: none;"></label>
+                    <div class="thumb bg-cover lazyload" data-original="{img $goods[goods_thumb]}"></div>
+                    <div class="info">
+                        <h3>{$goods[goods_name]}</h3>
+                        <span class="price">￥{amount:$goods[goods_price]}</span>
+                        <span class="quantity">x{$goods[goods_number]}</span>
+
+                        <div class="editview">
+                            <div class="inner">
+                                <div class="edit-quantity">
+                                    <div class="btn-minus">-</div>
+                                    <div class="btn-input"><input type="number" value="1"></div>
+                                    <div class="btn-plus">+</div>
+                                </div>
+                                <span class="btn-delete">删除</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {/loop}
+        </div>
+        {/loop}
+    </div>
+</div>
+{template footer}

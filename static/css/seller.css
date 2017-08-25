@@ -143,8 +143,8 @@
 .mcenter-task-div{display:block; margin-left:-20px;}
 .mcenter-task-box{width:20%; float:left; color:#fff; margin-bottom:20px;}
 .mcenter-task-box .box{padding:25px 15px; display:block; margin-left:20px;}
-.mcenter-task-box .icon{font-size:46px; width:auto; height:auto; margin-right:5px; float:left;}
-.mcenter-task-box .con{overflow:hidden;}
+.mcenter-task-box .iconfont{font-size:46px; width:auto; height:auto; margin-right:5px; float:left;}
+.mcenter-task-box .con{overflow:hidden; padding-top: 2px;}
 .mcenter-task-box .con h3{font-size:16px; padding-top:5px;}
 .mcenter-task-box .con p{display:block; margin-top:3px; font-size:10px;}
 
@@ -197,3 +197,4 @@
     height: 26px; line-height: 26px; border-radius: 3px;
 }
 .order-item-table tbody td p{display: block; padding-bottom: 3px;}
+.h3-title{font-size: 14px; padding: 15px 0; display: block;}
