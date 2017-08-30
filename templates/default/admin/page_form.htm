@@ -1,8 +1,8 @@
 {template header}
 <div class="console-title">
     <div class="float-right">
-        <a href="{echo U('a=category')}" class="button">分类管理</a>
-        <a href="{echo U("a=itemlist&catid=$catid")}" class="button">返回列表</a>
+        <a href="{echo U('c=page&a=category')}" class="button">分类管理</a>
+        <a href="{echo U("c=page&a=itemlist&catid=$catid")}" class="button">返回列表</a>
     </div>
     <h2>{if $G[a]=='add'}添加页面{else}编辑页面{/if}</h2>
 </div>

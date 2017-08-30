@@ -12,9 +12,6 @@ namespace Model\Api;
 class CollectionController extends BaseController
 {
     public function add(){
-        $uid = intval($_GET['uid']);
-        $token = trim($_GET['token']);
-        $this->checkToken($uid, $token);
 
         $dataid = intval($_GET['dataid']);
         $datatype = trim($_GET['datatype']);

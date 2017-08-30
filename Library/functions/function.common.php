@@ -105,6 +105,7 @@ function M($name){
 /**
  * 创建URL
  * @param mixed $params
+ * @return string
  */
 function U($params=null){
 	if (is_null($params)) {
@@ -135,6 +136,7 @@ function U($params=null){
 /**
  * 创建URL
  * @param mixed $params
+ * @return string
  */
 function URL($params=null){
 	return U($params);
@@ -144,6 +146,7 @@ function URL($params=null){
  * 后台配置操作函数
  * @param string $name
  * @param string $value
+ * @return bool|null|string
  */
 function setting($name=null, $value=''){
 	$setting = $GLOBALS['_G']['setting'];
@@ -174,6 +177,7 @@ function DB(){
  * 缓存操作
  * @param string $name
  * @param string $value
+ * @return bool|mixed
  */
 function cache($name, $value=''){
 	$cache = Core\Cache::getInstance();
@@ -287,7 +291,7 @@ function image($file,$html=0){
 		if (is_file(C('ATTACHDIR').'image/'.$file)){
 			$url = C('ATTACHURL').'image/'.$file;
 		}else {
-			$url = C('STATICURL').'images/common/nopic.png';
+			$url = C('STATICURL').'images/common/placeholder.png';
 		}
 	}
 	if ($html){
@@ -451,11 +455,12 @@ function amap_location_by_ip($ip=null){
 }
 
 /**
- *  @desc 计算两点之间的距离
- *  @param float $lat 纬度值
- *  @param float $lng 经度值
- *  @param float $lat2 纬度值
- *  @param float $lng2 经度值
+ * @desc 计算两点之间的距离
+ * @param float $lat 纬度值
+ * @param float $lng 经度值
+ * @param float $lat2 纬度值
+ * @param float $lng2 经度值
+ * @return float
  */
 function getDistance($lng1,$lat1,$lng2,$lat2){
 	$earthRadius = 6377830;
@@ -633,7 +638,7 @@ function dhtmlspecialchars($string) {
 /**
  * 生成一个随机字符串
  * @param number $length
- * @param number $numeric
+ * @param int|number $numeric
  * @return string
  */
 function random($length, $numeric = 0) {
@@ -753,6 +758,7 @@ function formatTime($time,$format=''){
 /**
  * 格式化文件尺寸
  * @param number $size
+ * @return string
  */
 function formatSize($size){
     $sizes = array(" Bytes", " KB", " MB", " GB", " TB", " PB", " EB", " ZB", " YB");
@@ -767,8 +773,10 @@ function formatSize($size){
  * 金额格式化
  * @param float $amount
  * @param number $decimals
+ * @return string
  */
 function formatAmount($amount, $decimals=2){
+    $amount = floatval($amount);
 	return @number_format($amount, $decimals, '.', '');
 }
 

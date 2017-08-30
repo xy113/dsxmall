@@ -55,12 +55,13 @@ return array(
 
     'pay_types'=>array(
         '1'=>'余额支付',
-        '2'=>'在线支付',
-        '3'=>'货到付款'
+        '2'=>'货到付款',
+        '3'=>'在线支付'
     ),
     'order_not_exists'=>'订单不存在',
     'order_has_send'=>'订单已发货，不能重复发货',
     'order_send_success'=>'发货成功',
+    'pay_failed'=>'支付失败',
 
     'shop_auth_success'=>'店铺认证成功',
     'order_trade_status'=>array(

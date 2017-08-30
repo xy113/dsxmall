@@ -35,7 +35,7 @@ class PageController extends BaseController{
 			$pagesize  = 20;
 			$totalnum  = page_get_count($condition);
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$pagelist  = page_get_page($condition, $_G['page'], $pagesize);
+			$pagelist  = page_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize);
 			$pages = $this->showPages($_G['page'], $pagecount,$totalnum,"catid=$catid", 1);
 			$categorylist = page_get_list(array('type'=>'category'), 0);
 			include template('page_list');

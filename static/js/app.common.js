@@ -34,6 +34,36 @@ function onBridgeReady(callback) {
     }
 }
 
+function showAppMsg(msg, callback){
+    var div = $("<div/>").addClass('app-message').html(msg).appendTo(document.body).center();
+    setTimeout(function () {
+        div.remove();
+        if (callback) callback();
+    }, 1500);
+}
+function showAppConfirm(text, callback, cancel) {
+    var overLayer = $('<div/>').addClass('ui-overlayer').appendTo(document.body);
+    var alertbox = $('<div/>').addClass('app-confirm').appendTo(document.body);
+    var contect = $('<div/>').addClass('content').html(text);
+    var btnOK = $('<div/>').addClass('btn btn-ok').text('确定');
+    var btnCancel = $('<div/>').addClass('btn btn-cancel').text('取消');
+    var bot = $('<div/>').addClass('bot');
+    bot.append(btnOK);
+    bot.append(btnCancel);
+    alertbox.append(contect);
+    alertbox.append(bot).center();
+    btnOK.on('click', function (e) {
+        overLayer.remove();
+        alertbox.remove();
+        if (callback) callback();
+    });
+    btnCancel.on('click', function (e) {
+        overLayer.remove();
+        alertbox.remove();
+        if (cancel) cancel();
+    });
+}
+
 $(function () {
     onBridgeReady(function (bridge) {
         //打开一个指定连接
@@ -56,5 +86,8 @@ $(function () {
             var id = $(this).attr('data-id');
             bridge.callHandler('viewArticle', id);
         });
+    });
+    $(document).on('click', function (e) {
+        DSXUtil.stopPropagation(e);
     });
 });

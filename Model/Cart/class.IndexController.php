@@ -59,7 +59,7 @@ class IndexController extends BaseController{
 
             $this->showAjaxReturn();
         }else {
-            $this->showAjaxError('FAIL', L('goods_not_exists'));
+            $this->showAjaxError('FAIL', 'goods_not_exists');
         }
     }
 

@@ -1,33 +1,15 @@
 {template header}
-<div class="swiper-div" id="swiper-div" style="padding-top: 50%;">
-    <div class="swiper" id="swiper">
-        <ul class="swiper-wrapper">
-            {eval $slide_list=block_get_cache(6)}
-            {loop $slide_list $sd}
-            <li class="swiper-slide"><span href="{$sd[url]}" class="bg bg-cover asyncload" data-original="{img $sd[image]}"></span></li>
-            {/loop}
-        </ul>
-        <div class="swiper-pagination"></div>
-    </div>
-</div>
-<script type="text/javascript">
-    (function(){
-        var swiper = new Swiper('#swiper',
-            {loop:true,pagination:'.swiper-pagination',autoplay:2500});
-    })();
-</script>
-
 <div class="shop">
     <div class="title-tuijian">
         <div class="line"></div>
-        <span class="title">热铺推荐</span>
+        <span class="title">查询结果</span>
     </div>
 
     <div class="shop-horizontal-list">
         <ul id="item-list-ul"></ul>
     </div>
 </div>
-<div style="clear: both; height: 50px;"></div>
+<div style="clear: both; height: 30px;"></div>
 <script type="text/template" id="itemTpl">
     <li>
         <div class="bd">
@@ -44,6 +26,7 @@
         </div>
     </li>
 </script>
+<script>var formdata = {$formdata};</script>
 <script type="text/javascript">
     var current_page = 0;
     var isLoading = false;
@@ -53,8 +36,9 @@
         isLoading = true;
         current_page++;
         $.ajax({
-            url:"{U:('c=shop&a=batchget')}&page="+current_page,
+            url:"{U:('c=shopsearch&a=batchget')}&page="+current_page,
             dataType:'json',
+            data:formdata,
             beforeSend:function () {
                 if (!isRefreshing) $("#onloading").show();
             },

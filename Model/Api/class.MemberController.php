@@ -17,11 +17,8 @@ class MemberController extends BaseController
      * 获取用户信息
      */
     public function get_info(){
-        $uid = intval($_GET['uid']);
-        $token = trim($_GET['token']);
-        $this->checkToken($uid, $token);
-        $member = member_get_data(array('uid'=>$uid));
-        $info = member_get_info(array('uid'=>$uid));
+        $member = member_get_data(array('uid'=>$this->uid));
+        $info = member_get_info(array('uid'=>$this->uid));
         $this->showAjaxReturn(array(
             'username'=>$member['username'],
             'mobile'=>$member['mobile'],
@@ -32,7 +29,7 @@ class MemberController extends BaseController
             'city'=>$info['city'],
             'county'=>$info['county'],
             'street'=>$info['street'],
-            'headimg'=>avatar($uid)
+            'headimg'=>avatar($this->uid)
         ));
     }
 
@@ -40,9 +37,6 @@ class MemberController extends BaseController
      *
      */
     public function set_headimg(){
-        $uid = intval($_GET['uid']);
-        $token = trim($_GET['token']);
-        $this->checkToken($uid, $token);
 
         $upload = new \Core\UploadImage();
         if ($filedata = $upload->save()){
@@ -96,12 +90,9 @@ class MemberController extends BaseController
      * 修改手机号
      */
     public function edit_mobile(){
-        $uid = intval($_GET['uid']);
-        $token = trim($_GET['token']);
-        $this->checkToken($uid, $token);
 
         $mobile = trim($_GET['mobile']);
-        $userinfo = member_get_info(array('uid'=>$uid));
+        $userinfo = member_get_info(array('uid'=>$this->uid));
         if ($mobile == $userinfo['mobile']){
             $this->showAjaxReturn();
         }else {
@@ -114,7 +105,7 @@ class MemberController extends BaseController
                 $this->showAjaxError(2, 'mobile_be_occupied');
             }
 
-            member_update_data(array('uid'=>$uid), array('mobile'=>$mobile));
+            member_update_data(array('uid'=>$this->uid), array('mobile'=>$mobile));
             $this->showAjaxReturn();
         }
     }

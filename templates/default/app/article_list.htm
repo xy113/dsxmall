@@ -1,49 +1,22 @@
 {template header}
-<div class="swiper-div" id="swiper-div" style="padding-top: 50%;">
-    <div class="swiper" id="swiper">
-        <ul class="swiper-wrapper">
-            {eval $slide_list=block_get_cache(6)}
-            {loop $slide_list $sd}
-            <li class="swiper-slide"><span href="{$sd[url]}" class="bg bg-cover asyncload" data-original="{img $sd[image]}"></span></li>
-            {/loop}
-        </ul>
-        <div class="swiper-pagination"></div>
-    </div>
-</div>
-<script type="text/javascript">
-    (function(){
-        var swiper = new Swiper('#swiper',
-            {loop:true,pagination:'.swiper-pagination',autoplay:2500});
-    })();
-</script>
-
-<div class="shop">
-    <div class="title-tuijian">
-        <div class="line"></div>
-        <span class="title">热铺推荐</span>
-    </div>
-
-    <div class="shop-horizontal-list">
+<div class="article">
+    <div class="article-list" style="padding: 10px 0 0;">
         <ul id="item-list-ul"></ul>
     </div>
 </div>
-<div style="clear: both; height: 50px;"></div>
 <script type="text/template" id="itemTpl">
-    <li>
-        <div class="bd">
-            <div class="pic bg-cover lazyload" id="item_{item[shop_id]}" data-original="{item[shop_logo]}" handler="viewShop" data-id="{item[shop_id]}"></div>
-            <div class="con">
-                <div class="name">{item[shop_name]}</div>
-                <div class="addr">{item[city]} {item[county]}</div>
-                <div class="line">
-                    <span class="sold">已售{item[total_sold]}件</span>
-                    <strong class="price">￥{item[goods_price]}</strong>
-                    <span class="qi">起</span>
-                </div>
-            </div>
+    <li id="item_{item[id]}" data-id="{$item[id]}">
+        <div class="img bg-cover lazyload" id="pic_{item[id]}" data-original="{item[image]}"></div>
+        <div class="info">
+            <h3>{item[title]}</h3>
+            <p>
+                <span>{item[pubtime]}</span>
+                <span><i class="iconfont icon-appreciate"></i> {item[viewnum]}</span>
+            </p>
         </div>
     </li>
 </script>
+<script>var formdata = {};</script>
 <script type="text/javascript">
     var current_page = 0;
     var isLoading = false;
@@ -53,8 +26,9 @@
         isLoading = true;
         current_page++;
         $.ajax({
-            url:"{U:('c=shop&a=batchget')}&page="+current_page,
+            url:"{U:('c=article&a=batchget')}&page="+current_page,
             dataType:'json',
+            data:formdata,
             beforeSend:function () {
                 if (!isRefreshing) $("#onloading").show();
             },
@@ -68,13 +42,13 @@
                         var item_ids = [];
                         $(response.data).each(function (i, data) {
                             items+= tpl.replace(/\{item\[(.*?)\]\}/g, function (s, k) {
-                                if (typeof data[k] == 'undefined'){
+                                if (typeof data[k] === 'undefined'){
                                     return '';
                                 }else {
                                     return data[k];
                                 }
                             });
-                            item_ids.push(data.shop_id);
+                            item_ids.push(data.id);
                         });
                         if (isRefreshing) {
                             $("#item-list-ul").html(items);
@@ -82,7 +56,7 @@
                             $("#item-list-ul").append(items);
                         }
                         $(item_ids).each(function (i, id) {
-                            $("#item_"+id).lazyload({
+                            $("#pic_"+id).lazyload({
                                 effect:'fadeIn',
                                 placeholder:'/static/images/common/placeholder.png'
                             });
@@ -90,8 +64,8 @@
                         onBridgeReady(function (bridge) {
                             $(item_ids).each(function (i, id) {
                                 $("#item_"+id).on('click', function (e) {
-                                    var id = $(this).attr('data-id');
-                                    bridge.callHandler('viewShop', id);
+                                    //var id = $(this).attr('data-id');
+                                    bridge.callHandler('viewArticle', id);
                                 });
                             });
                         });

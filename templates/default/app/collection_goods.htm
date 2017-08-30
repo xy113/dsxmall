@@ -1,0 +1,23 @@
+{template header}
+<div class="item">
+    <div class="item-vertical-list">
+        <ul id="item-list-ul">
+            {loop $itemlist $item}
+            <li>
+                <div class="list-item" id="item_{$item[dataid]}" handler="viewItem" data-id="{$item[dataid]}">
+                    <div class="g-pic bg-cover lazyload" id="pic_{$item[dataid]}" data-original="{$item[goods_thumb]}"></div>
+                    <div class="g-info">
+                        <h3>{$item[goods_name]}</h3>
+                        <div class="price">
+                            <span>￥</span>
+                            <strong>{amount:$item[goods_price]}</strong>
+                        </div>
+                        <span class="sold">已售{$item[sold]}件</span>
+                    </div>
+                </div>
+            </li>
+            {/loop}
+        </ul>
+    </div>
+</div>
+{template footer}

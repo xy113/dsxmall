@@ -478,9 +478,9 @@ function cart_get_count($condition, $field='*'){
  * @param null $order
  * @return array
  */
-function cart_get_list($condition, $count=20, $offset=0, $order=null){
+function cart_get_list($condition, $count=20, $offset=0, $order=null, $field='*'){
     $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
     !$order && $order = 'id DESC';
-    $itemlist = M('cart')->where($condition)->order($order)->limit($limit)->select();
+    $itemlist = M('cart')->field($field)->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }

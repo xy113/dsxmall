@@ -35,7 +35,7 @@
     {if $shop}
     <div class="section-title">
         <div class="line"></div>
-        <div class="title">店铺</div>
+        <div class="title">店铺信息</div>
     </div>
 
     <div class="shop-info">
@@ -98,11 +98,114 @@
         <div class="title" style="width: 100px; margin-left: -50px; font-size: 12px;">做人要有底线</div>
     </div>
 </div>
+<div class="clearfix" style="height: 60px;"></div>
+<!--<div class="item-action-bar">
+    <div class="bar">
+        <div class="iconfont icon-shop cell" handler="viewShop" data-id="{$goods[shop_id]}">
+            店铺
+        </div>
+        <div class="iconfont icon-wang cell">
+            客服
+        </div>
+        <div class="iconfont icon-favor cell" id="btn-favor">
+            收藏
+        </div>
+        <div class="cart cell" id="btn-cart">加入购物车</div>
+        <div class="buy cell" id="btn-buy">立即购买</div>
+    </div>
+</div>
+<div class="ui-overlayer" id="ui-overlayer" style="display: none;"></div>
+<section class="item-action-layer" id="action-layer">
+    <div class="inner">
+        <div class="section" style="height: 90px;">
+            <div class="iconfont icon-roundclose" id="close-layer"></div>
+            <div class="g-pic">
+                <i class="bg-cover asyncload" data-original="{img $goods[goods_thumb]}"></i>
+            </div>
+            <div class="g-info">
+                <h3>{$goods[goods_name]}</h3>
+                <div class="price">{amount:$goods[goods_price]}</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="label">数量</div>
+            <div class="quantity-action">
+                <div class="btn cell" id="btn-minus">-</div>
+                <div class="cell"><input type="text" class="text" value="1" id="quantity"></div>
+                <div class="btn cell" id="btn-plus">+</div>
+            </div>
+        </div>
+        <div class="foot">
+            <div class="btn cart" id="addtocart">加入购物车</div>
+            <div class="btn buy" id="buynow">立即购买</div>
+        </div>
+    </div>
+</section>-->
 <script type="text/javascript">
     onBridgeReady(function (bridge) {
         bridge.registerHandler('getData', function (data, responseCallback) {
             var goodsData = {echo json_encode($goods)};
             responseCallback(goodsData);
+        });
+    });
+    function showLayer() {
+        $("#ui-overlayer").show();
+        $("#action-layer").slideDown('fast');
+    }
+    function closeLayer() {
+        $("#action-layer").slideUp('fast', function () {
+            $("#ui-overlayer").hide();
+        });
+    }
+    $(function () {
+        $("#action-layer").on('click', function (e) {
+            DSXUtil.stopPropagation(e);
+        });
+        $("#btn-buy,#btn-cart").on('click', function (e) {
+            showLayer();
+        });
+        $("#ui-overlayer,#close-layer").on('click', function () {
+            closeLayer();
+        });
+        $("#btn-minus").on('click', function () {
+            var quantity = $("#quantity").val();
+            if (quantity <= 1) {
+                return;
+            }else {
+                quantity--;
+                $("#quantity").val(quantity);
+            }
+        });
+        $("#btn-plus").on('click', function () {
+            var quantity = $("#quantity").val();
+            quantity++;
+            $("#quantity").val(quantity);
+        });
+        var spinner;
+        $("#btn-favor").on('click', function () {
+            $.ajax({
+                type:'POST',
+                url:"{U:('m=member&c=collection&a=add')}",
+                data:{'dataid':'{$goods[shop_id]}', 'datatype':'shop'},
+                //dataType:'json',
+                beforeSend:function () {
+                    //spinner = DSXUI.showSpinner();
+                },
+                success:function (response) {
+                    setTimeout(function () {
+                        //spinner.close();
+                        showAppMsg('已成功加入收藏');
+                    }, 50);
+                }
+            });
+        });
+        //showAppMsg('已成功加入收藏');
+        $("#buynow").on('click', function () {
+            closeLayer();
+            onBridgeReady(function (bridge) {
+                bridge.callHandler('buyNow', {'goods_id':'{$goods[id]}','goods_number':$('#quantity').val()});
+            });
         });
     });
 </script>

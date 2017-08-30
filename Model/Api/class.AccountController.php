@@ -16,6 +16,7 @@ class AccountController extends BaseController
      */
     function __construct()
     {
+        $this->verifyToken = false;
         parent::__construct();
     }
 
@@ -36,12 +37,15 @@ class AccountController extends BaseController
             if ($member) {
                 if ($member['password'] == getPassword($password)){
                     $token = sha1(time().random(10));
+                    $token_data = array(
+                        'uid'=>$member['uid'],
+                        'username'=>$member['username'],
+                        'token'=>$token,
+                        'expire_time'=>time()
+                    );
+                    cache('token_'.md5($member['uid']), $token_data);
                     if (!member_update_token($member['uid'], $token, time())){
-                        member_add_token(array(
-                            'uid'=>$member['uid'],
-                            'token'=>$token,
-                            'expire_time'=>time()
-                        ));
+                        member_add_token($token_data);
                     }
                     $info = member_get_info(array('uid'=>$member['uid']));
                     $this->showAjaxReturn(array(

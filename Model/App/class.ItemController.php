@@ -16,7 +16,6 @@ class ItemController extends BaseController
      */
     public function index(){
         global $_G,$_lang;
-
         $id = intval($_GET['id']);
         $goods = goods_get_item(array('id'=>$id));
         if (!$goods) {

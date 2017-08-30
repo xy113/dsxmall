@@ -31,7 +31,7 @@
         $("img[rel=pickimage]").pickImage({multi:false,
             onPicked:function(o,data){
                 var url = $(o).attr('data-action');
-                url = typeof(url) !== 'undefined' ? url : '{echo U("c=$G[c]&a=setimage")}';
+                url = typeof(url) !== 'undefined' ? url : '{echo U("c=$_G[c]&a=setimage")}';
                 var requestData = $(o).attr("data-json");
                 requestData = typeof(requestData) !== 'undefined' ? eval('('+requestData+')') : {};
                 if(typeof requestData !== 'object') requestData = {};

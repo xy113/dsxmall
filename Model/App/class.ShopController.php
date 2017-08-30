@@ -17,8 +17,32 @@ class ShopController extends BaseController
     public function index(){
         global $_G,$_lang;
 
-        $shop_list = shop_get_list(array('shop_status'=>'OPEN', 'auth_status'=>'SUCCESS'), 10);
         include template('shop_index');
+    }
+
+    /**
+     * 获取店铺信息
+     */
+    public function batchget(){
+        $offset = (G('page') - 1) * 20;
+        $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
+        $condition = array('shop_status'=>'OPEN', 'auth_status'=>'SUCCESS');
+        $shop_list = shop_get_list($condition, 20, $offset, null, $fields);
+        $datalist = array();
+        foreach ($shop_list as $shop){
+            $shop['shop_logo'] = image($shop['shop_logo']);
+            if (!$shop['city']) $shop['city'] = '贵州';
+            if (!$shop['county']) $shop['county'] = '六盘水';
+            $datalist[$shop['shop_id']] = $shop;
+        }
+        $shop_ids = implodeids(array_keys($datalist));
+        $goods_list = M('goods_item')->field('shop_id, MIN(goods_price) AS price')
+            ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
+        foreach ($goods_list as $goods){
+            $datalist[$goods['shop_id']]['goods_price'] = formatAmount($goods['price']);
+        }
+        unset($shop_list, $shop, $goods_list, $goods, $shop_ids);
+        $this->showAjaxReturn(array_values($datalist));
     }
 
     /**
@@ -47,5 +71,31 @@ class ShopController extends BaseController
             $_G['title'] = $shop['shop_name'];
             include template('viewshop');
         }
+    }
+
+    public function dingxiang(){
+        global $_G,$_lang;
+
+        $offset = (G('page') - 1) * 20;
+        $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
+        $condition = array('shop_status'=>'OPEN', 'auth_status'=>'SUCCESS');
+        $shop_list = shop_get_list($condition, 20, $offset, null, $fields);
+        $datalist = array();
+        foreach ($shop_list as $shop){
+            $shop['shop_logo'] = image($shop['shop_logo']);
+            if (!$shop['city']) $shop['city'] = '贵州';
+            if (!$shop['county']) $shop['county'] = '六盘水';
+            $datalist[$shop['shop_id']] = $shop;
+        }
+        $shop_ids = implodeids(array_keys($datalist));
+        $goods_list = M('goods_item')->field('shop_id, MIN(goods_price) AS price')
+            ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
+        foreach ($goods_list as $goods){
+            $datalist[$goods['shop_id']]['goods_price'] = formatAmount($goods['price']);
+        }
+        $shop_list = $datalist;
+        unset($shop, $goods_list, $goods, $shop_ids, $datalist);
+        $_G['title'] = '定向采购';
+        include template('shop_dingxiang');
     }
 }

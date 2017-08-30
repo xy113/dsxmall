@@ -1,7 +1,7 @@
 {template header}
 <div class="console-title">
 	<div class="float-right">
-        <a href="{echo U('a=add&catid='.$catid)}" class="button">添加页面</a>
+        <a href="{echo U('c=page&a=add&catid='.$catid)}" class="button">添加页面</a>
     </div>
     <h2>页面管理</h2>
 </div>
@@ -37,7 +37,7 @@
         <td><input type="text" class="input-text w60" name="pagelist[{$pageid}][displayorder]" value="{$item[displayorder]}" /></td>
         <td>{echo @date('Y-m-d H:i',$item[pubtime])}</td>
         <td>{echo @date('Y-m-d H:i',$item[modified])}</td>
-        <td><a href="{echo U('a=edit&pageid='.$pageid)}">编辑</a></td>
+        <td><a href="{echo U('c=page&a=edit&pageid='.$pageid)}">编辑</a></td>
       </tr>
       {/loop}
       </tbody>

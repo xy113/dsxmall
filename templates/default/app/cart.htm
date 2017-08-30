@@ -4,15 +4,17 @@
         {loop $itemlist $shop_id $item}
         <div class="cart-item">
             <div class="console-bar">
-                <span class="edit">编辑</span>
-                <label class="iconfont icon-round"><input type="radio"></label>
+                <!--<span class="edit">编辑</span>-->
+                <label class="iconfont icon-round shopLabel"><input type="checkbox" class="radio shopCheckbox" value="{$shop_id}" style="display: none;"></label>
                 <div class="shop-name">{$item[shop_name]}</div>
             </div>
 
             {loop $item[goods] $goods_id $goods}
             <div class="item-box">
                 <div class="item-div">
-                    <label class="iconfont icon-round"><input type="radio" style="display: none;"></label>
+                    <label class="iconfont icon-round itemLabel group-{$shop_id}">
+                        <input type="checkbox" class="itemCheckbox item-group-{$shop_id}" data-id="{$goods_id}" data-price="{$goods[goods_price]}" data-num="{$goods[goods_number]}" style="display: none;">
+                    </label>
                     <div class="thumb bg-cover lazyload" data-original="{img $goods[goods_thumb]}"></div>
                     <div class="info">
                         <h3>{$goods[goods_name]}</h3>
@@ -38,4 +40,49 @@
         {/loop}
     </div>
 </div>
+<script type="text/javascript">
+    onBridgeReady(function (bridge) {
+        function sumTotal() {
+            var total_num=0,total_fee=0;
+            $(".itemCheckbox:checked").each(function () {
+                var price = parseFloat($(this).attr('data-price'));
+                var number = parseInt($(this).attr('data-num'));
+                total_num+= number;
+                total_fee+= price*number;
+            });
+            bridge.callHandler("sumTotal", {"total_num":total_num,"total_fee":total_fee});
+        }
+
+        $(".shopLabel").on('click', function () {
+            var checkBox = $(this).find('.shopCheckbox');
+            var shop_id = checkBox.val();
+            if (checkBox.is(":checked")){
+                $(this).removeClass('icon-round').addClass('icon-roundcheckfill');
+                $(".group-"+shop_id).removeClass('icon-round').addClass('icon-roundcheckfill');
+                $(".item-group-"+shop_id).prop('checked', true);
+            }else {
+                $(this).removeClass('icon-roundcheckfill').addClass('icon-round');
+                $(".group-"+shop_id).removeClass('icon-roundcheckfill').addClass('icon-round');
+                $(".item-group-"+shop_id).prop('checked', false);
+            }
+            sumTotal();
+        });
+        $(".itemLabel").on('click', function () {
+            if ($(this).find('.itemCheckbox').is(":checked")){
+                $(this).removeClass('icon-round').addClass('icon-roundcheckfill');
+            }else {
+                $(this).removeClass('icon-roundcheckfill').addClass('icon-round');
+            }
+            sumTotal();
+        });
+
+        bridge.registerHandler('submit', function (data, responseCallback) {
+            var item_ids = [];
+            $(".itemCheckbox:checked").each(function () {
+                item_ids.push($(this).attr('data-id'));
+            });
+            responseCallback(item_ids);
+        });
+    });
+</script>
 {template footer}
