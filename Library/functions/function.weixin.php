@@ -194,6 +194,7 @@ function weixin_send_msg($token, $message=array()){
  * @param string $template_id
  * @param array $data
  * @param string $url
+ * @return bool|mixed
  */
 function weixin_send_template_msg($token,$openid,$template_id,$data,$url=''){
 	if (!$token || !$openid || !$template_id || !$data){
@@ -215,6 +216,7 @@ function weixin_send_template_msg($token,$openid,$template_id,$data,$url=''){
  * 创建自定义菜单
  * @param string $token
  * @param string $menu
+ * @return mixed
  */
 function weixin_create_menu($token, $menu){
 	$res = httpPost("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=$token", $menu);
@@ -224,6 +226,7 @@ function weixin_create_menu($token, $menu){
 /**
  * 删除自定义菜单
  * @param string $token
+ * @return mixed
  */
 function weixin_delete_menu($token){
 	$res = httpGet("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=$token");
@@ -236,6 +239,7 @@ function weixin_delete_menu($token){
  * @param string $access_token
  * @param string $type
  * @param array $data
+ * @return mixed
  */
 function weixin_add_material($access_token, $type, $data){
 	$res = httpPost("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=$access_token&type=$type", $data);
@@ -247,6 +251,7 @@ function weixin_add_material($access_token, $type, $data){
  * 从微信服务器删除永久素材
  * @param string $access_token
  * @param string $media_id
+ * @return mixed
  */
 function weixin_delete_material($access_token, $media_id){
 	$access_data = json_encode(array('media_id'=>$media_id));
@@ -274,6 +279,7 @@ function weixin_get_material($access_token, $media_id, $type='image'){
 /**
  * 获取微信素材数目
  * @param string $access_token
+ * @return bool|mixed
  */
 function weixin_get_material_count($access_token){
 	$count = cache('weixin_material_count');
@@ -291,6 +297,7 @@ function weixin_get_material_count($access_token){
  * @param string $type
  * @param number $offset
  * @param number $count
+ * @return mixed
  */
 function weixin_get_material_list($access_token, $type='image', $offset=0, $count=20){
 	$access_data = json_encode(array(

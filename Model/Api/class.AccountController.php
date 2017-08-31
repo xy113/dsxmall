@@ -12,15 +12,6 @@ namespace Model\Api;
 class AccountController extends BaseController
 {
     /**
-     * AccountController constructor.
-     */
-    function __construct()
-    {
-        $this->verifyToken = false;
-        parent::__construct();
-    }
-
-    /**
      *
      */
     public function login(){

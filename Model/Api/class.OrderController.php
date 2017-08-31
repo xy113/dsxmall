@@ -8,7 +8,6 @@
 
 namespace Model\Api;
 
-
 class OrderController extends BaseController
 {
     /**

@@ -11,8 +11,18 @@ namespace Model\App;
 
 class CollectionController extends BaseController
 {
+    /**
+     *
+     */
     public function index(){
+        $this->item();
+    }
 
+    /**
+     *
+     */
+    public function item(){
+        $this->goods();
     }
 
     public function goods(){

@@ -7,8 +7,6 @@
  */
 
 namespace Model\Api;
-
-
 use Core\Validate;
 
 class MemberController extends BaseController

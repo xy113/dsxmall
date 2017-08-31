@@ -11,12 +11,6 @@ namespace Model\Api;
 
 class AppController extends BaseController
 {
-    function __construct()
-    {
-        $this->verifyToken = false;
-        parent::__construct();
-    }
-
     /**
      *
      */

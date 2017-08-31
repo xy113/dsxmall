@@ -11,11 +11,6 @@ namespace Model\Api;
 
 class DistrictController extends BaseController
 {
-    function __construct()
-    {
-        $this->verifyToken = false;
-        parent::__construct();
-    }
 
     /**
      * 批量获取区域列表

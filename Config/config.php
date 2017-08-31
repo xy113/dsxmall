@@ -24,12 +24,12 @@ return array(
     'app_7e1805aea7e8d300'=>array(
         'appid'=>'7e1805aea7e8d300',
         'appkey'=>'51e0fd51bed3446461a6ac8e7278fe86',
-        'version'=>'1.0'
+        'version'=>'1.2.1'
     ),
     //Android App 配置
     'app_61569d34a951f553'=>array(
         'appid'=>'61569d34a951f553',
         'appkey'=>'42494c3b0ccb7b033d7cc6f7f653591e',
-        'version'=>'1.0'
+        'version'=>'1.0.0'
     )
 );

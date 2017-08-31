@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>APP开发文档</title>
+    <meta name="keywords" content="农品集市">
+    <meta name="description" content="农品集市">
+    <meta name="render" content="webkit">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <style type="text/css">*{font-size: 14px; color: #666; font-family: Arial; line-height: 1.5;}</style>
+</head>
+<body>
+<pre>
+    一、相关地址
+    API地址: http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌
+    页面地址: http://cg.liaidi.com/?m=app
+
+    token生成方法: 字符串appid+appkey+当前时间戳截取前6位（Unix时间戳），然后MD5
+    注：请把API和页面地址存入应用配置里，已方便随时更改
+
+    二、页面API（webView显示页面）
+
+    2.1 首页:http://cg.liaidi.com/?m=app&c=index
+
+    2.2 商品搜索页(列表页):http://cg.liaidi.com/?m=app&c=itemsearch
+    参数1：catid=产品分类ID（选填）
+    参数2：q=关键字
+
+    2.3 商品详细页:http://cg.liaidi.com/?m=app&c=item
+    参数1：id=商品ID
+
+    2.4 商家首页:http://cg.liaidi.com/?m=app&c=shop
+
+    2.5 商家搜索页(列表页):http://cg.liaidi.com/?m=app&c=shopsearch
+    参数1: q=关键字
+
+    2.6 商家详情页:http://cg.liaidi.com/?m=app&c=shop&a=viewshop
+    参数1: shop_id=店铺ID或者uid=店主UID
+
+    2.7 资讯列表页:http://cg.liaidi.com/?m=app&c=article
+    参数1：catid=分类ID（选填）
+
+    2.8 资讯详细页:http://cg.liaidi.com/?m=app&c=article&a=detail
+    参数1：id=文章ID
+
+    2.9 商品收藏页:http://cg.liaidi.com/?m=app&c=collection&a=item
+
+    2.10 店铺收藏页:http://cg.liaidi.com/?m=app&c=collection&a=shop
+
+    2.11 消息通知列表:http://cg.liaidi.com/?m=app&c=notice
+
+    2.12 消息通知详情:http://cg.liaidi.com/?m=app&c=notice&a=detail&id=消息ID
+
+    2.13 关于我们:2.11 消息通知列表:http://cg.liaidi.com/?m=app&c=page&a=detail&pageid=33
+
+    三、json数据请求API
+
+    3.1 登录验证：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=account&a=login
+    请求方式：POST
+    参数1：account=账号，必填，手机，用户名，邮箱自动识别，在客户端做合法性验证
+    参数2：password=密码，长度6-12位，在客户端做合法性验证
+    参数3：timstamp=时间戳，登录时间戳（unix时间戳）
+    参数4：sign=签名，登录签名
+    签名生成方式：account+password+timestamp+appid+appkey 然后MD5
+
+    3.2 注册接口
+    请求方式：POST
+    参数1：username=昵称，不能包含符号，在客户端做合法性验证
+    参数2：mobile=手机号，11位，在客户端做合法性验证
+    参数3：password=密码，长度6-12位，在客户端做合法性验证
+    参数4：timstamp=时间戳，登录时间戳（unix时间戳）
+    参数5：sign=签名，登录签名
+    签名生成方式：username+mobile+password+timestamp+appid+appkey 然后MD5
+
+    3.3 获取收货地址：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=get
+    请求方式：GET
+    参数1：uid=用户ID
+    参数2：address_id=收货地址ID，选填，不填写则获取默认地址
+
+    3.4 获取收货地址列表:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=batchget
+    请求方式：GET
+    参数1：uid=用户ID
+
+    3.5 添加到购物车:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=cart&a=add
+    请求方式：POST
+    参数1：goods_id = 商品ID
+    参数2：goods_number=商品数量
+    参数3：uid=用户ID
+
+    3.6 获取要结算的商品列表:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=cart&a=get_settle_items
+    请求方式：GET
+    参数1：uid=用户ID
+    参数2：itemids=多个商品ID，用半角逗号分隔
+
+    3.7 购物车结算:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=cart&a=settlement
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：orders=订单数据 JSON格式，格式如下
+    [
+        {
+            shop_id:店铺ID，
+            shop_name:店铺名称
+            pay_type:付款方式，1=余额支付，2=在线支付，3=货到付款
+            shipping_type:配送方式，1=快递，2=物流，3=自取或无物流
+            remark:订单备注
+            itemids:[1,2,3,4] 订单商品ID
+        },
+        {
+            shop_id:店铺ID，
+            shop_name:店铺名称
+            pay_type:付款方式，1=余额支付，2=在线支付，3=货到付款
+            shipping_type:配送方式，1=快递，2=物流，3=自取或无物流
+            remark:订单备注
+            itemids:[1,2,3,4] 订单商品ID
+        }
+        .......
+    ]
+
+    3.8 添加到收藏夹：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=collection&a=add
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：dataid=单品ID，商品为商品ID，店铺为店铺ID
+    参数3：datatype=收藏类别 goods=商品，shop=店铺，article=文章
+
+    3.9 获取区域信息列表：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=district&a=batchget
+    参数1：fid=上级ID，选填，默认0
+
+    3.10 获取商品资料:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=item&a=get
+    请求方式：POST
+    参数1：id=商品ID
+
+    3.11 获取商品列表:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=item&a=batchget
+    请求方式：GET
+    参数1：catid=分类ID，选填
+    参数2：offset=偏移量，选填，默认0
+    参数3：count=列表数量，选填，默认20
+
+    3.12 获取店铺信息:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=shop&a=get
+    请求方式：GET
+    参数1：shop_id=店铺ID或者uid=店主ID
+
+    3.13 获取店铺列表:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=shop&a=batchget
+    参数1：offset=偏移量，选填，默认0
+    参数2：count=列表数量，选填，默认20
+
+    3.14 获取用户资料:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=get_info
+    请求方式：GET
+    参数1：uid=用户ID
+
+    3.15 设置用户头像:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=set_headimg
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：表单文件域名称=filedata
+
+    3.16 修改登录名:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=edit_username
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：username=新的用户名
+
+    3.17 修改手机号:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=edit_mobile
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：mobile=新的手机号
+
+    3.17 修改邮箱:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=edit_email
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：email=新的邮箱地址
+
+    3.18 修改密码:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=edit_password
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：oldpassword=旧密码
+    参数3：newpassword=新密码
+
+    3.19 修改其他资料:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=member&a=edit_info
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：userinfo[字段名]=新的字段值
+
+    3.20 创建订单：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=create
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：goods_id=商品ID
+    参数3：goods_number=购买数量
+    参数4：pay_type=付款方式，1=余额支付，2=在线支付，3=货到付款
+    参数5：shipping_type=配送方式，1=快递，2=物流，3=自取或无物流
+    参数6：remark=买家留言
+
+    3.21 获取订单信息:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=get
+    请求方式：GET
+    参数1：uid=用户ID
+    参数2：order_id=订单ID
+
+    3.22 订单支付:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=pay
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：order_id=订单ID
+    参数2：pay_type=付款方式
+
+    3.23 订单确认:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=confirm
+    请求方式：POST
+    参数1：uid=用户ID
+    参数2：order_id=订单ID
+    参数2：password=登录密码
+
+    3.24 获取服务器端版本号:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=app&a=get_version&appid=应用APPID
+    用于提醒用户升级APP
+</pre>
+</body>
+</html>

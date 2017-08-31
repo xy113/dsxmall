@@ -9,36 +9,24 @@ namespace Model\Api;
 use Core\Controller;
 
 class BaseController extends Controller{
-    protected $verifyToken = true;
+    protected $appid;
+    protected $token;
     /**
      * BaseController constructor.
      */
     function __construct()
     {
         parent::__construct();
-        if ($this->verifyToken) {
-            $uid = intval($_GET['uid']);
-            $token = trim($_GET['token']);
-            //$this->showAjaxReturn(cache('token_'.md5($uid)));
-            $this->checkToken($uid, $token);
-        }
-    }
-
-    /**
-     * 验证客户端token
-     * @param $uid
-     * @param $token
-     */
-    protected function checkToken($uid, $token){
-        $token_data = cache('token_'.md5($uid));
-        if (!$token_data || !is_array($token_data)){
-            $token_data = member_get_token($uid);
-        }
-        if ($token_data['token'] !== $token){
+        $this->appid = trim($_GET['appid']);
+        $this->token = trim($_GET['token']);
+        if (!$this->appid || !$this->token) {
             $this->showAjaxError('1001', 'invalid_token');
-        }else {
-            $this->uid = $token_data['uid'];
-            $this->username = $token_data['username'];
+        }else{
+            $appconf = C('app_'.$this->appid);
+            $check_token = md5($appconf['appid'].$appconf['appkey'].substr(time(), 0, 6));
+            if ($check_token !== $this->token){
+                $this->showAjaxError('1001', 'invalid_token');
+            }
         }
     }
 }

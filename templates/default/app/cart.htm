@@ -53,7 +53,7 @@
             bridge.callHandler("sumTotal", {"total_num":total_num,"total_fee":total_fee});
         }
 
-        $(".shopLabel").on('click', function () {
+        $(".shopLabel").on('touchstart', function () {
             var checkBox = $(this).find('.shopCheckbox');
             var shop_id = checkBox.val();
             if (checkBox.is(":checked")){
@@ -67,7 +67,7 @@
             }
             sumTotal();
         });
-        $(".itemLabel").on('click', function () {
+        $(".itemLabel").on('touchstart', function () {
             if ($(this).find('.itemCheckbox').is(":checked")){
                 $(this).removeClass('icon-round').addClass('icon-roundcheckfill');
             }else {
