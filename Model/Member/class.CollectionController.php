@@ -25,13 +25,13 @@ class CollectionController extends BaseController
      * 收藏列表
      */
     public function index(){
-        $this->goods();
+        $this->item();
     }
 
     /**
      * 商品收藏列表
      */
-    public function goods(){
+    public function item(){
         global $_G,$_lang;
 
         if ($this->checkFormSubmit()) {
@@ -39,7 +39,7 @@ class CollectionController extends BaseController
         }else {
 
             $pagesize = 10;
-            $condition = array('uid'=>$this->uid, 'datatype'=>'goods');
+            $condition = array('uid'=>$this->uid, 'datatype'=>'item');
             $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
             if ($q) $condition['title'] = array('LIKE', $q);
 
@@ -48,8 +48,8 @@ class CollectionController extends BaseController
             $itemlist = collection_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", true);
 
-            $_G['title'] = $_lang['goods_collection'];
-            include template('collection_goods');
+            $_G['title'] = $_lang['item_collection'];
+            include template('collection_item');
         }
     }
 

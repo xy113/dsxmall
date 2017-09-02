@@ -14,15 +14,17 @@ class OrderController extends BaseController
      * 创建订单
      */
     public function create(){
-
-        $goods_id = intval($_GET['goods_id']);
-        $goods_number = intval($_GET['goods_number']);
+        $itemid = intval($_GET['itemid']);
+        $quantity = intval($_GET['quantity']);
+        if (!$itemid) $itemid = intval($_GET['goods_id']);
+        if (!$quantity) $quantity = intval($_GET['goods_number']);
         $shipping_type = intval($_GET['shipping_type']);
         $pay_type = intval($_GET['pay_type']);
-        $goods = $shop = array();
-        if ($goods_id && $goods_number) {
-            $goods = goods_get_item(array('id'=>$goods_id));
-            $shop  = shop_get_data(array('shop_id'=>$goods['shop_id']));
+
+        $item = $shop = array();
+        if ($itemid && $quantity) {
+            $item = item_get_data(array('id'=>$itemid));
+            $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
         } else{
             $this->showAjaxError(1,'can_not_buy');
         }
@@ -30,17 +32,17 @@ class OrderController extends BaseController
         $trade_no = trade_create_no();
         $order_no = order_create_no($this->uid);
         //卖家信息
-        $seller   = member_get_data(array('uid'=>$goods['uid']), 'uid,username');
+        $seller   = member_get_data(array('uid'=>$item['uid']), 'uid,username');
         //收货地址
         $address  = address_get_data(array('id'=>intval($_GET['address_id'])));
         //订单金额
-        $order_fee = floatval($goods['goods_price']) * $goods_number;
+        $order_fee = floatval($item['price']) * $quantity;
         //运费
         $shipping_fee = 0;
         //总金额
         $total_fee = $order_fee + $shipping_fee;
         //创建订单
-        $order_id = order_add_item(array(
+        $order_id = order_add_data(array(
             'uid'=>$this->uid,
             'seller_uid'=>$seller['uid'],
             'seller_username'=>$seller['username'],
@@ -61,19 +63,19 @@ class OrderController extends BaseController
             'phone'=>$address['phone'],
             'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
             'trade_no'=>$trade_no,
-            'order_remark'=>trim($_GET['remark'])
+            'remark'=>trim($_GET['remark'])
         ));
         //记录订单商品信息
-        order_add_goods(array(
+        order_add_item(array(
             'uid'=>$this->uid,
             'order_id'=>$order_id,
-            'goods_id'=>$goods['id'],
-            'goods_name'=>$goods['goods_name'],
-            'market_price'=>$goods['market_price'],
-            'goods_price'=>$goods['goods_price'],
-            'goods_number'=>$goods_number,
-            'goods_thumb'=>$goods['goods_thumb'],
-            'goods_image'=>$goods['goods_image']
+            'itemid'=>$item['id'],
+            'name'=>$item['name'],
+            'market_price'=>$item['market_price'],
+            'price'=>$item['price'],
+            'quantity'=>$quantity,
+            'thumb'=>$item['thumb'],
+            'image'=>$item['image']
         ));
         //创建订单操作记录
         order_add_action(array(
@@ -97,8 +99,8 @@ class OrderController extends BaseController
             'trade_time'=>time(),
             'out_trade_no'=>$trade_no
         ));
-        goods_update_item(array('id'=>$goods_id), "`sold`=`sold`+$goods_number");
-        shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$goods_number");
+        item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
+        shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity");
         $this->showAjaxReturn(array('order_id'=>$order_id));
     }
 
@@ -108,10 +110,10 @@ class OrderController extends BaseController
     public function get(){
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_item(array('uid'=>$this->uid, 'order_id'=>$order_id));
+        $order = order_get_data(array('uid'=>$this->uid, 'order_id'=>$order_id));
         if ($order) {
             $order['create_time'] = date('Y-m-d H:i:s', $order['create_time']);
-            $item = order_get_goods(array('order_id'=>$order_id));
+            $item = order_get_item(array('order_id'=>$order_id));
             $this->showAjaxReturn(array(
                 'item'=>$item,
                 'order'=>$order
@@ -136,7 +138,7 @@ class OrderController extends BaseController
 
         $order_id = intval($_GET['order_id']);
         $pay_type = intval($_GET['pay_type']);
-        $order = order_get_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        $order = order_get_data(array('order_id'=>$order_id, 'uid'=>$this->uid));
         if (!$order) {
             $this->showAjaxError(1, 'order_not_exists');
         }
@@ -158,7 +160,7 @@ class OrderController extends BaseController
             }
 
             if (wallet_cost($this->uid, $order['total_fee'])){
-                order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
+                order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
                 trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'trade_type'=>'balance'));
                 $this->showAjaxReturn(array('order_id'=>$order_id));
             }else {
@@ -168,7 +170,7 @@ class OrderController extends BaseController
 
         //货到付款
         if ($pay_type == 3) {
-            order_update_item(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
+            order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
             trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_type'=>'COD'));
             $this->showAjaxReturn(array('order_id'=>$order_id));
         }
@@ -186,7 +188,7 @@ class OrderController extends BaseController
     public function confirm(){
         $order_id = intval($_GET['order_id']);
         $password = trim($_GET['password']);
-        $order = order_get_item(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        $order = order_get_data(array('order_id'=>$order_id, 'uid'=>$this->uid));
         if ($order) {
             //验证密码
             $member = member_get_data(array('uid'=>$this->uid), 'password');
@@ -196,7 +198,7 @@ class OrderController extends BaseController
             //验证订单状态
             if (order_get_trade_status($order) == 3){
                 //更新订单状态
-                order_update_item(array('order_id'=>$order_id),
+                order_update_data(array('order_id'=>$order_id),
                     array(
                         'order_status'=>1,
                         'deal_time'=>time()

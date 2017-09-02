@@ -16,17 +16,17 @@ class CartController extends BaseController
      */
     public function index(){
         global $_G,$_lang;
-        $itemlist = cart_get_list(array('uid'=>$this->uid), 0);
-        $totalnum = count($itemlist);
-        if ($itemlist) {
+        $cart_item_list = cart_get_list(array('uid'=>$this->uid), 0);
+        $totalnum = count($cart_item_list);
+        if ($cart_item_list) {
             $datalist = array();
-            foreach ($itemlist as $item){
-                $item['total_fee'] = floatval($item['goods_price']) * intval($item['goods_number']);
+            foreach ($cart_item_list as $item){
+                $item['total_fee'] = floatval($item['price']) * intval($item['quantity']);
                 $datalist[$item['shop_id']]['shop_id'] = $item['shop_id'];
                 $datalist[$item['shop_id']]['shop_name'] = $item['shop_name'];
-                $datalist[$item['shop_id']]['goods'][$item['goods_id']] = $item;
+                $datalist[$item['shop_id']]['items'][$item['itemid']] = $item;
             }
-            $itemlist = $datalist;
+            $cart_item_list = $datalist;
             unset($datalist);
         }
 

@@ -25,39 +25,39 @@
                     </tbody>
                 </table>
             </div>
-            {if $itemlist}
-            {loop $itemlist $item}
+            {if $cart_list}
+            {loop $cart_list $shop_id $cart}
             <div class="cart-item">
-                <h3>店铺: <a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank">{$item[shop_name]}</a></h3>
+                <h3>店铺: <a href="{U:('m=shop&c=viewshop&shop_id='.$cart[shop_id])}" target="_blank">{$cart[shop_name]}</a></h3>
                 <div class="order-content">
                     <table cellpadding="0" cellspacing="0" width="100%">
                         {eval $index=0}
-                        {loop $item[goods] $goods_id $goods}
+                        {loop $cart[items] $itemid $item}
                         {eval $index++}
-                        <tbody id="item-{$goods_id}">
+                        <tbody id="item-{$itemid}">
                             <tr{if $index==1} class="first"{/if}>
                                 <td class="item-info">
-                                    <input type="hidden" id="J_goods_price_{$goods_id}" value="{$goods[goods_price]}">
-                                    <div class="chk"><input type="checkbox" class="checkbox checkmark J_CheckBoxItem" name="items[]" value="{$goods[goods_id]}"></div>
-                                    <div class="g-pic bg-cover lazyload" data-original="{img $goods[goods_thumb]}">
-                                        <a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank"></a>
+                                    <input type="hidden" id="J_price_{$itemid}" value="{$item[price]}">
+                                    <div class="chk"><input type="checkbox" class="checkbox checkmark J_CheckBoxItem" name="items[]" value="{$itemid}"></div>
+                                    <div class="g-pic bg-cover lazyload" data-original="{img $item[thumb]}">
+                                        <a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank"></a>
                                     </div>
                                     <div class="g-info">
-                                        <div class="g-name"><a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank">{$goods[goods_name]}</a></div>
+                                        <div class="g-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[name]}</a></div>
                                     </div>
                                 </td>
                                 <td width="100"></td>
-                                <td width="100"><strong>￥{amount:$goods[goods_price]}</strong></td>
+                                <td width="100"><strong>￥{amount:$item[price]}</strong></td>
                                 <td width="120">
                                     <div class="quantity-inner">
-                                    <span class="btn opLeft" data-id="{$goods_id}">-
-                                    </span><input type="text" class="text" value="{$goods[goods_number]}" id="quantity_{$goods_id}"><span class="btn opRight" data-id="{$goods_id}">+</span>
+                                    <span class="btn opLeft" data-id="{$itemid}">-
+                                    </span><input type="text" class="text" value="{$item[quantity]}" id="quantity_{$itemid}"><span class="btn opRight" data-id="{$itemid}">+</span>
                                     </div>
                                 </td>
-                                <td width="100"><strong style="color: #f40;" id="simple_price_{$goods_id}">￥{amount:$goods[total_fee]}</strong></td>
+                                <td width="100"><strong style="color: #f40;" id="simple_price_{$itemid}">￥{amount:$item[total_fee]}</strong></td>
                                 <td width="100">
                                     <p><a>移入收藏夹</a></p>
-                                    <p><a rel="delete" data-id="{$goods_id}">删除</a></p>
+                                    <p><a rel="delete" data-id="{$itemid}">删除</a></p>
                                 </td>
                             </tr>
                         </tbody>
@@ -97,11 +97,11 @@
         function settlement() {
             var total_count = 0, total_fee = 0;
             $(".J_CheckBoxItem:checked").each(function () {
-                var goods_id = $(this).val();
-                var goods_number = parseInt($("#quantity_"+goods_id).val());
-                var goods_price = $("#J_goods_price_"+goods_id).val();
-                total_count+= goods_number;
-                total_fee+= goods_price * goods_number;
+                var itemid = $(this).val();
+                var quantity = parseInt($("#quantity_"+itemid).val());
+                var price = $("#J_price_"+itemid).val();
+                total_count+= quantity;
+                total_fee+= price * quantity;
             });
             $("#total_count").text(total_count.toString());
             $("#total_fee").text(total_fee.toFixed(2));
@@ -115,11 +115,11 @@
         });
         var spinner = null;
         $("a[rel=delete]").on('click', function (e) {
-            var goods_id = $(this).attr('data-id');
+            var itemid = $(this).attr('data-id');
             DSXUI.showConfirm('确认要删除该宝贝吗？', function () {
                 $.ajax({
                     url:"{U:('m=cart&c=index&a=delete')}",
-                    data:{goods_id:goods_id},
+                    data:{itemid:itemid},
                     dataType:'json',
                     beforeSend:function () {
                         spinner = DSXUI.showSpinner();
@@ -148,7 +148,7 @@
                 DSXUI.showConfirm('确认要删除所选宝贝吗', function () {
                     $.ajax({
                         url:"{U:('m=cart&c=index&a=delete')}",
-                        data:{goods_id:ids.join(',')},
+                        data:{itemid:ids.join(',')},
                         dataType:'json',
                         beforeSend:function () {
                             spinner = DSXUI.showSpinner();
@@ -168,20 +168,20 @@
             }
         });
         $(".opLeft").on('click', function () {
-            var goods_id = $(this).attr('data-id');
-            var goods_number = $("#quantity_"+goods_id).val();
-            var goods_price = $("#J_goods_price_"+goods_id).val();
-            if (goods_number <= 1) {
+            var itemid = $(this).attr('data-id');
+            var quantity = $("#quantity_"+itemid).val();
+            var price = $("#J_price_"+itemid).val();
+            if (quantity <= 1) {
                 return false;
             }else {
-                goods_number--;
-                var simple_price = (goods_price*goods_number).toFixed(2);
-                $("#quantity_"+goods_id).val(goods_number);
-                $("#simple_price_"+goods_id).text('￥'+simple_price);
+                quantity--;
+                var simple_price = (price*quantity).toFixed(2);
+                $("#quantity_"+itemid).val(quantity);
+                $("#simple_price_"+itemid).text('￥'+simple_price);
                 $.ajax({
                     type:'POST',
-                    url:"{U:('m=cart&c=index&a=update_num')}",
-                    data:{goods_id:goods_id, goods_number:goods_number},
+                    url:"{U:('m=cart&c=index&a=update_quantity')}",
+                    data:{itemid:itemid, quantity:quantity},
                     dataType:'json',
                     beforeSend:function () {
                         spinner = DSXUI.showSpinner();
@@ -197,18 +197,18 @@
         });
 
         $(".opRight").on('click', function () {
-            var goods_id = $(this).attr('data-id');
-            var goods_number = $("#quantity_"+goods_id).val();
-            var goods_price = $("#J_goods_price_"+goods_id).val();
+            var itemid = $(this).attr('data-id');
+            var quantity = $("#quantity_"+itemid).val();
+            var price = $("#J_price_"+itemid).val();
 
-            goods_number++;
-            var simple_price = (goods_price*goods_number).toFixed(2);
-            $("#quantity_"+goods_id).val(goods_number);
-            $("#simple_price_"+goods_id).text('￥'+simple_price);
+            quantity++;
+            var simple_price = (price*quantity).toFixed(2);
+            $("#quantity_"+itemid).val(quantity);
+            $("#simple_price_"+itemid).text('￥'+simple_price);
             $.ajax({
                 type:'POST',
-                url:"{U:('m=cart&c=index&a=update_num')}",
-                data:{goods_id:goods_id, goods_number:goods_number},
+                url:"{U:('m=cart&c=index&a=update_quantity')}",
+                data:{itemid:itemid, quantity:quantity},
                 dataType:'json',
                 beforeSend:function () {
                     spinner = DSXUI.showSpinner();

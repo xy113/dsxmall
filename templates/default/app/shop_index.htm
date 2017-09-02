@@ -37,7 +37,7 @@
                 <div class="addr">{item[city]} {item[county]}</div>
                 <div class="line">
                     <span class="sold">已售{item[total_sold]}件</span>
-                    <strong class="price">￥{item[goods_price]}</strong>
+                    <strong class="price">￥{item[min_price]}</strong>
                     <span class="qi">起</span>
                 </div>
             </div>
@@ -68,7 +68,7 @@
                         var item_ids = [];
                         $(response.data).each(function (i, data) {
                             items+= tpl.replace(/\{item\[(.*?)\]\}/g, function (s, k) {
-                                if (typeof data[k] == 'undefined'){
+                                if (typeof data[k] === 'undefined'){
                                     return '';
                                 }else {
                                     return data[k];

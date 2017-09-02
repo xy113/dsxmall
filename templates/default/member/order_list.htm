@@ -5,7 +5,7 @@
         <input type="hidden" name="m" value="{$_G[m]}">
         <input type="hidden" name="c" value="{$_G[c]}">
         <input type="hidden" name="a" value="{$_G[a]}">
-    	<input type="text" name="q" value="{$q}" class="input-text" placeholder="订单名称，订单号">
+    	<input type="text" name="q" value="{$q}" class="input-text" placeholder="订单号">
         <input type="submit" class="button" value="搜索">
         </form>
     </div>
@@ -32,19 +32,19 @@
             </tr>
         </tbody>
     </table>
-    {loop $itemlist $order_id $item}
+    {loop $order_list $order_id $order}
     <div class="order-item-wrap" id="order-item-{$order_id}">
         <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
             <thead>
             <tr>
                 <th>
                     <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">{date:$item[create_time]|'Y-m-d'}</span>
-                    <span class="wrap-order-no">{$item[order_no]}</span>
+                    <span class="wrap-time">{date:$order[create_time]|'Y-m-d'}</span>
+                    <span class="wrap-order-no">{$order[order_no]}</span>
                 </th>
                 <th colspan="2">
                     <h3>
-                        <a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" title="{$item[shop_name]}" target="_blank">
+                        <a href="{U:('m=shop&c=viewshop&shop_id='.$order[shop_id])}" title="{$order[shop_name]}" target="_blank">
                             {$item[shop_short_name]}</a>
                     </h3>
                 </th>
@@ -54,23 +54,23 @@
             </thead>
             <tbody>
                 {eval $index=0}
-                {loop $item[goods] $goods_id $goods}
+                {loop $order[items] $itemid $item}
                 {eval $index++}
                 <tr>
                     <td class="col1">
                         <div class="goods-pic">
-                            <a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank"><img src="{img $goods[goods_thumb]}"></a>
+                            <a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank"><img src="{img $item[thumb]}"></a>
                         </div>
                         <div style="margin-left: 90px; overflow: hidden;">
-                            <div class="goods-name"><a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank">{$goods[goods_name]}</a></div>
+                            <div class="goods-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[name]}</a></div>
                             <div class="goods-attr">产品属性</div>
                         </div>
                     </td>
                     <td class="col2">
-                        {if $goods[market_price]}<p><s>￥{amount:$goods[market_price]}</s></p>{/if}
-                        <p>￥{amount:$goods[goods_price]}</p>
+                        {if $item[market_price]}<p><s>￥{amount:$item[market_price]}</s></p>{/if}
+                        <p>￥{amount:$item[price]}</p>
                     </td>
-                    <td class="col3">{$goods[goods_number]}</td>
+                    <td class="col3">{$item[quantity]}</td>
                     <td class="col4">
                         {if $index==1}
                         <p><a>申请售后</a></p>
@@ -79,34 +79,34 @@
                     </td>
                     <td class="col5">
                         {if $index==1}
-                        <p><strong style="color: #FF0000;">￥{amount:$item[total_fee]}</strong></p>
-                        <p style="font-size: 11px;">(含运费:￥{amount:$item[shipping_fee]})</p>
+                        <p><strong style="color: #FF0000;">￥{amount:$order[total_fee]}</strong></p>
+                        <p style="font-size: 11px;">(含运费:￥{amount:$order[shipping_fee]})</p>
                         {/if}
                     </td>
                     <td class="col6">
                         {if $index==1}
-                        {if $item[trade_status]==4||$item[trade_status]==5}
+                        {if $order[trade_status]==4||$order[trade_status]==5}
                         <p>交易成功</p>
                         {else}
-                        <p>{$item[trade_status_tips]}</p>
+                        <p>{$order[trade_status_tips]}</p>
                         {/if}
-                        <p><a href="{U:('c=order&a=detail&order_id='.$item['order_id'])}" target="_blank">订单详情</a></p>
-                        {if $item[shipping_status]}
+                        <p><a href="{U:('c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
+                        {if $order[shipping_status]}
                         <p>查看物流</p>
                         {/if}
                         {/if}
                     </td>
                     <td class="col7">
                         {if $index==1}
-                        {if $item[trade_status]==1}
+                        {if $order[trade_status]==1}
                         <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
-                        {elseif $item[trade_status]==2}
+                        {elseif $order[trade_status]==2}
                         <a>提醒卖家发货</a>
-                        {elseif $item[trade_status]==3}
-                        <a href="{U:('c=order&a=detail&order_id='.$item['order_id'].'#receipt')}" class="button btn" target="_blank">确认收货</a>
-                        {elseif $item[trade_status]==4}
+                        {elseif $order[trade_status]==3}
+                        <a href="{U:('c=order&a=detail&order_id='.$order_id.'#receipt')}" class="button btn" target="_blank">确认收货</a>
+                        {elseif $order[trade_status]==4}
                         <p><a>立即评价</a></p>
-                        {elseif $item[trade_status]==5}
+                        {elseif $order[trade_status]==5}
                         <p><a>申请退货</a></p>
                         {/if}
                         {/if}

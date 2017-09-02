@@ -74,7 +74,7 @@ class Application{
 		unset($langlist, $langfile, $name);
 		
 		//加载function文件
-		$functionlist = array('material', 'member', 'misc', 'shop', 'goods', 'trade', 'post', 'weixin');
+		$functionlist = array('material', 'member', 'misc', 'shop', 'item', 'trade', 'post', 'weixin');
 		if (is_array(C('AUTO_LOAD_FUNCTIONS'))){
 			$functionlist = array_merge($functionlist, C('AUTO_LOAD_FUNCTIONS'));
 		}

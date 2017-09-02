@@ -5,7 +5,7 @@
  * Date: 2017/8/3
  * Time: 下午5:01
  */
-namespace Model\Goods;
+namespace Model\Item;
 use Core\Controller;
 
 class BaseController extends Controller{
@@ -15,6 +15,6 @@ class BaseController extends Controller{
     function __construct()
     {
         parent::__construct();
-        G('nav', 'goods');
+        G('nav', 'item');
     }
 }

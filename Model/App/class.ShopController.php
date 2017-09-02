@@ -36,12 +36,12 @@ class ShopController extends BaseController
             $datalist[$shop['shop_id']] = $shop;
         }
         $shop_ids = implodeids(array_keys($datalist));
-        $goods_list = M('goods_item')->field('shop_id, MIN(goods_price) AS price')
+        $itemlist = M('item')->field('shop_id, MIN(price) AS min_price')
             ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
-        foreach ($goods_list as $goods){
-            $datalist[$goods['shop_id']]['goods_price'] = formatAmount($goods['price']);
+        foreach ($itemlist as $item){
+            $datalist[$item['shop_id']]['min_price'] = formatAmount($item['min_price']);
         }
-        unset($shop_list, $shop, $goods_list, $goods, $shop_ids);
+        unset($shop_list, $shop, $itemlist, $item, $shop_ids);
         $this->showAjaxReturn(array_values($datalist));
     }
 
@@ -65,8 +65,8 @@ class ShopController extends BaseController
         }else {
             shop_update_data(array('shop_id'=>$shop_id), '`view_num`=`view_num`+1');
             $condition = array('shop_id'=>$shop_id, 'on_sale'=>1);
-            $itemlist = goods_get_item_list($condition, 0);
-            $shop_item_count = goods_get_item_count(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1));
+            $itemlist = item_get_list($condition, 0);
+            $shop_item_count = item_get_count(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1));
 
             $_G['title'] = $shop['shop_name'];
             include template('viewshop');

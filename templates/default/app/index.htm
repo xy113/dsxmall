@@ -60,18 +60,18 @@
 <script type="text/template" id="itemTpl">
     <li>
         <div class="bd">
-            <div class="pic bg-cover lazyload" id="item_{item[id]}" data-original="{item[goods_thumb_url]}" handler="viewItem" data-id="{item[id]}"></div>
-            <div class="name">{item[goods_name]}</div>
+            <div class="pic bg-cover lazyload" id="item_{item[id]}" data-original="{item[thumb]}" handler="viewItem" data-id="{item[id]}"></div>
+            <div class="name">{item[name]}</div>
             <div class="line">
                 <span>已售出{item[sold]}件</span>
-                <strong>￥{item[goods_price]}</strong>
+                <strong>￥{item[price]}</strong>
             </div>
         </div>
     </li>
 </script>
 <script type="text/javascript">
     onBridgeReady(function (bridge) {
-        $("[handler=viewMenu]").on('click', function () {
+        $("[handler=viewMenu]").on(tap, function () {
             var menu = $(this).attr('menu');
             bridge.callHandler('viewMenu', menu);
         });
@@ -110,16 +110,6 @@
                         }else {
                             $("#item-list-ul").append(items);
                         }
-                        /*onBridgeReady(function (bridge) {
-                            $("#item-list-ul").find("[handler=viewItem]").off('click').on('click', function (e) {
-                                var id = $(this).attr('data-id');
-                                bridge.callHandler('viewItem', id);
-                            });
-                        });
-                        $("#item-list-ul").find('.lazyload').lazyload({
-                            effect:'fadeIn',
-                            placeholder:'/static/images/common/placeholder.png'
-                        });*/
                         $(item_ids).each(function (i, id) {
                             $("#item_"+id).lazyload({
                                 effect:'fadeIn',
@@ -128,7 +118,7 @@
                         });
                         onBridgeReady(function (bridge) {
                             $(item_ids).each(function (i, id) {
-                                $("#item_"+id).on('click', function (e) {
+                                $("#item_"+id).on(tap, function (e) {
                                     var id = $(this).attr('data-id');
                                     bridge.callHandler('viewItem', id);
                                 });

@@ -63,7 +63,7 @@
     参数4：sign=签名，登录签名
     签名生成方式：account+password+timestamp+appid+appkey 然后MD5
 
-    3.2 注册接口
+    3.2 注册接口：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=account&a=register
     请求方式：POST
     参数1：username=昵称，不能包含符号，在客户端做合法性验证
     参数2：mobile=手机号，11位，在客户端做合法性验证
@@ -206,6 +206,22 @@
 
     3.24 获取服务器端版本号:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=app&a=get_version&appid=应用APPID
     用于提醒用户升级APP
+
+    四、JSBridge部分
+    （1）客户端注册的方法
+    4.1.1 打开商品详情页：viewItem，传入参数data为商品ID
+
+    4.1.2 打开店铺详情页：viewShop，传入参数data为店铺ID
+
+    4.1.3 打开订单详情页：viewOrder，传入参数data为订单ID
+
+    4.1.4 打开一个网站：openURL，传入参数data为URL
+
+    4.1.5 首页四个菜单：viewMenu，传入参数data为菜单名称
+    //营养餐菜单跳转到商品搜索页
+    //企业店铺菜单跳转到店铺搜索页
+    //定向采购菜单跳转到定向采购页面（功能未做先跳转到指定链接页面）
+    //资讯菜单跳转到资讯列表页
 </pre>
 </body>
 </html>

@@ -34,7 +34,7 @@
             <td width="80"><input type="text" class="input-text w60"  name="itemlist[{$id1}][displayorder]" value="{$lv1[displayorder]}"></td>
             <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id1}][enable]" value="1"{if $lv1[enable]} checked="checked"{/if}></td>
             <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id1}][available]" value="1"{if $lv1[available]} checked="checked"{/if}></td>
-        	<td width="50"><a href="{U:('c=goodscat&a=edit&catid='.$id1)}" class="edit">编辑</a></td>
+        	<td width="50"><a href="{U:('c=itemcat&a=edit&catid='.$id1)}" class="edit">编辑</a></td>
         </tbody>
     </table>
     <div id="item-list-div-{$id1}">
@@ -53,7 +53,7 @@
               <td width="80"><input type="text" class="input-text w60"  name="itemlist[{$id2}][displayorder]" value="{$lv2[displayorder]}"></td>
               <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id2}][enable]" value="1"{if $lv2[enable]} checked="checked"{/if}></td>
               <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id2}][available]" value="1"{if $lv2[available]} checked="checked"{/if}></td>
-              <td width="50"><a href="{echo U('c=goodscat&a=edit&catid='.$id2)}" class="edit">编辑</a></td>
+              <td width="50"><a href="{echo U('c=itemcat&a=edit&catid='.$id2)}" class="edit">编辑</a></td>
           </tbody>
       	</table>
         <div id="item-list-div-{$id2}">
@@ -71,7 +71,7 @@
                   <td width="80"><input type="text" class="input-text w60"  name="itemlist[{$id3}][displayorder]" value="{$lv3[displayorder]}"></td>
                   <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id3}][enable]" value="1"{if $lv3[enable]} checked="checked"{/if}></td>
                   <td width="50" class="center"><input type="checkbox" class="checkbox" name="itemlist[{$id3}][available]" value="1"{if $lv3[available]} checked="checked"{/if}></td>
-                  <td width="50"><a href="{echo U('c=goodscat&a=edit&catid='.$id3)}" class="edit">编辑</a></td>
+                  <td width="50"><a href="{echo U('c=itemcat&a=edit&catid='.$id3)}" class="edit">编辑</a></td>
               </tbody>
             </table>
             {/loop}
@@ -85,13 +85,13 @@
 <tr>
     <td>
         <label><input type="checkbox" class="checkbox checkall" /> 全选</label>
-        <a href="javascript:;" onclick="addItem(0,1)" style="margin-left:20px;"><i class="icon">&#xf0154;</i>添加分类</a>
+        <a href="javascript:;" onclick="addItem(0,1)" style="margin-left:20px;"><i class="iconfont icon-roundaddfill"></i>添加分类</a>
     </td>
 </tr>
 <tr>
     <td>
         <input type="submit" class="button" value="提交" />
-        <input type="button" class="button cancel" value="刷新" onclick="window.location.reload()" />
+        <input type="button" class="button button-cancel" value="刷新" onclick="window.location.reload()" />
     </td>
 </tr>
 </tfoot>

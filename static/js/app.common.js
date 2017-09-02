@@ -1,7 +1,7 @@
 /**
  * Created by songdewei on 2017/6/27.
  */
-var touch = window.ontouchstart ? 'touchstart' : 'click';
+var tap = window.ontouchstart ? 'tap' : 'click';
 function onBridgeReady(callback) {
     var ua = navigator.userAgent.toLowerCase();
     if (/android/.test(ua)){
@@ -67,27 +67,27 @@ function showAppConfirm(text, callback, cancel) {
 $(function () {
     onBridgeReady(function (bridge) {
         //打开一个指定连接
-        $("[handler=openURL]").on('click', function (e) {
+        $("[handler=openURL]").on(tap, function (e) {
             var url = $(this).attr('data-url');
             bridge.callHandler('openURL', url);
         });
         //商品详情
-        $("[handler=viewItem]").on('click', function (e) {
+        $("[handler=viewItem]").on(tap, function (e) {
             var id = $(this).attr('data-id');
             bridge.callHandler('viewItem', id);
         });
         //店铺详情
-        $("[handler=viewShop]").on('click', function (e) {
+        $("[handler=viewShop]").on(tap, function (e) {
             var shop_id = $(this).attr('data-id');
             bridge.callHandler('viewShop', shop_id);
         });
         //文章详情
-        $("[handler=viewArticle]").on('click', function (e) {
+        $("[handler=viewArticle]").on(tap, function (e) {
             var id = $(this).attr('data-id');
             bridge.callHandler('viewArticle', id);
         });
     });
-    $(document).on('click', function (e) {
+    $(document).on(tap, function (e) {
         DSXUtil.stopPropagation(e);
     });
 });

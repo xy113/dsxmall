@@ -67,8 +67,8 @@
                     <dd><a><i class="iconfont icon-presentfill"></i>商品管理</a></dd>
                     <dt>
                         <ul>
-                            <li><a rel="item" href="{U:('c=goods&a=itemlist')}"{if $_GET[menu]=="goodsitem"} class="cur"{/if}>商品列表</a></li>
-                            <li><a rel="item" href="{U:('c=goodscat&a=index')}"{if $_GET[menu]=="goodscat"} class="cur"{/if}>商品分类</a></li>
+                            <li><a rel="item" href="{U:('c=item&a=itemlist')}"{if $_G[menu]=="item"} class="cur"{/if}>商品列表</a></li>
+                            <li><a rel="item" href="{U:('c=itemcat&a=index')}"{if $_G[menu]=="itemcat"} class="cur"{/if}>商品分类</a></li>
                         </ul>
                     </dt>
                 </dl>
@@ -108,8 +108,8 @@
                     <dd><a><i class="iconfont icon-rechargefill"></i>交易管理</a></dd>
                     <dt>
                     <ul>
-                        <li><a rel="item" href="{echo U('c=order&a=itemlist')}"{if $_GET[menu]=="order"} class="cur"{/if}>订单记录</a></li>
-                        <li><a rel="item" href="{echo U('c=trade&a=itemlist')}"{if $_GET[menu]=="trade"} class="cur"{/if}>交易记录</a></li>
+                        <li><a rel="item" href="{echo U('c=order&a=itemlist')}"{if $_G[menu]=="order"} class="cur"{/if}>订单记录</a></li>
+                        <li><a rel="item" href="{echo U('c=trade&a=itemlist')}"{if $_G[menu]=="trade"} class="cur"{/if}>交易记录</a></li>
                     </ul>
                     </dt>
                 </dl>

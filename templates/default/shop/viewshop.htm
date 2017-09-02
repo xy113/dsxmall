@@ -7,12 +7,12 @@
                 <ul>
                     {loop $hot_item_list $item}
                     <li>
-                        <div class="g-pic bg-cover" style="background-image: url({img $item[goods_thumb]})">
-                            <a href="{U:('m=goods&c=item&id='.$item[id])}" target="_blank" title="{$item[goods_name]}"></a>
+                        <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
+                            <a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank" title="{$item[name]}"></a>
                         </div>
                         <div class="g-info">
-                            <p><a href="{U:('m=goods&c=item&id='.$item[id])}" target="_blank">{$item[goods_name]}</a></p>
-                            <p class="price">￥<strong>{amount:$item[goods_price]}</strong></p>
+                            <p><a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank">{$item[name]}</a></p>
+                            <p class="price">￥<strong>{amount:$item[price]}</strong></p>
                             <p>已售出{$item[sold]}件</p>
                         </div>
                     </li>
@@ -36,13 +36,13 @@
                 {loop $itemlist $item}
                 <li>
                     <div class="bd">
-                        <div class="g-pic bg-cover lazyload" data-original="{img $item[goods_thumb]}">
-                            <a href="{U:('m=goods&c=item&id='.$item[id])}" title="{$item[goods_name]}" target="_blank"></a>
+                        <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
+                            <a href="{U:('m=item&c=item&id='.$item[id])}" title="{$item[name]}" target="_blank"></a>
                         </div>
-                        <div class="g-name"><a href="{U:('m=goods&c=item&id='.$item[id])}" title="{$item[goods_name]}" target="_blank">{$item[goods_name]}</a></div>
+                        <div class="g-name"><a href="{U:('m=item&c=item&id='.$item[id])}" title="{$item[name]}" target="_blank">{$item[name]}</a></div>
                         <div class="line">
                             <span class="sold">已售出{$item[sold]}件</span>
-                            <div class="price"><span>￥</span><strong>{amount:$item[goods_price]}</strong></div>
+                            <div class="price"><span>￥</span><strong>{amount:$item[price]}</strong></div>
                         </div>
                     </div>
                 </li>

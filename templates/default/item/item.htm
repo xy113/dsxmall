@@ -6,7 +6,7 @@
         <span> > </span>
         <a>水果</a>
         <span> > </span>
-        <span>{$goods[short_name]}</span>
+        <span>{$item_data[short_name]}</span>
     </div>
 </div>
 <div style="height: 10px; clear: both;"></div>
@@ -39,23 +39,23 @@
         </div>
     </div>
     <form method="post" id="J_Frmbuy" action="{U:('m=buy&c=order&a=buy_now')}">
-        <input type="hidden" name="goods_id" value="{$id}">
-        <input type="hidden" name="goods_number" value="1" id="J_goods_number">
+        <input type="hidden" name="itemid" value="{$item_data[id]}">
+        <input type="hidden" name="quantity" value="1" id="J_quantity">
         <input type="hidden" name="shipping_type" value="1" id="J_shipping_type">
         <input type="hidden" name="pay_type" value="1" id="J_pay_type">
         <input type="hidden" name="from" value="item_detail">
     </form>
     <div class="iteminfo-wrap">
-        <h1 class="item-name">{$goods[goods_name]}</h1>
-        <div class="item-brief">{$goods[goods_brief]}</div>
+        <h1 class="item-name">{$item_data[name]}</h1>
+        <div class="item-brief">{$item_data[brief]}</div>
         <div class="price-wrap">
             <div class="item-group" style="padding: 5px 10px;">
                 <div class="label">市 场 价</div>
                 <div class="info">
-                    {if $goods[market_price]}
-                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$goods[market_price]}</s></span>
+                    {if $item_data[market_price]}
+                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$item_data[market_price]}</s></span>
                     {else}
-                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$goods[goods_price]}</s></span>
+                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$item_data[price]}</s></span>
                     {/if}
                 </div>
             </div>
@@ -64,7 +64,7 @@
                 <div class="info">
                     <div class="p-price">
                         <span>￥</span>
-                        <strong>{amount:$goods[goods_price]}</strong>
+                        <strong>{amount:$item_data[price]}</strong>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@
                     <p>累计评论</p>
                 </li>
                 <li>
-                    <h3>{$goods[sold]}</h3>
+                    <h3>{$item_data[sold]}</h3>
                     <p>交易成功</p>
                 </li>
             </ul>
@@ -113,7 +113,7 @@
         </div>
         <div class="item-group">
             <div class="share"><i class="iconfont icon-share"></i><span>分享</span></div>
-            <div class="favorite" collection="true" data-id="{$goods[id]}" data-type="goods"><i class="iconfont icon-favor_fill_light"></i><span>收藏商品({$goods[collection_num]})</span></div>
+            <div class="favorite" collection="true" data-id="{$item_data[id]}" data-type="goods"><i class="iconfont icon-favor_fill_light"></i><span>收藏商品({$item_data[collection_num]})</span></div>
         </div>
     </div>
     <!--goodsinfo end-->
@@ -147,8 +147,8 @@
             </div>
             <div class="separate"></div>
             <div class="row" style="padding: 10px 0 20px;">
-                <a href="{U:('m=shop&c=viewshop&shop_id='.$goods[shop_id])}" class="btn" style="margin-right: 10px;">进入店铺</a>
-                <a class="btn" collection="true" data-id="{$goods[shop_id]}" data-type="shop">收藏店铺</a>
+                <a href="{U:('m=shop&c=viewshop&shop_id='.$item_data[shop_id])}" class="btn" style="margin-right: 10px;">进入店铺</a>
+                <a class="btn" collection="true" data-id="{$item_data[shop_id]}" data-type="shop">收藏店铺</a>
                 <div class="clearfix"></div>
             </div>
         </div>
@@ -165,7 +165,7 @@
             </ul>
         </div>
         <div class="detail-content">
-            {$goods_desc[content]}
+            {$item_desc[content]}
         </div>
     </div>
 
@@ -175,13 +175,13 @@
             <ul class="hot-item-list">
                 {loop $hot_sale_list $item}
                 <li>
-                    <div class="g-pic bg-cover lazyload" data-original="{img $item[goods_thumb]}">
+                    <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
                         <div class="g-name"><p>{$item[goods_name]}</p></div>
-                        <a href="{U:('m=goods&c=item&id='.$item[id])}" target="_blank" title="{$item[goods_name]}"></a>
+                        <a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank" title="{$item[name]}"></a>
                     </div>
                     <div class="line">
                         <span class="sold">已售出<span style="color: #f40;">{$item[sold]}</span>件</span>
-                        <strong class="price"><span>¥</span>{amount:$item[goods_price]}</strong>
+                        <strong class="price"><span>¥</span>{amount:$item[price]}</strong>
                     </div>
                 </li>
                 {/loop}
@@ -210,7 +210,7 @@
                 var shipping_type = $("input.shipping_type:checked").val();
                 var pay_type = $("input.pay_type:checked").val();
                 var quantity = $("#quantity").val();
-                $("#J_goods_number").val(quantity);
+                $("#J_quantity").val(quantity);
                 $("#J_shipping_type").val(shipping_type);
                 $("#J_pay_type").val(pay_type);
                 $("#J_Frmbuy").submit();
@@ -225,11 +225,11 @@
         });
         $("#add-to-cart").on('click', function () {
             DSXUtil.checkLogin(function (data) {
-                var goods_id = "{$id}";
-                var goods_number = $("#quantity").val();
+                var itemid = "{$item_data[id]}";
+                var quantity = $("#quantity").val();
                 $.ajax({
                     url:"{U:('m=cart&c=index&a=add')}",
-                    data:{goods_id:goods_id,goods_number:goods_number},
+                    data:{itemid:itemid,quantity:quantity},
                     dataType:'json',
                     success:function (response) {
                         if (response.errcode == 0){

@@ -34,8 +34,7 @@ class OrderController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_item(array('order_id'=>$order_id));
-        $itemlist = order_get_goods_list(array('order_id'=>$order_id));
+        $order = order_get_data(array('order_id'=>$order_id));
         $trade_status = order_get_trade_status($order);
         $trade_status_tips = $_lang['order_trade_status'][$trade_status];
         if ($trade_status == 3) $shipping = order_get_shipping(array('order_id'=>$order_id));
@@ -45,6 +44,8 @@ class OrderController extends BaseController
         }else {
             $express_list = M('express')->order('id', 'ASC')->select();
         }
+        //商品列表
+        $itemlist = order_get_item_list(array('order_id'=>$order_id));
 
         $_G['title'] = '订单详情';
         include template('order_detail');
@@ -55,7 +56,7 @@ class OrderController extends BaseController
      */
     public function send(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_item(array('order_id'=>$order_id, 'seller_uid'=>$this->uid));
+        $order = order_get_data(array('order_id'=>$order_id, 'seller_uid'=>$this->uid));
         $trade_status = order_get_trade_status($order);
         if ($order) {
             if ($trade_status != 2) {
@@ -88,7 +89,7 @@ class OrderController extends BaseController
                     ));
                 }
                 //更新订单状态
-                order_update_item(array('order_id'=>$order_id), array('shipping_type'=>$shipping_type, 'shipping_status'=>1, 'shipping_time'=>time()));
+                order_update_data(array('order_id'=>$order_id), array('shipping_type'=>$shipping_type, 'shipping_status'=>1, 'shipping_time'=>time()));
                 $this->showSuccess('order_send_success');
             }
         }else {

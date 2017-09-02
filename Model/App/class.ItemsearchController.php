@@ -21,6 +21,7 @@ class ItemsearchController extends BaseController
             'catid'=>intval($_GET['catid']),
             'q'=>trim($_GET['q'])
         ));
+        //print_array($_GET);exit();
 
         include template('item_list');
     }

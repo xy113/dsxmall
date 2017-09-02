@@ -22,8 +22,8 @@ class PayController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_item(array('order_id'=>$order_id));
-        $goods = order_get_goods(array('order_id'=>$order_id));
+        $order = order_get_data(array('order_id'=>$order_id));
+        $item  = order_get_item(array('order_id'=>$order_id));
 
         include template('order_query');
     }

@@ -1,25 +1,25 @@
 {template header}
 <div class="cart">
     <div class="cart-list">
-        {loop $itemlist $shop_id $item}
+        {loop $cart_item_list $shop_id $shop}
         <div class="cart-item">
             <div class="console-bar">
                 <!--<span class="edit">编辑</span>-->
                 <label class="iconfont icon-round shopLabel"><input type="checkbox" class="radio shopCheckbox" value="{$shop_id}" style="display: none;"></label>
-                <div class="shop-name">{$item[shop_name]}</div>
+                <div class="shop-name">{$shop[shop_name]}</div>
             </div>
 
-            {loop $item[goods] $goods_id $goods}
+            {loop $shop[items] $itemid $item}
             <div class="item-box">
                 <div class="item-div">
                     <label class="iconfont icon-round itemLabel group-{$shop_id}">
-                        <input type="checkbox" class="itemCheckbox item-group-{$shop_id}" data-id="{$goods_id}" data-price="{$goods[goods_price]}" data-num="{$goods[goods_number]}" style="display: none;">
+                        <input type="checkbox" class="itemCheckbox item-group-{$shop_id}" data-id="{$itemid}" data-price="{$item[price]}" data-quantity="{$item[quantity]}" style="display: none;">
                     </label>
-                    <div class="thumb bg-cover lazyload" data-original="{img $goods[goods_thumb]}"></div>
+                    <div class="thumb bg-cover lazyload" data-original="{img $item[thumb]}"></div>
                     <div class="info">
-                        <h3>{$goods[goods_name]}</h3>
-                        <span class="price">￥{amount:$goods[goods_price]}</span>
-                        <span class="quantity">x{$goods[goods_number]}</span>
+                        <h3>{$item[name]}</h3>
+                        <span class="price">￥{amount:$item[price]}</span>
+                        <span class="quantity">x{$item[quantity]}</span>
 
                         <div class="editview">
                             <div class="inner">
@@ -32,7 +32,6 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             {/loop}
@@ -46,9 +45,9 @@
             var total_num=0,total_fee=0;
             $(".itemCheckbox:checked").each(function () {
                 var price = parseFloat($(this).attr('data-price'));
-                var number = parseInt($(this).attr('data-num'));
-                total_num+= number;
-                total_fee+= price*number;
+                var quantity = parseInt($(this).attr('data-quantity'));
+                total_num+= quantity;
+                total_fee+= price*quantity;
             });
             bridge.callHandler("sumTotal", {"total_num":total_num,"total_fee":total_fee});
         }

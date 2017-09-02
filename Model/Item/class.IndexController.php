@@ -5,7 +5,7 @@
  * Date: 2017/8/3
  * Time: 下午5:02
  */
-namespace Model\Goods;
+namespace Model\Item;
 class IndexController extends BaseController{
     public function index(){
         global $_G,$_lang;

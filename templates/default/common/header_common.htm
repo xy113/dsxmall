@@ -23,7 +23,7 @@
         </div>
         <div class="global-search-box">
             <form method="get" action="{U:('/')}">
-                <input type="hidden" name="m" value="goods">
+                <input type="hidden" name="m" value="item">
                 <input type="hidden" name="c" value="search">
                 <div class="input-box">
                     <input type="text" class="text" placeholder="商品名称" name="q" value="{$q}">
@@ -32,9 +32,9 @@
             </form>
             <div class="hot">
                 热门搜索:
-                <a href="{U:('m=goods&c=search&q=花菜')}">花菜</a>、
-                <a href="{U:('m=goods&c=search&q=胡萝卜')}">胡萝卜</a>、
-                <a href="{U:('m=goods&c=search&q=五花肉')}">五花肉</a>
+                <a href="{U:('m=item&c=search&q=花菜')}">花菜</a>、
+                <a href="{U:('m=item&c=search&q=胡萝卜')}">胡萝卜</a>、
+                <a href="{U:('m=item&c=search&q=五花肉')}">五花肉</a>
             </div>
         </div>
         <ul class="apps">
@@ -55,7 +55,7 @@
         <div class="cat"><span class="iconfont icon-sort"></span> 全部商品分类</div>
         <ul>
             <li><a href="{U:('/')}"{if $_G[nav]=="home"} class="cur"{/if}>首页</a></li>
-            <li><a href="{U:('m=goods&c=search')}"{if $_G[nav]=="goods"} class="cur"{/if}>营养餐</a></li>
+            <li><a href="{U:('m=item&c=search')}"{if $_G[nav]=="item"} class="cur"{/if}>营养餐</a></li>
             <li><a href="{U:('m=shop&c=index')}"{if $_G[nav]=="shop"} class="cur"{/if}>企业店铺</a></li>
             <li><a href="{U:('m=member&c=order&a=index')}">我的订单</a></li>
         </ul>

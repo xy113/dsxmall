@@ -27,6 +27,7 @@ class AccountController extends BaseController
             $member = member_get_data("`username`='$account' OR `mobile`='$account' OR `email`='$account'");
             if ($member) {
                 if ($member['password'] == getPassword($password)){
+                    /*
                     $token = sha1(time().random(10));
                     $token_data = array(
                         'uid'=>$member['uid'],
@@ -38,6 +39,8 @@ class AccountController extends BaseController
                     if (!member_update_token($member['uid'], $token, time())){
                         member_add_token($token_data);
                     }
+                    */
+                    member_update_cookie($member['uid']);
                     $info = member_get_info(array('uid'=>$member['uid']));
                     $this->showAjaxReturn(array(
                         'uid'=>$member['uid'],
@@ -45,8 +48,7 @@ class AccountController extends BaseController
                         'province'=>$info['province'],
                         'city'=>$info['city'],
                         'county'=>$info['county'],
-                        'headimg'=>avatar($member['uid']),
-                        'token'=>$token
+                        'headimg'=>avatar($member['uid'])
                     ));
                 }else {
                     $this->showAjaxError('1003', 'password_incorrect');

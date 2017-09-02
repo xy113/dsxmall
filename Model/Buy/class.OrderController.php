@@ -20,13 +20,14 @@ class OrderController extends BaseController{
     public function buy_now(){
         global $_G,$_lang;
 
-        $goods_id = intval($_GET['goods_id']);
-        $goods_number = intval($_GET['goods_number']);
+        $itemid = intval($_GET['itemid']);
+        $quantity = intval($_GET['quantity']);
         $shipping_type = intval($_GET['shipping_type']);
         $pay_type = intval($_GET['pay_type']);
-        if ($goods_id && $goods_number) {
-            $goods = goods_get_item(array('id'=>$goods_id));
-            $shop  = shop_get_data(array('shop_id'=>$goods['shop_id']));
+        $item = $shop = array();
+        if ($itemid && $quantity) {
+            $item = item_get_data(array('id'=>$itemid));
+            $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
         } else{
             $this->showError('can_not_buy');
         }
@@ -42,17 +43,18 @@ class OrderController extends BaseController{
             $trade_no = trade_create_no();
             $order_no = order_create_no($this->uid);
             //卖家信息
-            $seller   = member_get_data(array('uid'=>$goods['uid']), 'uid,username');
+            $seller   = member_get_data(array('uid'=>$item['uid']), 'uid,username');
             //收货地址
             $address  = address_get_data(array('id'=>intval($_GET['address_id'])));
+            $formated_address = $address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'];
             //订单金额
-            $order_fee = floatval($goods['goods_price']) * $goods_number;
+            $order_fee = floatval($item['price']) * $quantity;
             //运费
             $shipping_fee = 0;
             //总金额
             $total_fee = $order_fee + $shipping_fee;
             //创建订单
-            $order_id = order_add_item(array(
+            $order_id = order_add_data(array(
                 'uid'=>$this->uid,
                 'seller_uid'=>$seller['uid'],
                 'seller_username'=>$seller['username'],
@@ -71,21 +73,21 @@ class OrderController extends BaseController{
                 'shipping_status'=>0,
                 'consignee'=>$address['consignee'],
                 'phone'=>$address['phone'],
-                'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
+                'address'=>$formated_address,
                 'trade_no'=>$trade_no,
-                'order_remark'=>trim($_GET['remark'])
+                'remark'=>trim($_GET['remark'])
             ));
             //记录订单商品信息
-            order_add_goods(array(
+            order_add_item(array(
                 'uid'=>$this->uid,
                 'order_id'=>$order_id,
-                'goods_id'=>$goods['id'],
-                'goods_name'=>$goods['goods_name'],
-                'market_price'=>$goods['market_price'],
-                'goods_price'=>$goods['goods_price'],
-                'goods_number'=>$goods_number,
-                'goods_thumb'=>$goods['goods_thumb'],
-                'goods_image'=>$goods['goods_image']
+                'itemid'=>$item['id'],
+                'name'=>$item['name'],
+                'market_price'=>$item['market_price'],
+                'price'=>$item['price'],
+                'quantity'=>$quantity,
+                'thumb'=>$item['thumb'],
+                'image'=>$item['image']
             ));
             //创建订单操作记录
             order_add_action(array(
@@ -101,20 +103,20 @@ class OrderController extends BaseController{
                 'payee_uid'=>$seller['uid'],
                 'payee_name'=>$seller['username'],
                 'trade_no'=>$trade_no,
-                'trade_name'=>$goods['goods_name'],
-                'trade_desc'=>$goods['goods_name'],
+                'trade_name'=>$item['name'],
+                'trade_desc'=>$item['brief'] ? $item['brief'] : $item['name'],
                 'trade_fee'=>$total_fee,
                 'trade_type'=>'SHOPPING',
                 'trade_status'=>'UNPAID',
                 'trade_time'=>time(),
                 'out_trade_no'=>$trade_no
             ));
-            goods_update_item(array('id'=>$goods_id), "`sold`=`sold`+$goods_number");
-            shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$goods_number");
+            item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity");
+            shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity,`stock`=`stock`-$quantity");
             $this->redirect(U('c=pay&order_id='.$order_id));
         }else {
             cookie('_token_', md5_16(random(10)));
-            $total_fee = floatval($goods['goods_price']) * $goods_number;
+            $total_fee = floatval($item['price']) * $quantity;
 
             $_G['step'] = 'confirm_order';
             $_G['title'] = $_lang['confirm_order'];
@@ -129,33 +131,36 @@ class OrderController extends BaseController{
         global $_G,$_lang;
 
         $items = $_GET['items'];
-        $itemlist = array();
+        $cart_item_list = array();
+        $itemids = 0;
         if ($items && is_array($items)) {
             $itemids = implodeids($items);
-            $itemlist = cart_get_list(array('uid'=>$this->uid, 'goods_id'=>array('IN', $itemids)), 0);
+            $cart_item_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0);
         }else{
             $this->showError('can_not_buy');
         }
 
         $total_count = $total_fee = 0;
-        if ($itemlist) {
+        if ($cart_item_list) {
             $price_list = array();
-            $goods_list = goods_get_item_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, goods_price');
-            foreach ($goods_list as $goods){
-                $price_list[$goods['id']] = $goods['goods_price'];
-            }
-            $datalist = array();
+            $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, price');
             foreach ($itemlist as $item){
-                $item['goods_price'] = $price_list[$item['goods_id']];
-                $item['total_fee'] = floatval($item['goods_price']) * intval($item['goods_number']);
+                $price_list[$item['id']] = $item['price'];
+            }
+            unset($itemlist, $item);
+
+            $datalist = array();
+            foreach ($cart_item_list as $item){
+                $item['price'] = $price_list[$item['itemid']];
+                $item['total_fee'] = floatval($item['price']) * intval($item['quantity']);
                 $datalist[$item['shop_id']]['shop_id'] = $item['shop_id'];
                 $datalist[$item['shop_id']]['shop_name'] = $item['shop_name'];
                 $datalist[$item['shop_id']]['simple_fee']+= $item['total_fee'];
-                $datalist[$item['shop_id']]['goods'][$item['goods_id']] = $item;
-                $total_count+= $item['goods_number'];
-                $total_fee+= floatval($item['goods_price']) * intval($item['goods_number']);
+                $datalist[$item['shop_id']]['items'][$item['itemid']] = $item;
+                $total_count+= $item['quantity'];
+                $total_fee+= floatval($item['price']) * intval($item['quantity']);
             }
-            $itemlist = $datalist;
+            $cart_item_list = $datalist;
             unset($datalist, $item);
         }else {
             $this->showError('can_not_buy');
@@ -171,13 +176,14 @@ class OrderController extends BaseController{
             $shipping_type = intval($_GET['shipping_type']);
             $pay_type = intval($_GET['pay_type']);
             $remark_list = $_GET['remark_list'];
-            foreach ($itemlist as $shop) {
+            foreach ($cart_item_list as $shop) {
                 $trade_no = trade_create_no();
                 $order_no = order_create_no($this->uid);
                 //卖家信息
                 $seller = shop_get_data(array('shop_id'=>$shop['shop_id']), 'owner_uid,owner_username');
                 //收货地址
                 $address = address_get_data(array('id'=>intval($_GET['address_id'])));
+                $formated_address = $address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'];
                 //订单金额
                 $order_fee = floatval($shop['simple_fee']);
                 //运费
@@ -185,7 +191,7 @@ class OrderController extends BaseController{
                 //总金额
                 $total_fee = $order_fee + $shipping_fee;
                 //创建订单
-                $order_id = order_add_item(array(
+                $order_id = order_add_data(array(
                     'uid'=>$this->uid,
                     'seller_uid'=>$seller['owner_uid'],
                     'seller_username'=>$seller['owner_username'],
@@ -204,29 +210,29 @@ class OrderController extends BaseController{
                     'shipping_status'=>0,
                     'consignee'=>$address['consignee'],
                     'phone'=>$address['phone'],
-                    'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
+                    'address'=>$formated_address,
                     'trade_no'=>$trade_no,
-                    'order_remark'=>$remark_list[$shop['shop_id']]
+                    'remark'=>$remark_list[$shop['shop_id']]
                 ));
 
                 $shop_total_num = 0;
                 $trade_name = '';
-                foreach ($shop['goods'] as $goods_id=>$goods){
+                foreach ($shop['items'] as $itemid=>$item){
                     //记录订单商品信息
-                    if (!$trade_name) $trade_name = $goods['goods_name'];
-                    order_add_goods(array(
+                    if (!$trade_name) $trade_name = $item['name'];
+                    order_add_item(array(
                         'uid'=>$this->uid,
                         'order_id'=>$order_id,
-                        'goods_id'=>$goods['id'],
-                        'goods_name'=>$goods['goods_name'],
-                        'market_price'=>$goods['market_price'],
-                        'goods_price'=>$goods['goods_price'],
-                        'goods_number'=>$goods['goods_number'],
-                        'goods_thumb'=>$goods['goods_thumb'],
-                        'goods_image'=>$goods['goods_image']
+                        'itemid'=>$itemid,
+                        'name'=>$item['name'],
+                        'market_price'=>$item['market_price'],
+                        'price'=>$item['price'],
+                        'quantity'=>$item['quantity'],
+                        'thumb'=>$item['thumb'],
+                        'image'=>$item['image']
                     ));
-                    goods_update_item(array('id'=>$goods_id), "`sold`=`sold`+".$goods['goods_number']);
-                    $shop_total_num+= $goods['goods_number'];
+                    item_update_data(array('id'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
+                    $shop_total_num+= $item['quantity'];
 
                 }
                 shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$shop_total_num");
@@ -257,8 +263,7 @@ class OrderController extends BaseController{
                     'out_trade_no'=>$trade_no
                 ));
             }
-            $itemids = implodeids($items);
-            cart_delete_data(array('uid'=>$this->uid, 'goods_id'=>array('IN', $itemids)));
+            cart_delete_data(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)));
             $this->redirect(U('m=member&c=order&a=itemlist'));
         }else {
             cookie('_token_', md5_16(random(10)));

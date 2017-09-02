@@ -31,15 +31,15 @@
         </tr>
         </tbody>
     </table>
-    {loop $itemlist $order_id $item}
+    {loop $order_list $order_id $order}
     <div class="order-item-wrap" id="order-item-{$order_id}">
         <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
             <thead>
             <tr>
                 <th>
                     <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">{date:$item[create_time]|'Y-m-d'}</span>
-                    <span class="wrap-order-no">{$item[order_no]}</span>
+                    <span class="wrap-time">{date:$order[create_time]|'Y-m-d'}</span>
+                    <span class="wrap-order-no">{$order[order_no]}</span>
                 </th>
                 <th colspan="2">
                 </th>
@@ -48,50 +48,50 @@
             </tr>
             </thead>
             <tbody>
-            {loop $item[goods] $goods_id $goods}
+            {loop $order[items] $itemid $item}
             <tr>
                 <td class="col1">
                     <div class="goods-pic">
-                        <a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank"><img src="{img $goods[goods_thumb]}"></a>
+                        <a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank"><img src="{img $item[thumb]}"></a>
                     </div>
                     <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name"><a href="{U:('m=goods&c=item&id='.$goods_id)}" target="_blank">{$goods[goods_name]}</a></div>
+                        <div class="goods-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[name]}</a></div>
                         <div class="goods-attr">商品属性</div>
                     </div>
                 </td>
                 <td class="col2">
-                    {if $goods[market_price]}<p><s>￥{amount:$goods[market_price]}</s></p>{/if}
-                    <p>￥{amount:$goods[goods_price]}</p>
+                    {if $item[market_price]}<p><s>￥{amount:$item[market_price]}</s></p>{/if}
+                    <p>￥{amount:$item[price]}</p>
                 </td>
-                <td class="col3">{$goods[goods_number]}</td>
+                <td class="col3">{$item[quantity]}</td>
                 <td class="col5">
-                    <p><strong style="color: #FF0000;">￥{amount:$item[total_fee]}</strong></p>
-                    <p style="font-size: 11px;">(含运费:￥{amount:$item[shipping_fee]})</p>
+                    <p><strong style="color: #FF0000;">￥{amount:$order[total_fee]}</strong></p>
+                    <p style="font-size: 11px;">(含运费:￥{amount:$order[shipping_fee]})</p>
                 </td>
                 <td class="col6">
-                    {if $item[order_trade_status]==1}
+                    {if $order[order_trade_status]==1}
                     <p>等待买家付款</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
-                    {elseif $item[order_trade_status]==2}
+                    {elseif $order[order_trade_status]==2}
                     <p>等待卖家发货</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
-                    {elseif $item[order_trade_status]==3}
+                    {elseif $order[order_trade_status]==3}
                     <p>宝贝运送中</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
                     <p>查看物流</p>
-                    {elseif $item[order_trade_status]==4||$item[order_trade_status]==5}
+                    {elseif $order[order_trade_status]==4||$order[order_trade_status]==5}
                     <p>交易成功</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
-                    {elseif $item[order_trade_status]==6}
+                    {elseif $order[order_trade_status]==6}
                     <p>退款中</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
-                    {elseif $item[order_trade_status]==7}
+                    {elseif $order[order_trade_status]==7}
                     <p>退款完成</p>
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
                     {/if}
                 </td>
                 <td class="col7">
-                    {if $item[order_trade_status]==2}
+                    {if $order[order_trade_status]==2}
                     <p><a href="{U:('&c=order&a=detail&order_id='.$order_id)}" target="_blank" class="button btn">发货</a></p>
                     {/if}
                     <p><a>评价买家</a></p>
@@ -102,5 +102,6 @@
         </table>
     </div>
     {/loop}
+    <div class="pagination">{$pages}</div>
 </div>
 {template footer}

@@ -21,7 +21,7 @@
             {loop $itemlist $item}
             <li>
                 <div class="hd">
-                    <div class="logo bg-cover lazyload" data-original="{img $item[shop_logo]}">
+                    <div class="logo bg-cover asyncload" data-original="{img $item[shop_logo]}">
                         <a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank" title="{$item[shop_name]}"></a>
                     </div>
                     <div class="shop-name"><a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank">{$item[shop_name]}</a></div>

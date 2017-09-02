@@ -15,31 +15,33 @@ class CartController extends BaseController
      * 添加到购物车
      */
     public function add(){
-        $goods_id = intval($_GET['goods_id']);
-        $goods_number = intval($_GET['goods_number']);
-        $item = goods_get_item(array('id'=>$goods_id));
+        $itemid = intval($_GET['itemid']);
+        $quantity = intval($_GET['quantity']);
+        if (!$itemid) $itemid = intval($_GET['goods_id']);
+        if (!$quantity) $quantity = intval($_GET['goods_number']);
+        $item = item_get_data(array('id'=>$itemid));
         if ($item) {
-            if (cart_get_count(array('uid'=>$this->uid, 'goods_id'=>$goods_id))){
-                cart_update_data(array('uid'=>$this->uid, 'goods_id'=>$goods_id), "`goods_number`=`goods_number`+".$goods_number);
+            if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
+                cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
             }else {
                 $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
                 cart_add_data(array(
                     'uid'=>$this->uid,
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
-                    'goods_id'=>$goods_id,
-                    'goods_name'=>$item['goods_name'],
-                    'goods_number'=>$goods_number,
-                    'goods_price'=>$item['goods_price'],
-                    'goods_thumb'=>$item['goods_thumb'],
-                    'goods_image'=>$item['goods_image'],
+                    'itemid'=>$itemid,
+                    'name'=>$item['name'],
+                    'quantity'=>$quantity,
+                    'price'=>$item['price'],
+                    'thumb'=>$item['thumb'],
+                    'image'=>$item['image'],
                     'create_time'=>time()
                 ));
             }
 
             $this->showAjaxReturn();
         }else {
-            $this->showAjaxError(1, 'goods_not_exists');
+            $this->showAjaxError(1, 'item_not_exists');
         }
     }
 
@@ -48,41 +50,45 @@ class CartController extends BaseController
      */
     public function get_settle_items(){
         $itemids = $_GET['itemids'];
-        $itemlist = array();
+        $cart_item_list = array();
         if (is_array($itemids)) $itemids = implode(',', $itemids);
         if (!$itemids || empty($itemids)){
             $this->showAjaxError(1, 'can_not_buy');
         }else {
-            $itemlist = cart_get_list(array('uid'=>$this->uid, 'goods_id'=>array('IN', $itemids)), 0);
+            $cart_item_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0);
         }
 
         $total_num = $total_fee = 0;
-        if ($itemlist) {
+        if ($cart_item_list) {
             $price_list = array();
-            $goods_list = goods_get_item_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, goods_price');
-            foreach ($goods_list as $goods){
-                $price_list[$goods['id']] = $goods['goods_price'];
+            $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, price');
+            foreach ($itemlist as $item){
+                $price_list[$item['id']] = $item['price'];
             }
             $datalist = array();
-            foreach ($itemlist as $item){
-                $item['goods_price'] = $price_list[$item['goods_id']];
-                $item['formated_price'] = formatAmount($item['goods_price']);
-                $item['goods_thumb'] = image($item['goods_thumb']);
-                $item['total_fee'] = floatval($item['goods_price']) * intval($item['goods_number']);
-                $datalist[$item['shop_id']]['shop_id'] = $item['shop_id'];
-                $datalist[$item['shop_id']]['shop_name'] = $item['shop_name'];
-                $datalist[$item['shop_id']]['simple_fee']+= $item['total_fee'];
-                $datalist[$item['shop_id']]['simple_num']+= intval($item['goods_number']);
-                $datalist[$item['shop_id']]['items'][] = $item;
-                $total_num+= $item['goods_number'];
-                $total_fee+= floatval($item['goods_price']) * intval($item['goods_number']);
+            foreach ($cart_item_list as $cartitem){
+                $cartitem['price'] = $price_list[$cartitem['itemid']];
+                $cartitem['goods_price'] = $cartitem['price'];
+                $cartitem['formated_price'] = formatAmount($cartitem['price']);
+
+                $cartitem['thumb'] = image($cartitem['thumb']);
+                $cartitem['goods_thumb'] = $cartitem['thumb'];
+                $cartitem['goods_number'] = $cartitem['quantity'];
+                $cartitem['total_fee'] = floatval($cartitem['price']) * intval($cartitem['quantity']);
+                $datalist[$cartitem['shop_id']]['shop_id'] = $cartitem['shop_id'];
+                $datalist[$cartitem['shop_id']]['shop_name'] = $cartitem['shop_name'];
+                $datalist[$cartitem['shop_id']]['simple_fee']+= $cartitem['total_fee'];
+                $datalist[$cartitem['shop_id']]['simple_num']+= intval($cartitem['quantity']);
+                $datalist[$cartitem['shop_id']]['items'][] = $cartitem;
+                $total_num+= $cartitem['quantity'];
+                $total_fee+= floatval($cartitem['price']) * intval($cartitem['quantity']);
             }
-            $itemlist = $datalist;
-            unset($datalist, $item);
+            $cart_item_list = $datalist;
+            unset($datalist, $cartitem);
             $this->showAjaxReturn(array(
                 'total_num'=>$total_num,
                 'total_fee'=>$total_fee,
-                'items'=>array_values($itemlist)
+                'items'=>array_values($cart_item_list)
             ));
         }else {
             $this->showAjaxError(1,'can_not_buy');
@@ -108,43 +114,44 @@ class CartController extends BaseController
             unset($datalist, $order);
         }
 
-        $itemlist = array();
+        $shop_list = array();
         $itemids = $itemids ? implodeids($itemids) : 0;
         $price_list = array();
-        $goods_list = goods_get_item_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id AS goods_id, goods_price');
-        foreach ($goods_list as $goods){
-            $price_list[$goods['goods_id']] = $goods['goods_price'];
+        $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id AS itemid, price');
+        foreach ($itemlist as $item){
+            $price_list[$item['itemid']] = $item['price'];
         }
+        unset($itemlist, $item);
 
         $total_num = $total_fee = 0;
-        $cart_list = cart_get_list(array('uid'=>$this->uid, 'goods_id'=>array('IN', $itemids)), 0, 0, null);
+        $cart_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0, 0, null);
         foreach ($cart_list as $cartitem){
-            if (isset($price_list[$cartitem['goods_id']])){
-                $cartitem['goods_price'] = $price_list[$cartitem['goods_id']];
-                $cartitem['total_fee'] = floatval($cartitem['goods_price']) * intval($cartitem['goods_number']);
-                $itemlist[$cartitem['shop_id']]['shop_id'] = $cartitem['shop_id'];
-                $itemlist[$cartitem['shop_id']]['shop_name'] = $cartitem['shop_name'];
-                $itemlist[$cartitem['shop_id']]['simple_fee']+= $cartitem['total_fee'];
-                $itemlist[$cartitem['shop_id']]['goods'][$cartitem['goods_id']] = $cartitem;
-                $total_num+= $cartitem['goods_number'];
-                $total_fee+= floatval($cartitem['goods_price']) * intval($cartitem['goods_number']);
+            if (isset($price_list[$cartitem['itemid']])){
+                $cartitem['goods_price'] = $price_list[$cartitem['itemid']];
+                $cartitem['total_fee'] = floatval($cartitem['price']) * intval($cartitem['quantity']);
+                $shop_list[$cartitem['shop_id']]['shop_id'] = $cartitem['shop_id'];
+                $shop_list[$cartitem['shop_id']]['shop_name'] = $cartitem['shop_name'];
+                $shop_list[$cartitem['shop_id']]['simple_fee']+= $cartitem['total_fee'];
+                $shop_list[$cartitem['shop_id']]['items'][$cartitem['itemid']] = $cartitem;
+                $total_num+= $cartitem['quantity'];
+                $total_fee+= floatval($cartitem['price']) * intval($cartitem['quantity']);
             }
         }
-        unset($goods_list, $goods, $cart_list, $cartitem, $price_list);
+        unset($cart_list, $cartitem, $price_list);
 
         if ($order_list) {
             foreach ($order_list as $order){
-                if (isset($itemlist[$order['shop_id']])){
-                    $itemlist[$order['shop_id']]['pay_type'] = $order['pay_type'];
-                    $itemlist[$order['shop_id']]['shipping_type'] = $order['shipping_type'];
-                    $itemlist[$order['shop_id']]['remark'] = $order['remark'];
+                if (isset($shop_list[$order['shop_id']])){
+                    $shop_list[$order['shop_id']]['pay_type'] = $order['pay_type'];
+                    $shop_list[$order['shop_id']]['shipping_type'] = $order['shipping_type'];
+                    $shop_list[$order['shop_id']]['remark'] = $order['remark'];
                 }
             }
             unset($order_list, $order);
         }
 
-        //$this->showAjaxReturn($itemlist);
-        foreach ($itemlist as $shop) {
+        //创建订单
+        foreach ($shop_list as $shop_id=>$shop) {
             $trade_no = trade_create_no();
             $order_no = order_create_no($this->uid);
             //卖家信息
@@ -163,7 +170,7 @@ class CartController extends BaseController
             //总金额
             $total_fee = $order_fee + $shipping_fee;
             //创建订单
-            $order_id = order_add_item(array(
+            $order_id = order_add_data(array(
                 'uid'=>$this->uid,
                 'seller_uid'=>$seller['owner_uid'],
                 'seller_username'=>$seller['owner_username'],
@@ -189,23 +196,23 @@ class CartController extends BaseController
 
             $shop_total_num = 0;
             $trade_name = '';
-            if ($shop['goods']){
-                foreach ($shop['goods'] as $goods_id=>$goods){
+            if ($shop['items']){
+                foreach ($shop['items'] as $itemid=>$item){
                     //记录订单商品信息
-                    if (!$trade_name) $trade_name = $goods['goods_name'];
-                    order_add_goods(array(
+                    if (!$trade_name) $trade_name = $item['name'];
+                    order_add_item(array(
                         'uid'=>$this->uid,
                         'order_id'=>$order_id,
-                        'goods_id'=>$goods['id'],
-                        'goods_name'=>$goods['goods_name'],
-                        'market_price'=>$goods['market_price'],
-                        'goods_price'=>$goods['goods_price'],
-                        'goods_number'=>$goods['goods_number'],
-                        'goods_thumb'=>$goods['goods_thumb'],
-                        'goods_image'=>$goods['goods_image']
+                        'itemid'=>$itemid,
+                        'name'=>$item['name'],
+                        'market_price'=>$item['market_price'],
+                        'price'=>$item['price'],
+                        'quantity'=>$item['quantity'],
+                        'thumb'=>$item['thumb'],
+                        'image'=>$item['image']
                     ));
-                    goods_update_item(array('id'=>$goods_id), "`sold`=`sold`+".$goods['goods_number']);
-                    $shop_total_num+= $goods['goods_number'];
+                    item_update_data(array('id'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
+                    $shop_total_num+= $item['quantity'];
 
                 }
             }
@@ -238,7 +245,7 @@ class CartController extends BaseController
                 'out_trade_no'=>$trade_no
             ));
         }
-        cart_delete_data(array('uid'=>$this->uid, 'goods_id'=>array('IN', $itemids)));
+        cart_delete_data(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)));
         $this->showAjaxReturn();
     }
 }

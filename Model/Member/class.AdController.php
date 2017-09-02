@@ -4,8 +4,11 @@ class AdController extends BaseController{
 	public function index(){
 		$this->itemlist();
 	}
-	
-	public function itemlist(){
+
+    /**
+     *
+     */
+    public function itemlist(){
 		global $_G,$_lang;
 		
 		if ($this->checkFormSubmit()){

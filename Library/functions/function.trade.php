@@ -189,9 +189,9 @@ function order_create_no($uid, $type='6'){
  * @param int $return
  * @return array|bool|null
  */
-function order_add_item($data, $return=0){
-    $order_id = M('order_item')->insert($data, true);
-    return $return ? order_get_item(array('order_id'=>$order_id)) : $order_id;
+function order_add_data($data, $return=0){
+    $order_id = M('order')->insert($data, true);
+    return $return ? order_get_data(array('order_id'=>$order_id)) : $order_id;
 }
 
 /**
@@ -199,8 +199,8 @@ function order_add_item($data, $return=0){
  * @param $condition
  * @return bool|int
  */
-function order_delete_item($condition){
-    return $condition ? M('order_item')->where($condition)->delete() : false;
+function order_delete_data($condition){
+    return $condition ? M('order')->where($condition)->delete() : false;
 }
 
 /**
@@ -209,8 +209,8 @@ function order_delete_item($condition){
  * @param $data
  * @return bool|int
  */
-function order_update_item($condition, $data){
-    return M('order_item')->where($condition)->update($data);
+function order_update_data($condition, $data){
+    return M('order')->where($condition)->update($data);
 }
 
 /**
@@ -219,8 +219,8 @@ function order_update_item($condition, $data){
  * @param string $field
  * @return array|null
  */
-function order_get_item($condition, $field='*'){
-    $data = M('order_item')->where($condition)->field($field)->getOne();
+function order_get_data($condition, $field='*'){
+    $data = M('order')->where($condition)->field($field)->getOne();
     return $data ? $data : array();
 }
 
@@ -230,8 +230,8 @@ function order_get_item($condition, $field='*'){
  * @param string $field
  * @return mixed
  */
-function order_get_item_count($condition, $field='*'){
-    return M('order_item')->where($condition)->count($field);
+function order_get_count($condition, $field='*'){
+    return M('order')->where($condition)->count($field);
 }
 
 /**
@@ -243,10 +243,10 @@ function order_get_item_count($condition, $field='*'){
  * @param string $field
  * @return array
  */
-function order_get_item_list($condition, $count=20, $offset=0, $order=null, $field='*'){
+function order_get_list($condition, $count=20, $offset=0, $order=null, $field='*'){
     $limit = $count ? "$offset,$count" : ($offset ? $offset : '');
     !$order && $order = 'order_id DESC';
-    $itemlist = M('order_item')->where($condition)->field($field)->order($order)->limit($limit)->select();
+    $itemlist = M('order')->where($condition)->field($field)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }
 
@@ -290,8 +290,8 @@ function order_get_trade_status($order){
  * @param $data
  * @return bool|int|mysqli_result|string
  */
-function order_add_goods($data){
-    return M('order_goods')->insert($data, true);
+function order_add_item($data){
+    return M('order_item')->insert($data, true);
 }
 
 /**
@@ -299,8 +299,8 @@ function order_add_goods($data){
  * @param $condition
  * @return bool|int
  */
-function order_delete_goods($condition){
-    return $condition ? M('order_goods')->where($condition)->delete() : false;
+function order_delete_item($condition){
+    return $condition ? M('order_item')->where($condition)->delete() : false;
 }
 
 /**
@@ -309,8 +309,8 @@ function order_delete_goods($condition){
  * @param $data
  * @return bool|int
  */
-function order_update_goods($condition, $data){
-    return M('order_goods')->where($condition)->update($data);
+function order_update_item($condition, $data){
+    return M('order_item')->where($condition)->update($data);
 }
 
 /**
@@ -318,8 +318,8 @@ function order_update_goods($condition, $data){
  * @param $condition
  * @return array|null
  */
-function order_get_goods($condition){
-    $data = M('order_goods')->where($condition)->getOne();
+function order_get_item($condition){
+    $data = M('order_item')->where($condition)->getOne();
     return $data ? $data : array();
 }
 
@@ -328,8 +328,8 @@ function order_get_goods($condition){
  * @param $condition
  * @return array
  */
-function order_get_goods_list($condition){
-    $itemlist = M('order_goods')->where($condition)->order('id ASC')->select();
+function order_get_item_list($condition){
+    $itemlist = M('order_item')->where($condition)->order('id ASC')->select();
     return $itemlist ? $itemlist : array();
 }
 

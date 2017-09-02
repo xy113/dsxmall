@@ -31,11 +31,11 @@
             <tr id="favorite-item-{$item[id]}">
             	<td>
                     <div class="thumb bg-cover lazyload" data-original="{img $item[image]}">
-                        <a href="{U:('m=goods&c=item&id='.$item['dataid'])}" target="_blank"></a>
+                        <a href="{U:('m=item&c=item&id='.$item['dataid'])}" target="_blank"></a>
                     </div>
                 </td>
             	<td>
-                	<h3 class="title"><a href="{U:('m=goods&c=item&id='.$item['dataid'])}" target="_blank">{$item[title]}</a></h3>
+                	<h3 class="title"><a href="{U:('m=item&c=item&id='.$item['dataid'])}" target="_blank">{$item[title]}</a></h3>
                 </td>
                 <td>{date:$item[create_time]|'Y-m-d H:i:s'}</td>
                 <td class="align-right"><a rel="a-delete" data-id="{$item[id]}">取消收藏</a></td>

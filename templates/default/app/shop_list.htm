@@ -73,7 +73,7 @@
                         });
                         onBridgeReady(function (bridge) {
                             $(item_ids).each(function (i, id) {
-                                $("#item_"+id).on('click', function (e) {
+                                $("#item_"+id).on(tap, function (e) {
                                     var id = $(this).attr('data-id');
                                     bridge.callHandler('viewShop', id);
                                 });

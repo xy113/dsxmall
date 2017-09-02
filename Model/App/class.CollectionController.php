@@ -22,47 +22,53 @@ class CollectionController extends BaseController
      *
      */
     public function item(){
-        $this->goods();
-    }
-
-    public function goods(){
         global $_G,$_lang;
 
         $pagesize = 10;
-        $condition = array('uid'=>$this->uid, 'datatype'=>'goods');
+        $condition = array('uid'=>$this->uid, 'datatype'=>'item');
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['title'] = array('LIKE', $q);
 
         $totalnum  = collection_get_count($condition);
         $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $itemlist = collection_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
-        if ($itemlist) {
-            $datalist = $goods_ids = array();
-            foreach ($itemlist as $item){
-                $datalist[$item['dataid']] = $item;
-                $goods_ids[] = $item['dataid'];
+        $collection_list = collection_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
+        if ($collection_list) {
+            $datalist = $itemids = array();
+            foreach ($collection_list as $coll){
+                $datalist[$coll['dataid']] = $coll;
+                $itemids[] = $coll['dataid'];
             }
-            $itemlist = $datalist;
-            unset($datalist, $item);
+            $collection_list = $datalist;
+            unset($datalist, $coll);
 
-            $goods_ids = $goods_ids ? implodeids($goods_ids) : 0;
-            if ($goods_ids) {
-                $goods_list = goods_get_item_list(array('id'=>array('IN', $goods_ids)), 0, 0, null, 'id,goods_name,goods_price,goods_thumb,sold');
-                foreach ($goods_list as $goods){
-                    $itemlist[$goods['id']]['goods_name'] = $goods['goods_name'];
-                    $itemlist[$goods['id']]['goods_price'] = $goods['goods_price'];
-                    $itemlist[$goods['id']]['goods_thumb'] = image($goods['goods_thumb']);
-                    $itemlist[$goods['id']]['sold'] = $goods['sold'];
+            $itemids = $itemids ? implodeids($itemids) : 0;
+            if ($itemids) {
+                $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id,name,price,thumb,sold');
+                foreach ($itemlist as $item){
+                    $collection_list[$item['id']]['name']  = $item['name'];
+                    $collection_list[$item['id']]['price'] = $item['price'];
+                    $collection_list[$item['id']]['thumb'] = image($item['thumb']);
+                    $collection_list[$item['id']]['sold']  = $item['sold'];
                 }
             }
-            unset($goods_ids, $goods_list, $goods);
+            unset($itemids, $itemlist, $item);
         }
         $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", true);
 
-        $_G['title'] = $_lang['goods_collection'];
-        include template('collection_goods');
+        $_G['title'] = $_lang['item_collection'];
+        include template('collection_item');
     }
 
+    /**
+     * 商品收藏
+     */
+    public function goods(){
+        $this->item();
+    }
+
+    /**
+     * 店铺收藏
+     */
     public function shop(){
         global $_G,$_lang;
 

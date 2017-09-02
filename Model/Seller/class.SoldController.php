@@ -45,34 +45,33 @@ class SoldController extends BaseController{
         }
 
         $pagesize = 10;
-        $totalnum = order_get_item_count($condition);
-        $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+        $totalnum = order_get_count($condition);
+        $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
         $_G['page'] = min(array($_G['page'], $pagecount));
-        $start_limit = ($_G['page'] - 1) * $pagesize;
-        $itemlist = order_get_item_list($condition, $pagesize, $start_limit, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $start_limit, "", 1);
+        $order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize, 'order_id DESC');
+        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", 1);
 
-        if ($itemlist) {
+        if ($order_list) {
             $datalist = $order_ids = array();
-            foreach ($itemlist as $item){
-                $item['order_trade_status'] = order_get_trade_status($item);
-                $item['shop_short_name'] = cutstr($item['shop_name'], 12, '..');
-                $datalist[$item['order_id']] = $item;
-                $order_ids[] = $item['order_id'];
+            foreach ($order_list as $order){
+                $order['order_trade_status'] = order_get_trade_status($order);
+                $order['shop_short_name'] = cutstr($order['shop_name'], 12, '..');
+                $datalist[$order['order_id']] = $order;
+                $order_ids[] = $order['order_id'];
             }
 
-            $itemlist = $datalist;
-            unset($datalist);
+            $order_list = $datalist;
+            unset($datalist, $order);
 
             $order_ids = array_unique($order_ids);
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $goods_list = order_get_goods_list(array('order_id'=>array('IN', $order_ids)));
-                foreach ($goods_list as $goods){
-                    $itemlist[$goods['order_id']]['goods'][$goods['goods_id']] = $goods;
+                $itemlist = order_get_item_list(array('order_id'=>array('IN', $order_ids)));
+                foreach ($itemlist as $item){
+                    $order_list[$item['order_id']]['items'][$item['itemid']] = $item;
                 }
             }
-            unset($order_ids, $goods_list, $goods);
+            unset($order_ids, $itemlist, $item);
         }
 
         $_G['title'] = $_lang['sold_item'];

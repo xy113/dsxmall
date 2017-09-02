@@ -7,14 +7,17 @@ class TradeController extends BaseController{
     function __construct()
     {
         parent::__construct();
-        $_GET['menu'] = 'trade';
+        G('menu', 'trade');
     }
 
     public function index(){
 		$this->itemlist();
 	}
-	
-	public function itemlist(){
+
+    /**
+     *
+     */
+    public function itemlist(){
 		global $_G,$_lang;
 		if ($this->checkFormSubmit()){
 			$trade_id = $_GET['trade_id'];

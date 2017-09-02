@@ -12,12 +12,12 @@ return array(
     'shop_manage'=>'店铺管理',
 
     /*商品部分*/
-    'goods_manager'=>'商品管理',
-    'sell_goods'=>'出售宝贝',
-    'edit_goods'=>'编辑宝贝',
-    'on_sale_goods'=>'出售中的宝贝',
-    'goods_cat'=>'商品分类',
-    'goods_cat_manage'=>'商品分类管理',
+    'item_manage'=>'商品管理',
+    'sell_item'=>'出售宝贝',
+    'edit_item'=>'编辑宝贝',
+    'on_sale_item'=>'出售中的宝贝',
+    'item_cat'=>'商品分类',
+    'item_cat_manage'=>'商品分类管理',
 
     /*交易部分*/
     'order_list'=> '订单列表',
@@ -45,11 +45,11 @@ return array(
     'address_manage'=>'收货地址管理',
     'sold_item'=>'已卖出的宝贝',
     'search_result'=>'搜索结果',
-    'goods_not_exists'=>'商品不存在',
+    'item_not_exists'=>'商品不存在',
     'cart'=>'购物车',
     'trade_name_formater'=>'%s等%d件商品',
     'pay_result'=>'支付结果',
-    'goods_collection'=>'商品收藏',
+    'item_collection'=>'商品收藏',
     'shop_collection'=>'店铺收藏',
     'article_collection'=>'文章收藏',
 

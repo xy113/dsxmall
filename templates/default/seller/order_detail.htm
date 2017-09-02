@@ -106,22 +106,22 @@
     <div class="order-item-wrap" id="order-item-{$order_id}">
         <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
-            {loop $itemlist $goods}
+            {loop $itemlist $item}
             <tr>
                 <td class="col1">
                     <div class="goods-pic">
-                        <img src="{img $goods[goods_thumb]}">
+                        <img src="{img $item[thumb]}">
                     </div>
                     <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">{$goods[goods_name]}</div>
+                        <div class="goods-name">{$item[name]}</div>
                         <div class="goods-attr">商品属性</div>
                     </div>
                 </td>
                 <td class="col2">
-                    {if $goods[market_price]}<p><s>￥{amount:$goods[market_price]}</s></p>{/if}
-                    <p>￥{amount:$goods[goods_price]}</p>
+                    {if $item[market_price]}<p><s>￥{amount:$item[market_price]}</s></p>{/if}
+                    <p>￥{amount:$item[price]}</p>
                 </td>
-                <td class="col3">{$goods[goods_number]}</td>
+                <td class="col3">x{$item[quantity]}</td>
                 <td class="col5">
                     <p><strong style="color: #FF0000;">￥{amount:$order[total_fee]}</strong></p>
                     <p style="font-size: 11px;">(含运费:￥{amount:$order[shipping_fee]})</p>

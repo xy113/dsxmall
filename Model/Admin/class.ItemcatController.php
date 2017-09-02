@@ -6,14 +6,14 @@
  * Time: 下午2:08
  */
 namespace Model\Admin;
-class GoodscatController extends BaseController{
+class ItemcatController extends BaseController{
     /**
      * GoodscatController constructor.
      */
     function __construct()
     {
         parent::__construct();
-        $_GET['menu'] = 'goodscat';
+        G('menu', 'itemcat');
     }
 
     public function index(){
@@ -30,7 +30,7 @@ class GoodscatController extends BaseController{
             $delete = $_GET['delete'];
             if ($delete && is_array($delete)){
                 $deleteids = implodeids($delete);
-                goods_delete_cat(array('catid'=>array('IN', $deleteids)));
+                item_delete_cat(array('catid'=>array('IN', $deleteids)));
             }
 
             $itemlist = $_GET['itemlist'];
@@ -42,18 +42,18 @@ class GoodscatController extends BaseController{
                             $item['identifer'] = $pinyin->getPinyin($item['name']);
                         }
                         if ($catid > 0){
-                            goods_update_cat(array('catid'=>$catid), $item);
+                            item_update_cat(array('catid'=>$catid), $item);
                         }else {
-                            goods_add_cat($item);
+                            item_add_cat($item);
                         }
                     }
                 }
             }
-            goods_update_cat_cache();
+            item_update_cat_cache();
             $this->showSuccess('update_succeed');
         }else {
 
-            $itemlist = goods_get_cat_list(0);
+            $itemlist = item_get_cat_list(0);
             if ($itemlist) {
                 $datalist = array();
                 foreach ($itemlist as $item){
@@ -62,8 +62,8 @@ class GoodscatController extends BaseController{
                 $itemlist = $datalist;
                 unset($datalist, $item);
             }
-            $_G['title'] = L('goods_cat_manage');
-            include template('goods_cat_list');
+            $_G['title'] = L('item_cat_manage');
+            include template('item_cat_list');
         }
     }
 
@@ -80,14 +80,14 @@ class GoodscatController extends BaseController{
                     $pinyin = new \Core\Pinyin();
                     $category['identifer'] = $pinyin->getPinyin($category['name']);
                 }
-                goods_update_cat(array('catid'=>$catid), $category);
-                goods_update_cat_cache();
+                item_update_cat(array('catid'=>$catid), $category);
+                item_update_cat_cache();
                 $this->showSuccess('update_succeed');
             }
         }else {
 
-            $category = goods_get_cat(array('catid'=>$catid));
-            $itemlist = goods_get_cat_list(0);
+            $category = item_get_cat(array('catid'=>$catid));
+            $itemlist = item_get_cat_list(0);
             if ($itemlist) {
                 $datalist = array();
                 foreach ($itemlist as $item){
@@ -97,8 +97,8 @@ class GoodscatController extends BaseController{
                 unset($datalist, $item);
             }
 
-            $_G['title'] = L('goods_cat_manage');
-            include template('goods_cat_form');
+            $_G['title'] = L('item_cat_manage');
+            include template('item_cat_form');
         }
     }
 
@@ -107,7 +107,6 @@ class GoodscatController extends BaseController{
      */
     public function merge(){
         global $_G,$_lang;
-        $_GET['menu'] = 'merge_article';
 
         if ($this->checkFormSubmit()){
             $source = $_GET['source'];
@@ -137,8 +136,8 @@ class GoodscatController extends BaseController{
     public function setimage(){
         $catid = intval($_GET['catid']);
         $image = htmlspecialchars($_GET['image']);
-        goods_update_cat(array('catid'=>$catid), array('image'=>$image));
-        goods_update_cat_cache();
+        item_update_cat(array('catid'=>$catid), array('image'=>$image));
+        item_update_cat_cache();
         $this->showAjaxReturn();
     }
 }

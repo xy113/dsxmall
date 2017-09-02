@@ -16,9 +16,9 @@
 <form method="post" id="J_Frmorder" action="{U:('m=buy&c=order&a=buy_now')}">
     <input type="hidden" name="formsubmit" value="yes">
     <input type="hidden" name="formhash" value="{FORMHASH}">
-    <input type="hidden" name="goods_id" value="{$goods_id}">
-    <input type="hidden" name="goods_number" value="{$goods_number}" id="J_goods_number">
-    <input type="hidden" name="goods_price" value="{$goods[goods_price]}" id="J_goods_price">
+    <input type="hidden" name="itemid" value="{$itemid}">
+    <input type="hidden" name="quantity" value="{$quantity}" id="J_quantity">
+    <input type="hidden" name="price" value="{$item[price]}" id="J_price">
     <input type="hidden" name="address_id" value="0" id="J_address_id">
     <input type="hidden" name="shipping_type" value="{$shipping_type}" id="J_shipping_type">
     <input type="hidden" name="pay_type" value="{$pay_type}" id="J_pay_type">
@@ -47,18 +47,18 @@
                     <tr>
                         <td>
                             <div class="info-img">
-                                <img src="{img $goods[goods_thumb]}">
+                                <img src="{img $item[thumb]}">
                             </div>
                             <div class="info-detail">
-                                <div class="item-name">{$goods[goods_name]}</div>
-                                <div class="item-attr">颜色:红色 品质:优</div>
+                                <div class="item-name">{$item[name]}</div>
+                                <div class="item-attr">颜色:默认 品质:优</div>
                             </div>
                         </td>
-                        <td width="125" class="cell-price">{amount:$goods[goods_price]}</td>
+                        <td width="125" class="cell-price">{amount:$item[price]}</td>
                         <td width="125" class="cell-num">
                             <div class="quantity-inner">
                                 <span class="btn" id="operate-left">-
-                                </span><input type="text" class="text" value="{$goods_number}" id="quantity"><span class="btn" id="operate-right">+</span>
+                                </span><input type="text" class="text" value="{$quantity}" id="quantity"><span class="btn" id="operate-right">+</span>
                             </div>
                         </td>
                         <td width="125" class="cell-simple-price" id="simple-price">{amount:$total_fee}</td>
@@ -154,31 +154,31 @@
             });
         });
         $("#operate-left").on('click', function () {
-            var goods_number = parseInt($("#quantity").val());
-            var goods_price = parseFloat($("#J_goods_price").val());
-            if(goods_number <= 1) {
+            var quantity = parseInt($("#quantity").val());
+            var price = parseFloat($("#J_price").val());
+            if(quantity <= 1) {
                 return;
             }else {
-                goods_number--;
-                var total_price = goods_number * goods_price;
+                quantity--;
+                var total_price = price * quantity;
                 total_price = total_price.toFixed(2);
                 $("#simple-price").text(total_price);
                 $("#total-fee").text(total_price);
-                $("#quantity").val(goods_number);
+                $("#quantity").val(quantity);
             }
         });
         $("#operate-right").on('click', function () {
-            var goods_number = parseInt($("#quantity").val());
-            var goods_price = parseFloat($("#J_goods_price").val());
-            goods_number++;
-            var total_price = goods_number * goods_price;
+            var quantity = parseInt($("#quantity").val());
+            var price = parseFloat($("#J_price").val());
+            quantity++;
+            var total_price = price * quantity;
             total_price = total_price.toFixed(2);
             $("#simple-price").text(total_price);
             $("#total-fee").text(total_price);
-            $("#quantity").val(goods_number);
+            $("#quantity").val(quantity);
         });
         $("#submit-order-btn").on('click', function () {
-            var goods_number = $("#quantity").val();
+            var quantity = $("#quantity").val();
             var shipping_type = $("input.shipping_type:checked").val();
             var pay_type = $("input.pay_type:checked").val();
             var address_id = $("#address-list").find('[name=address_id]:checked').val();
@@ -186,7 +186,7 @@
                 DSXUI.error('请选择收货地址');
                 return false;
             }else {
-                $("#J_goods_number").val(goods_number);
+                $("#J_quantity").val(quantity);
                 $("#J_address_id").val(address_id);
                 $("#J_shipping_type").val(shipping_type);
                 $("#J_pay_type").val(pay_type);

@@ -6,7 +6,7 @@
  * Time: 下午2:09
  */
 
-function goods_create_sn(){
+function item_create_sn(){
     return time().rand(100,999).rand(100,999);
 }
 /**
@@ -15,9 +15,9 @@ function goods_create_sn(){
  * @param int $return
  * @return array|bool|int|mysqli_result|null|string
  */
-function goods_add_item($data, $return=0){
-    $id = M('goods_item')->insert($data, true);
-    return $return ? goods_get_item(array('id'=>$id)) : $id;
+function item_add_data($data, $return=0){
+    $id = M('item')->insert($data, true);
+    return $return ? item_get_data(array('id'=>$id)) : $id;
 }
 
 /**
@@ -25,8 +25,8 @@ function goods_add_item($data, $return=0){
  * @param $condition
  * @return bool|int
  */
-function goods_delete_item($condition){
-    return $condition ? M('goods_item')->where($condition)->delete() : false;
+function item_delete_data($condition){
+    return $condition ? M('item')->where($condition)->delete() : false;
 }
 
 /**
@@ -35,8 +35,8 @@ function goods_delete_item($condition){
  * @param $data
  * @return bool|int
  */
-function goods_update_item($condition, $data){
-    return M('goods_item')->where($condition)->update($data);
+function item_update_data($condition, $data){
+    return M('item')->where($condition)->update($data);
 }
 
 /**
@@ -45,8 +45,8 @@ function goods_update_item($condition, $data){
  * @param string $field
  * @return array|null
  */
-function goods_get_item($condition, $field='*'){
-    $data = M('goods_item')->where($condition)->field($field)->getOne();
+function item_get_data($condition, $field='*'){
+    $data = M('item')->where($condition)->field($field)->getOne();
     return $data ? $data : array();
 }
 
@@ -56,8 +56,8 @@ function goods_get_item($condition, $field='*'){
  * @param string $field
  * @return mixed
  */
-function goods_get_item_count($condition, $field='*'){
-    return M('goods_item')->where($condition)->count($field);
+function item_get_count($condition, $field='*'){
+    return M('item')->where($condition)->count($field);
 }
 
 /**
@@ -69,10 +69,10 @@ function goods_get_item_count($condition, $field='*'){
  * @param string $field
  * @return array
  */
-function goods_get_item_list($condition, $count=20, $offset=0, $order=null, $field='*'){
+function item_get_list($condition, $count=20, $offset=0, $order=null, $field='*'){
     $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
     !$order && $order = 'id DESC';
-    $itemlist = M('goods_item')->field($field)->where($condition)->order($order)->limit($limit)->select();
+    $itemlist = M('item')->field($field)->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }
 
@@ -81,8 +81,8 @@ function goods_get_item_list($condition, $count=20, $offset=0, $order=null, $fie
  * @param $data
  * @return bool|int|mysqli_result|string
  */
-function goods_add_desc($data){
-    return M('goods_desc')->insert($data, false, true);
+function item_add_desc($data){
+    return M('item_desc')->insert($data, false, true);
 }
 
 /**
@@ -90,8 +90,8 @@ function goods_add_desc($data){
  * @param $condition
  * @return bool|int
  */
-function goods_delete_desc($condition){
-    return $condition ? M('goods_desc')->where($condition)->delete() : false;
+function item_delete_desc($condition){
+    return $condition ? M('item_desc')->where($condition)->delete() : false;
 }
 
 /**
@@ -100,8 +100,8 @@ function goods_delete_desc($condition){
  * @param $data
  * @return bool|int
  */
-function goods_update_desc($condition, $data){
-    return M('goods_desc')->where($condition)->update($data);
+function item_update_desc($condition, $data){
+    return M('item_desc')->where($condition)->update($data);
 }
 
 /**
@@ -110,8 +110,8 @@ function goods_update_desc($condition, $data){
  * @param string $field
  * @return array|bool|null
  */
-function goods_get_desc($condition, $field='*'){
-    $data = M('goods_desc')->where($condition)->field($field)->getOne();
+function item_get_desc($condition, $field='*'){
+    $data = M('item_desc')->where($condition)->field($field)->getOne();
     return $data ? $data : false;
 }
 
@@ -121,9 +121,9 @@ function goods_get_desc($condition, $field='*'){
  * @param int $return
  * @return array|bool|int|mysqli_result|null|string
  */
-function goods_add_image($data, $return=0){
-    $id = M('goods_image')->insert($data, true);
-    return $return ? goods_get_image(array('id'=>$id)) : $id;
+function item_add_image($data, $return=0){
+    $id = M('item_image')->insert($data, true);
+    return $return ? item_get_image(array('id'=>$id)) : $id;
 }
 
 /**
@@ -131,8 +131,8 @@ function goods_add_image($data, $return=0){
  * @param $condition
  * @return bool|int
  */
-function goods_delete_image($condition){
-    return $condition ? M('goods_image')->where($condition)->delete() : false;
+function item_delete_image($condition){
+    return $condition ? M('item_image')->where($condition)->delete() : false;
 }
 
 /**
@@ -141,8 +141,8 @@ function goods_delete_image($condition){
  * @param $data
  * @return bool|int
  */
-function goods_update_image($condition, $data){
-    return M('goods_image')->where($condition)->update($data);
+function item_update_image($condition, $data){
+    return M('item_image')->where($condition)->update($data);
 }
 
 /**
@@ -150,8 +150,8 @@ function goods_update_image($condition, $data){
  * @param $condition
  * @return array|null
  */
-function goods_get_image($condition){
-    $data = M('goods_image')->where($condition)->getOne();
+function item_get_image($condition){
+    $data = M('item_image')->where($condition)->getOne();
     return $data ? $data : array();
 }
 
@@ -160,8 +160,8 @@ function goods_get_image($condition){
  * @param $condition
  * @return array
  */
-function goods_get_image_list($condition){
-    $itemlist = M('goods_image')->where($condition)->order('id ASC')->select();
+function item_get_image_list($condition){
+    $itemlist = M('item_image')->where($condition)->order('id ASC')->select();
     return $itemlist ? $itemlist : array();
 }
 
@@ -171,9 +171,9 @@ function goods_get_image_list($condition){
  * @param int $return
  * @return array|bool|int|mysqli_result|null|string
  */
-function goods_add_cat($data, $return=0){
-    $catid = M('goods_cat')->insert($data, true);
-    return $return ? goods_get_cat(array('catid'=>$catid)) : $catid;
+function item_add_cat($data, $return=0){
+    $catid = M('item_cat')->insert($data, true);
+    return $return ? item_get_cat(array('catid'=>$catid)) : $catid;
 }
 
 /**
@@ -181,8 +181,8 @@ function goods_add_cat($data, $return=0){
  * @param $condition
  * @return bool|int
  */
-function goods_delete_cat($condition){
-    return $condition ? M('goods_cat')->where($condition)->delete() : false;
+function item_delete_cat($condition){
+    return $condition ? M('item_cat')->where($condition)->delete() : false;
 }
 
 /**
@@ -191,8 +191,8 @@ function goods_delete_cat($condition){
  * @param $data
  * @return bool|int
  */
-function goods_update_cat($condition, $data){
-    return M('goods_cat')->where($condition)->update($data);
+function item_update_cat($condition, $data){
+    return M('item_cat')->where($condition)->update($data);
 }
 
 /**
@@ -201,8 +201,8 @@ function goods_update_cat($condition, $data){
  * @param string $field
  * @return array|null
  */
-function goods_get_cat($condition, $field='*'){
-    $data = M('goods_cat')->where($condition)->field($field)->getOne();
+function item_get_cat($condition, $field='*'){
+    $data = M('item_cat')->where($condition)->field($field)->getOne();
     return $data ? $data : array();
 }
 
@@ -211,8 +211,8 @@ function goods_get_cat($condition, $field='*'){
  * @param $condition
  * @return mixed
  */
-function goods_get_cat_count($condition){
-    return M('goods_cat')->where($condition)->count();
+function item_get_cat_count($condition){
+    return M('item_cat')->where($condition)->count();
 }
 
 /**
@@ -220,17 +220,17 @@ function goods_get_cat_count($condition){
  * @param int $usecache
  * @return array
  */
-function goods_get_cat_list($usecache=1){
+function item_get_cat_list($usecache=1){
     if ($usecache) {
-        $itemlist = cache('goodscat');
+        $itemlist = cache('itemcat');
         if (!is_array($itemlist)) {
-            goods_update_cat_cache();
-            return cache('goodscat');
+            item_update_cat_cache();
+            return cache('itemcat');
         }else {
             return $itemlist;
         }
     }else {
-        $itemlist = M('goods_cat')->order('displayorder ASC,catid ASC')->select();
+        $itemlist = M('item_cat')->order('displayorder ASC,catid ASC')->select();
         if ($itemlist) {
             $datalist = array();
             foreach ($itemlist as $item){
@@ -247,6 +247,6 @@ function goods_get_cat_list($usecache=1){
  * 更新分类缓存
  * @return bool|mixed
  */
-function goods_update_cat_cache(){
-    return cache('goodscat', goods_get_cat_list(0));
+function item_update_cat_cache(){
+    return cache('itemcat', item_get_cat_list(0));
 }

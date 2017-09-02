@@ -27,14 +27,14 @@ class ViewshopController extends BaseController{
         }else {
             shop_update_data(array('shop_id'=>$shop_id), '`view_num`=`view_num`+1');
             //掌柜热卖
-            $hot_item_list = goods_get_item_list(array('on_sale'=>1, 'shop_id'=>$shop_id), 5, 0, 'sold DESC');
+            $hot_item_list = item_get_list(array('on_sale'=>1, 'shop_id'=>$shop_id), 5, 0, 'sold DESC');
 
             $pagesize = 20;
             $condition = array('shop_id'=>$shop_id, 'on_sale'=>1);
-            $totalnum  = goods_get_item_count($condition);
+            $totalnum  = item_get_count($condition);
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $offset = ($_G['page'] - 1) * $pagesize;
-            $itemlist = goods_get_item_list($condition, $pagesize, $offset, 'sold DESC');
+            $itemlist = item_get_list($condition, $pagesize, $offset, 'sold DESC');
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "shop_id=$shop_id", true);
 
             $_G['title'] = $shop['shop_name'];

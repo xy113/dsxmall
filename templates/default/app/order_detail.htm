@@ -17,16 +17,16 @@
             </div>
             {eval $item_count=0}
             {loop $itemlist $item}
-            {eval $item_count+=$item[goods_number]}
+            {eval $item_count+=$item[quantity]}
             <div class="order-item">
-                <div class="pic bg-cover cell" style="background-image: url({img $item[goods_thumb]})"></div>
+                <div class="pic bg-cover cell" style="background-image: url({img $item[thumb]})"></div>
                 <div class="info cell">
-                    <h3>{$item[goods_name]}</h3>
+                    <h3>{$item[name]}</h3>
                     <p class="attrs">七夕大优惠</p>
                     <div class="right">
-                        <div class="price">￥{amount:$item[goods_price]}</div>
+                        <div class="price">￥{amount:$item[price]}</div>
                         <div class="price"><s>￥{amount:$item[market_price]}</s></div>
-                        <div class="quantity">x{$item[goods_number]}</div>
+                        <div class="quantity">x{$item[quantity]}</div>
                     </div>
                 </div>
             </div>

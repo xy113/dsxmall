@@ -13,18 +13,18 @@ class IndexController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
-        $itemlist = cart_get_list(array('uid'=>$this->uid), 0);
-        $totalnum = count($itemlist);
-        if ($itemlist) {
+        $cart_list = cart_get_list(array('uid'=>$this->uid), 0);
+        $totalnum = count($cart_list);
+        if ($cart_list) {
             $datalist = array();
-            foreach ($itemlist as $item){
-                $item['total_fee'] = floatval($item['goods_price']) * intval($item['goods_number']);
-                $datalist[$item['shop_id']]['shop_id'] = $item['shop_id'];
-                $datalist[$item['shop_id']]['shop_name'] = $item['shop_name'];
-                $datalist[$item['shop_id']]['goods'][$item['goods_id']] = $item;
+            foreach ($cart_list as $cart){
+                $cart['total_fee'] = floatval($cart['price']) * intval($cart['quantity']);
+                $datalist[$cart['shop_id']]['shop_id'] = $cart['shop_id'];
+                $datalist[$cart['shop_id']]['shop_name'] = $cart['shop_name'];
+                $datalist[$cart['shop_id']]['items'][$cart['itemid']] = $cart;
             }
-            $itemlist = $datalist;
-            unset($datalist);
+            $cart_list = $datalist;
+            unset($datalist, $cart);
         }
 
         $_G['title'] = $_lang['cart'];
@@ -35,31 +35,31 @@ class IndexController extends BaseController{
      * 添加购物车
      */
     public function add(){
-        $goods_id = intval($_GET['goods_id']);
-        $goods_number = intval($_GET['goods_number']);
-        $item = goods_get_item(array('id'=>$goods_id));
+        $itemid = intval($_GET['itemid']);
+        $quantity = intval($_GET['quantity']);
+        $item = item_get_data(array('id'=>$itemid));
         if ($item) {
-            if (cart_get_count(array('uid'=>$this->uid, 'goods_id'=>$goods_id))){
-                cart_update_data(array('uid'=>$this->uid, 'goods_id'=>$goods_id), "`goods_number`=`goods_number`+".$goods_number);
+            if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
+                cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
             }else {
                 $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
                 cart_add_data(array(
                     'uid'=>$this->uid,
+                    'itemid'=>$itemid,
+                    'quantity'=>$quantity,
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
-                    'goods_id'=>$goods_id,
-                    'goods_name'=>$item['goods_name'],
-                    'goods_number'=>$goods_number,
-                    'goods_price'=>$item['goods_price'],
-                    'goods_thumb'=>$item['goods_thumb'],
-                    'goods_image'=>$item['goods_image'],
+                    'name'=>$item['name'],
+                    'price'=>$item['price'],
+                    'thumb'=>$item['thumb'],
+                    'image'=>$item['image'],
                     'create_time'=>time()
                 ));
             }
 
             $this->showAjaxReturn();
         }else {
-            $this->showAjaxError('FAIL', 'goods_not_exists');
+            $this->showAjaxError('FAIL', 'item_not_exists');
         }
     }
 
@@ -67,10 +67,10 @@ class IndexController extends BaseController{
      * AJAX删除宝贝
      */
     public function delete(){
-        $goods_id = $_GET['goods_id'];
-        $id_list = explode(',', $goods_id);
+        $itemid = $_GET['itemid'];
+        $id_list = explode(',', $itemid);
         foreach ($id_list as $id) {
-            cart_delete_data(array('uid'=>$this->uid, 'goods_id'=>intval($id)));
+            cart_delete_data(array('uid'=>$this->uid, 'itemid'=>intval($id)));
         }
         $this->showAjaxReturn();
     }
@@ -78,11 +78,11 @@ class IndexController extends BaseController{
     /**
      * 更新商品数量
      */
-    public function update_num(){
-        $goods_id = intval($_GET['goods_id']);
-        $goods_number = intval($_GET['goods_number']);
+    public function update_quantity(){
+        $itemid = intval($_GET['itemid']);
+        $quantity = intval($_GET['quantity']);
 
-        cart_update_data(array('uid'=>$this->uid, 'goods_id'=>$goods_id), array('goods_number'=>$goods_number));
+        cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), array('quantity'=>$quantity));
         $this->showAjaxReturn();
     }
 }

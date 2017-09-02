@@ -15,7 +15,7 @@
 </div>
 <script type="text/javascript">
     onBridgeReady(function (bridge) {
-        $("[handler=viewNotice]").on('click', function (e) {
+        $("[handler=viewNotice]").on(tap, function (e) {
             bridge.callHandler('viewNotice', $(this).attr('data-id'));
         });
     });

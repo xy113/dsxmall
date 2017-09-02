@@ -31,32 +31,32 @@
             <input type="hidden" name="shipping_type" value="1" id="J_shipping_type">
             <input type="hidden" name="pay_type" value="1" id="J_pay_type">
             <input type="hidden" name="_token_" value="{cookie _token_}">
-            {loop $itemlist $shop_id $item}
+            {loop $cart_item_list $shop_id $cart}
             <div class="order-item" data-shop-id="{$shop_id}" style="margin-bottom: 20px;">
                 <table cellpadding="0" cellspacing="0" width="100%" class="order-item-table">
                     <thead>
                         <tr>
-                            <th colspan="4">店铺: {$item[shop_name]}</th>
+                            <th colspan="4">店铺: {$cart[shop_name]}</th>
                         </tr>
                     </thead>
                     {eval $simple_fee=0}
-                    {loop $item[goods] $goods_id $goods}
-                    {eval $simple_fee+= $goods[total_fee]}
+                    {loop $cart[items] $itemid $item}
+                    {eval $simple_fee+= $item[total_fee]}
                     <tbody>
                         <tr>
                             <td>
                                 <div class="info-img">
-                                    <img src="{img $goods[goods_thumb]}">
-                                    <input type="hidden" name="items[]" value="{$goods_id}">
+                                    <img src="{img $item[thumb]}">
+                                    <input type="hidden" name="items[]" value="{$itemid}">
                                 </div>
                                 <div class="info-detail">
-                                    <div class="item-name">{$goods[goods_name]}</div>
-                                    <div class="item-attr">颜色:红色 品质:优</div>
+                                    <div class="item-name">{$item[name]}</div>
+                                    <div class="item-attr">颜色:默认 品质:优</div>
                                 </div>
                             </td>
-                            <td width="125" class="cell-price">{amount:$goods[goods_price]}</td>
-                            <td width="125" class="cell-num">{$goods[goods_number]}</td>
-                            <td width="125" class="cell-simple-price" id="simple-price">{amount:$goods[total_fee]}</td>
+                            <td width="125" class="cell-price">{amount:$item[price]}</td>
+                            <td width="125" class="cell-num">{$item[quantity]}</td>
+                            <td width="125" class="cell-simple-price" id="simple-price">{amount:$item[total_fee]}</td>
                         </tr>
                     </tbody>
                     {/loop}

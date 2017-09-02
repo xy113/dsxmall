@@ -16,12 +16,12 @@ class IndexController extends BaseController{
      */
     public function batchget(){
         $offset = (G('page') - 1) * 20;
-        $fields = 'id, goods_name, goods_thumb, goods_price, market_price, sold';
-        $itemlist = goods_get_item_list(array('on_sale'=>1), 20, $offset, 'id DESC', $fields);
+        $fields = 'id, name, thumb, price, market_price, sold';
+        $itemlist = item_get_list(array('on_sale'=>1), 20, $offset, 'id DESC', $fields);
         $datalist = array();
         foreach ($itemlist as $item){
-            $item['goods_thumb_url'] = image($item['goods_thumb']);
-            $item['goods_price'] = formatAmount($item['goods_price']);
+            $item['thumb'] = image($item['thumb']);
+            $item['price'] = formatAmount($item['price']);
             $datalist[] = $item;
         }
         $this->showAjaxReturn($datalist);
