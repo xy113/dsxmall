@@ -64,7 +64,7 @@
     height: 33px; padding-right: 20px; overflow: hidden;
 }
 .category-panel .childs-panel{
-    position: absolute; width: 780px; height: 495px;
+    position: absolute; width: 780px; height: 497px;
     background-color: #fff; border: 1px #DDD solid; border-left: none;
     left: 100%; top: 0; z-index: 300; display: none;
 }

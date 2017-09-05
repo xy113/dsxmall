@@ -37,10 +37,17 @@
             <td class="cell-name">交易流水</td>
             <td>{$order[trade_no]}</td>
         </tr>
+        {if $order[pay_type]==2}
+        <tr>
+            <td class="cell-name">订单状态</td>
+            <td>{if $order[shipping_status]}卖家已发货{else}买家已提交需求，等待卖家发货{/if}</td>
+        </tr>
+        {else}
         <tr>
             <td class="cell-name">订单状态</td>
             <td>{$trade_status_tips}</td>
         </tr>
+        {/if}
         </tbody>
     </table>
     <h3 class="h3-title">收货人信息</h3>
@@ -131,7 +138,7 @@
             </tbody>
         </table>
     </div>
-    {if $trade_status==2}
+    {if $trade_status==2||($order[pay_type]==2 && $order[shipping_status]==0)}
     <h3 class="h3-title">发货</h3>
     <form method="post" id="sendForm" action="{U:('c=order&a=send')}" autocomplete="off">
         <input type="hidden" name="order_id" value="{$order_id}">
@@ -172,11 +179,11 @@
     {/if}
 </div>
 <div style="clear: both; height: 50px;"></div>
-{if $trade_status==2}
+{if $trade_status==2||($order[pay_type]==2 && $order[shipping_status]==0)}
 <script type="text/javascript">
     $(function () {
          $("input[name=shipping_type]").on('click', function (e) {
-             if($(this).val() == 1){
+             if($(this).val() === '1'){
                  $("#express_body").show();
              }else {
                  $("#express_body").hide();

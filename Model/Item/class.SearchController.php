@@ -43,8 +43,15 @@ class SearchController extends BaseController{
         $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
         $offset = ($_G['page'] - 1) * $pagesize;
 
+        $orderby = 'i.sold DESC';
+        $sort = $_GET['sort'] ? htmlspecialchars($_GET['sort']) : 'default';
+        if ($sort == 'price-asc'){
+            $orderby = 'i.price ASC';
+        }elseif ($orderby == 'sale-desc'){
+            $orderby = 'i.sold DESC';
+        }
         $sql = "SELECT i.*,s.shop_name,s.owner_username AS seller_username,s.city,s.county FROM ".$db->table('item')." i LEFT JOIN ".$db->table('shop').
-            " s ON s.shop_id=i.shop_id WHERE $condition ORDER  BY i.sold DESC LIMIT $offset,$pagesize";
+            " s ON s.shop_id=i.shop_id WHERE $condition ORDER  BY $orderby LIMIT $offset,$pagesize";
         $query = $db->query($sql);
         $itemlist = array();
         while ($item = $db->fetch_array($query)){
@@ -52,7 +59,7 @@ class SearchController extends BaseController{
             $itemlist[$item['id']] = $item;
         }
         $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($params), true);
-        unset($sql, $query, $data, $item, $condition, $params);
+        unset($sql, $query, $data, $item, $condition, $params, $orderby);
 
         //掌柜热卖
         if ($catid) {

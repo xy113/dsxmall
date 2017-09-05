@@ -10,14 +10,22 @@
         {/if}
     </div>
 </div>
+<form method="get" id="J_FrmSearch">
+    <input type="hidden" name="m" value="{$_G[m]}">
+    <input type="hidden" name="c" value="{$_G[c]}">
+    <input type="hidden" name="a" value="{$_G[a]}">
+    <input type="hidden" name="catid" value="{$catid}">
+    <input type="hidden" name="q" value="{$q}">
+    <input type="hidden" name="sort" value="{$sort}" id="J_sort">
+</form>
 <div class="area item-search-wrap">
     <div class="main">
         <div class="search-th">
             <span class="total-count">总计{$totalnum}件商品</span>
             <ul class="sort-tab">
-                <li><a class="cur">综合</a></li>
-                <li title="销量从高到低"><a>销量</a></li>
-                <li title="价格从低到高"><a>价格</a></li>
+                <li><a href="#" class="J_Ajax{if $sort=='default'} cur{/if}" data-key="sort" data-value="default">综合</a></li>
+                <li title="销量从高到低"><a class="J_Ajax{if $sort=='sale-desc'} cur{/if}" href="#" data-key="sort" data-value="sale-desc">销量</a></li>
+                <li title="价格从低到高"><a class="J_Ajax{if $sort=='price-asc'} cur{/if}" href="#" data-key="sort" data-value="price-asc">价格</a></li>
             </ul>
         </div>
         <div class="item-list-wrap">
@@ -39,7 +47,7 @@
                     </div>
                     <div class="item-sold">
                         <p>{$item[sold]}人付款</p>
-                        <p><a>{$item[comment_num]}条评论</a></p>
+                        <p><a>{$item[reviews_num]}条评论</a></p>
                     </div>
                 </li>
                 {/loop}
@@ -69,4 +77,12 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $(".J_Ajax").on('click', function () {
+        var key = $(this).attr('data-key');
+        var value = $(this).attr('data-value');
+        $("#J_"+key).val(value);
+        $("#J_FrmSearch").submit();
+    });
+</script>
 {template footer_common}

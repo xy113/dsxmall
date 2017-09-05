@@ -18,10 +18,10 @@ class LogoutController extends BaseController{
             if ($contiue !== curPageURL()){
                 $this->redirect($contiue);
             }else {
-                $this->redirect(U('m=member&c=login'));
+                $this->redirect(U('m=account&c=login'));
             }
         }else {
-            $this->redirect(U('m=member&c=login'));
+            $this->redirect(U('m=account&c=login'));
         }
     }
 }

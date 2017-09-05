@@ -2,7 +2,8 @@
 define('version', '2.0');
 defined('ROOT_PATH')      or define('ROOT_PATH',   dirname($_SERVER['SCRIPT_FILENAME']).'/');
 defined('LIB_PATH')       or define('LIB_PATH',    __DIR__.'/');
-defined('APP_PATH')       or define('MODEL_PATH',  ROOT_PATH.'/Model/');
+defined('MODEL_PATH')     or define('MODEL_PATH',  ROOT_PATH.'/Model/');
+defined('CERT_PATH')      or define('CERT_PATH',   ROOT_PATH.'/cert/');
 defined('CONFIG_PATH')    or define('CONFIG_PATH', ROOT_PATH.'Config/');
 defined('LANG_PATH')      or define('LANG_PATH',   ROOT_PATH.'Lang/');
 defined('DATA_PATH')      or define('DATA_PATH',   ROOT_PATH.'data/');

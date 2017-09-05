@@ -78,7 +78,7 @@ class OrderController extends BaseController{
         }else {
             $express_list = M('express')->order('id', 'ASC')->select();
         }
-
+        $back_url = $_SERVER['HTTP_REFERER'];
         $_G['title'] = '订单详情';
         include template('order_detail');
     }

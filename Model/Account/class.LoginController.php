@@ -48,7 +48,7 @@ class LoginController extends BaseController{
             $returns = member_login($account, $password, 'username');
         }
 
-        if ($returns['errno'] == 0 && $returns['userinfo']){
+        if ($returns['errcode'] == 0 && $returns['userinfo']){
             if (G('inajax')) {
                 $this->showAjaxReturn();
             }else {
@@ -61,9 +61,9 @@ class LoginController extends BaseController{
             }
         }else {
             if (G('inajax')) {
-                $this->showAjaxError($returns['errno'], L($returns['error']));
+                $this->showAjaxError($returns['errcode'], $returns['errmsg']);
             }else {
-                $this->showError($returns['error']);
+                $this->showError($returns['errmsg']);
             }
         }
     }
@@ -75,5 +75,59 @@ class LoginController extends BaseController{
         global $_G,$_lang;
 
         include template('ajaxlogin');
+    }
+
+    /**
+     *
+     */
+    public function qrcode(){
+        $login_code = cookie('login_code');
+        if (!$login_code) {
+            $login_code = md5(time().random(10));
+            M('scan_login')->insert(array(
+                'uid'=>0,
+                'login_code'=>$login_code,
+                'scaned'=>0,
+                'create_time'=>time()
+            ));
+            cookie('login_code', $login_code);
+        }
+        $url = "cgapp://scanLogin?login_code=".$login_code;
+        include LIB_PATH.'Vendor/phpqrcode.php';
+        \QRcode::png($url, false, QR_ECLEVEL_H, 10);
+    }
+
+    /**
+     *
+     */
+    public function scan_query(){
+        $login_code = cookie('login_code');
+        $check = M('scan_login')->where(array('login_code'=>$login_code, 'scaned'=>1))->getOne();
+        if ($check) {
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError(1, 'not scaned');
+        }
+    }
+
+    /**
+     *
+     */
+    public function confirm_login(){
+        $login_code = cookie('login_code');
+        $check = M('scan_login')->where(array('login_code'=>$login_code, 'scaned'=>1))->getOne();
+        if ($check) {
+            cookie('login_code', null);
+            member_add_log($check['uid'], 'login');
+            member_update_status(array('uid'=>$check['uid']), array(
+                'lastvisit'=>TIMESTAMP,
+                'lastvisitip'=>getIp()
+            ));
+            member_update_cookie($check['uid']);
+            M('scan_login')->where(array('login_code'=>$login_code))->delete();
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError(1, 'not scaned');
+        }
     }
 }

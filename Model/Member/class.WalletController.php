@@ -14,7 +14,7 @@ class WalletController extends BaseController{
 		global $_G,$_lang;
 
         $pagesize = 20;
-        $condition = array("(`uid`='".$this->uid."' OR payee_uid='".$this->uid."')");
+        $condition = array("(`payer_uid`='".$this->uid."' OR payee_uid='".$this->uid."')");
         $date_range = $_GET['date_range'] ? trim($_GET['date_range']) : 'all';
         if ($date_range == '3days'){
             $condition[] = "DATEDIFF(NOW(), FROM_UNIXTIME(trade_time,'%Y-%m-%d %H:%i:%s'))<=3";

@@ -19,9 +19,8 @@ class ItemsearchController extends BaseController
 
         $formdata = json_encode(array(
             'catid'=>intval($_GET['catid']),
-            'q'=>trim($_GET['q'])
+            'q'=>htmlspecialchars($_GET['q'])
         ));
-        //print_array($_GET);exit();
 
         include template('item_list');
     }
@@ -34,11 +33,18 @@ class ItemsearchController extends BaseController
         $catid = intval($_GET['catid']);
         if ($catid) $condition[] = "(`cat_id`='$catid' OR `catid_2`='$catid' OR `catid_3`='$catid')";
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-        if ($q) $condition['goods_name'] = array('LIKE', trim($q));
+        $q = str_replace(array(',',' ', '、'), '|', $q);
+        $arr = array();
+        foreach (explode('|', $q) as $key){
+            if ($key) {
+                $arr[] = "`name` LIKE '%$key%'";
+            }
+        }
+        if (!empty($arr)) $condition[] = "(".implode(' OR ', $arr).")";
 
         $offset = (G('page') - 1) * 20;
-        $fields = 'id,uid,shop_id,goods_name,goods_price,market_price,sold,goods_thumb';
-        $itemlist = goods_get_item_list($condition, 20, $offset, 'sold DESC', $fields);
+        $fields = 'id,uid,shop_id,name,price,market_price,sold,thumb';
+        $itemlist = item_get_list($condition, 20, $offset, 'sold DESC', $fields);
         $shop_ids = array();
         foreach ($itemlist as $item){
             $shop_ids[] = $item['shop_id'];
@@ -59,8 +65,8 @@ class ItemsearchController extends BaseController
 
         $datalist = array();
         foreach ($itemlist as $item){
-            $item['goods_price'] = formatAmount($item['goods_price']);
-            $item['goods_thumb_url'] = image($item['goods_thumb']);
+            $item['price'] = formatAmount($item['price']);
+            $item['thumb'] = image($item['thumb']);
             $item['shop_name'] = $shop_list[$item['shop_id']]['shop_name'] ? $shop_list[$item['shop_id']]['shop_name'] : '';
             $item['city'] = $shop_list[$item['shop_id']]['city'] ? $shop_list[$item['shop_id']]['city'] : '贵州';
             $item['county'] = $shop_list[$item['shop_id']]['county'] ? $shop_list[$item['shop_id']]['county'] : '六盘水';

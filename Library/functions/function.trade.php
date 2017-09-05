@@ -257,8 +257,9 @@ function order_get_list($condition, $count=20, $offset=0, $order=null, $field='*
  */
 function order_get_trade_status($order){
     $trade_status = 0;
-    if ($order['is_closed']) return 0;
-    if ($order['order_status'] == 0 && $order['pay_status'] == 0 && $order['shipping_status'] == 0){
+    if ($order['is_closed']) {
+        return 0;
+    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 0 && $order['shipping_status'] == 0){
         //已下单未支付
         $trade_status = 1;
     }elseif ($order['order_status'] == 0 && $order['pay_status'] == 1 && $order['shipping_status'] == 0){

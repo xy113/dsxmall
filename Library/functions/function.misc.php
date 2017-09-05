@@ -900,3 +900,40 @@ function notice_get_list($condition, $count=20, $offset=0, $order=null, $field='
     $itemlist = M('notification')->field($field)->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }
+
+/*
+ * APNS
+ */
+/**
+ * @param $data
+ * @return bool|int|mysqli_result|string
+ */
+function apns_add_token($data){
+    return M('apns_token')->insert($data, true, true);
+}
+
+/**
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function apns_update_token($condition, $data){
+    return M('apns_token')->where($condition)->update($data);
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function apns_delete_token($condition){
+    return $condition ? M('apns_token')->where($condition)->delete() : false;
+}
+
+/**
+ * @param $condition
+ * @return array|null
+ */
+function apns_get_token($condition){
+    $data = M('apns_token')->where($condition)->getOne();
+    return $data ? $data : array();
+}

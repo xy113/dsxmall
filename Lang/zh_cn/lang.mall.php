@@ -36,6 +36,9 @@ return array(
     ),
     'can_not_buy'=>'抱歉, 不能完成购买',
     'checkout_success'=>'下单成功',
+    'order_commited'=>'订单已成功',
+    'order_commit_success'=>'订单提价成功',
+    'stock_no_enough'=>'库存不足',
     'pay_order'=>'付款',
     'cannot_complete_payment'=>'无法完成付款',
     'order_delete_fail'=>'订单删除失败',
@@ -54,9 +57,8 @@ return array(
     'article_collection'=>'文章收藏',
 
     'pay_types'=>array(
-        '1'=>'余额支付',
-        '2'=>'货到付款',
-        '3'=>'在线支付'
+        '1'=>'在线支付',
+        '2'=>'货到付款'
     ),
     'order_not_exists'=>'订单不存在',
     'order_has_send'=>'订单已发货，不能重复发货',

@@ -5,9 +5,8 @@
           <input type="hidden" name="m" value="{$_G[m]}">
           <input type="hidden" name="c" value="{$_G[c]}">
           <input type="hidden" name="a" value="{$_G[a]}">
-          <input type="hidden" name="status" value="{$status}">
           <span>输入关键字：</span>
-          <input type="text" class="input-text" name="keyword" value="{$keyword}">
+          <input type="text" class="input-text" name="q" value="{$q}">
           <input type="submit" class="button" value="{$_lang[search]}">
       </form>
     </div>
@@ -23,8 +22,8 @@
       <tr>
         <th width="40" class="center">选?</th>
         <th width="50">头像</th>
-        <th>名称 | 流水 | 对方账户</th>
-        <th>用户</th>
+        <th>名称 | 流水 | 收款方账户</th>
+        <th>付款账户</th>
         <th width="100">金额</th>
         <th width="140">时间</th>
         <th width="60">状态</th>
@@ -34,7 +33,7 @@
       {loop $itemlist $trade_id $item}
       <tr>
         <td class="center"><input type="checkbox" class="checkbox checkmark" name="trade_id[]" value="{$trade_id}"></td>
-        <td><img src="{echo avatar($item[uid])}" width="30" height="30"></td>
+        <td><img src="{echo avatar($item[payer_uid])}" width="30" height="30"></td>
         <td>
         	<h3 class="title">{$item[trade_name]}</h3>
             <p class="subtitle">
@@ -42,7 +41,7 @@
                 <a href="{U:('m=shop&c=viewshop&uid='.$item['payee_uid'])}" target="_blank">{$item[payee_name]}</a>
             </p>
         </td>
-        <td>{$userlist[$item[uid]][username]}</td>
+        <td>{$item[payer_name]}</td>
         <td>{echo formatAmount($item[trade_fee])}</td>
         <td>{echo @date('Y-m-d H:i:s',$item[trade_time])}</td>
         <td>{$_lang[trade_status][$item[trade_status]]}</td>

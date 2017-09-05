@@ -170,10 +170,13 @@ class CartController extends BaseController
             //总金额
             $total_fee = $order_fee + $shipping_fee;
             //创建订单
+            $pay_type = $shop['pay_type'] == 3 ? 2 : 1;
+            $is_commited = $pay_type == 2 ? 1 : 0;
             $order_id = order_add_data(array(
-                'uid'=>$this->uid,
+                'buyer_uid'=>$this->uid,
+                'buyer_name'=>$this->uid,
                 'seller_uid'=>$seller['owner_uid'],
-                'seller_username'=>$seller['owner_username'],
+                'seller_name'=>$seller['owner_username'],
                 'shop_id'=>$shop['shop_id'],
                 'shop_name'=>$shop['shop_name'],
                 'order_no'=>$order_no,
@@ -191,7 +194,9 @@ class CartController extends BaseController
                 'phone'=>$address['phone'],
                 'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
                 'trade_no'=>$trade_no,
-                'order_remark'=>$shop['remark']
+                'order_remark'=>$shop['remark'],
+                'is_commited'=>$is_commited,
+                'is_accepted'=>0
             ));
 
             $shop_total_num = 0;
@@ -224,26 +229,29 @@ class CartController extends BaseController
                 'uid'=>$this->uid,
                 'username'=>$this->username,
                 'order_id'=>$order_id,
-                'action_name'=>L('checkout_success'),
+                'action_name'=>$pay_type == 1 ? L('checkout_success') : L('order_commited'),
                 'action_time'=>time()
             ));
-            //创建支付流水
-            if ($shop_total_num > 1){
-                $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_num);
+            if ($pay_type == 1){
+                //创建支付流水
+                if ($shop_total_num > 1){
+                    $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_num);
+                }
+                trade_add_data(array(
+                    'payer_uid'=>$this->uid,
+                    'payer_name'=>$this->username,
+                    'payee_uid'=>$seller['owner_uid'],
+                    'payee_name'=>$seller['owner_username'],
+                    'trade_no'=>$trade_no,
+                    'trade_name'=>$trade_name,
+                    'trade_desc'=>$trade_name,
+                    'trade_fee'=>$total_fee,
+                    'trade_type'=>'SHOPPING',
+                    'trade_status'=>'UNPAID',
+                    'trade_time'=>time(),
+                    'out_trade_no'=>$trade_no
+                ));
             }
-            trade_add_data(array(
-                'uid'=>$this->uid,
-                'payee_uid'=>$seller['owner_uid'],
-                'payee_name'=>$seller['owner_username'],
-                'trade_no'=>$trade_no,
-                'trade_name'=>$trade_name,
-                'trade_desc'=>$trade_name,
-                'trade_fee'=>$total_fee,
-                'trade_type'=>'SHOPPING',
-                'trade_status'=>'UNPAID',
-                'trade_time'=>time(),
-                'out_trade_no'=>$trade_no
-            ));
         }
         cart_delete_data(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)));
         $this->showAjaxReturn();

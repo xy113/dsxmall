@@ -21,7 +21,7 @@ class OrderController extends BaseController{
 		global $_G,$_lang;
 		$tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
 		
-		$condition = array('uid'=>$this->uid);
+		$condition = array('buyer_uid'=>$this->uid,'is_deleted'=>0);
         if ($tab == 'waitPay'){
             $condition['pay_status'] = 0;
         }elseif ($tab == 'waitSend'){
@@ -42,11 +42,10 @@ class OrderController extends BaseController{
 
 		$pagesize = 10;
         $totalnum = order_get_count($condition);
-        $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+        $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
         $_G['page'] = min(array($_G['page'], $pagecount));
-		$offset = ($_G['page'] - 1) * $pagesize;
-        $order_list = order_get_list($condition, $pagesize, $offset, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $offset, "", 1);
+        $order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize, 'order_id DESC');
+        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", 1);
 
         if ($order_list) {
             $datalist = $order_ids = array();
@@ -81,13 +80,14 @@ class OrderController extends BaseController{
      */
     public function delete(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
         if ($order) {
-            order_delete_data(array('order_id'=>$order_id));
+            /*order_delete_data(array('order_id'=>$order_id));
             order_delete_item(array('order_id'=>$order_id));
             order_delete_action(array('order_id'=>$order_id));
             order_delete_shipping(array('order_id'=>$order_id));
-            trade_delete_data(array('trade_no'=>$order['trade_no']));
+            trade_delete_data(array('trade_no'=>$order['trade_no']));*/
+            order_update_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid), array('is_deleted'=>1));
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError(1, 'order_delete_fail');
@@ -101,7 +101,10 @@ class OrderController extends BaseController{
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        if (!$order) {
+            $this->showError('order_not_exists');
+        }
         $trade_status = order_get_trade_status($order);
         $trade_status_tips = $_lang['order_trade_status'][$trade_status];
         if ($trade_status == 3) $shipping = order_get_shipping(array('order_id'=>$order_id));
@@ -118,10 +121,14 @@ class OrderController extends BaseController{
     public function confirm(){
         $this->receipt();
     }
+
+    /**
+     * 确认收货
+     */
     public function receipt(){
         $order_id = intval($_GET['order_id']);
         $password = trim($_GET['password']);
-        $order = order_get_data(array('order_id'=>$order_id, 'uid'=>$this->uid));
+        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
         if ($order) {
             //验证密码
             $member = member_get_data(array('uid'=>$this->uid), 'password');
@@ -137,7 +144,7 @@ class OrderController extends BaseController{
                         'deal_time'=>time()
                     ));
                 //打款给卖家
-                if ($order['pay_type'] == 1 || $order['pay_type'] == 2){
+                if ($order['pay_type'] == 1){
                     wallet_income($order['seller_uid'], $order['total_fee']);
                 }
             }

@@ -51,7 +51,13 @@
 
     2.12 消息通知详情:http://cg.liaidi.com/?m=app&c=notice&a=detail&id=消息ID
 
-    2.13 关于我们:2.11 消息通知列表:http://cg.liaidi.com/?m=app&c=page&a=detail&pageid=33
+    2.13 关于我们:http://cg.liaidi.com/?m=app&c=page&a=detail&pageid=33
+
+    2.14 购物车页面:http://cg.liaidi.com/?m=app&c=cart&a=index
+
+    2.15 订单列表:http://cg.liaidi.com/?m=app&c=order&a=index
+
+    2.15 订单详情:http://cg.liaidi.com/?m=app&c=order&a=detail&order_id=订单ID
 
     三、json数据请求API
 
@@ -83,8 +89,8 @@
 
     3.5 添加到购物车:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=cart&a=add
     请求方式：POST
-    参数1：goods_id = 商品ID
-    参数2：goods_number=商品数量
+    参数1：itemid = 商品ID
+    参数2：quantity=商品数量
     参数3：uid=用户ID
 
     3.6 获取要结算的商品列表:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=cart&a=get_settle_items
@@ -181,8 +187,8 @@
     3.20 创建订单：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=create
     请求方式：POST
     参数1：uid=用户ID
-    参数2：goods_id=商品ID
-    参数3：goods_number=购买数量
+    参数2：itemid=商品ID
+    参数3：quantity=购买数量
     参数4：pay_type=付款方式，1=余额支付，2=在线支付，3=货到付款
     参数5：shipping_type=配送方式，1=快递，2=物流，3=自取或无物流
     参数6：remark=买家留言

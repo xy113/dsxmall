@@ -85,11 +85,20 @@
                     </td>
                     <td class="col6">
                         {if $index==1}
-                        {if $order[trade_status]==4||$order[trade_status]==5}
-                        <p>交易成功</p>
-                        {else}
-                        <p>{$order[trade_status_tips]}</p>
-                        {/if}
+                            {if $order[pay_type]==2}
+                                {if $order[shipping_status]}
+                                <p>需求提交成功</p>
+                                {else}
+                                <p>需求已提交</p>
+                                {/if}
+                            {else}
+                                {if $order[trade_status]==4||$order[trade_status]==5}
+                                <p>交易成功</p>
+                                {else}
+                                <p>{$order[trade_status_tips]}</p>
+                                {/if}
+                            {/if}
+
                         <p><a href="{U:('c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
                         {if $order[shipping_status]}
                         <p>查看物流</p>
@@ -98,17 +107,19 @@
                     </td>
                     <td class="col7">
                         {if $index==1}
-                        {if $order[trade_status]==1}
-                        <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
-                        {elseif $order[trade_status]==2}
-                        <a>提醒卖家发货</a>
-                        {elseif $order[trade_status]==3}
-                        <a href="{U:('c=order&a=detail&order_id='.$order_id.'#receipt')}" class="button btn" target="_blank">确认收货</a>
-                        {elseif $order[trade_status]==4}
-                        <p><a>立即评价</a></p>
-                        {elseif $order[trade_status]==5}
-                        <p><a>申请退货</a></p>
-                        {/if}
+                            {if $order[pay_type]==1}
+                                {if $order[trade_status]==1}
+                                <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
+                                {elseif $order[trade_status]==2}
+                                <a>提醒卖家发货</a>
+                                {elseif $order[trade_status]==3}
+                                <a href="{U:('c=order&a=detail&order_id='.$order_id.'#receipt')}" class="button btn" target="_blank">确认收货</a>
+                                {elseif $order[trade_status]==4}
+                                <p><a>立即评价</a></p>
+                                {elseif $order[trade_status]==5}
+                                <p><a>申请退货</a></p>
+                                {/if}
+                            {/if}
                         {/if}
                     </td>
                 </tr>

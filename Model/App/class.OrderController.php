@@ -22,7 +22,7 @@ class OrderController extends BaseController
         global $_G,$_lang;
         $tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
 
-        $condition = array('uid'=>$this->uid);
+        $condition = array('buyer_uid'=>$this->uid);
         if ($tab == 'waitPay'){
             $condition['pay_status'] = 0;
         }elseif ($tab == 'waitSend'){
@@ -84,7 +84,7 @@ class OrderController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
         $shop  = shop_get_data(array('shop_id'=>$order['shop_id']));
         $itemlist = order_get_item_list(array('order_id'=>$order_id));
         $trade_status = order_get_trade_status($order);

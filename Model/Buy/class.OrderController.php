@@ -6,6 +6,9 @@
  * Time: 下午12:09
  */
 namespace Model\Buy;
+use Alisms\AlismsApi;
+use Core\Validate;
+
 class OrderController extends BaseController{
     /**
      * 购买确认
@@ -27,6 +30,9 @@ class OrderController extends BaseController{
         $item = $shop = array();
         if ($itemid && $quantity) {
             $item = item_get_data(array('id'=>$itemid));
+            if ($quantity > $item['stock']){
+                $this->showError('stock_no_enough');
+            }
             $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
         } else{
             $this->showError('can_not_buy');
@@ -53,30 +59,95 @@ class OrderController extends BaseController{
             $shipping_fee = 0;
             //总金额
             $total_fee = $order_fee + $shipping_fee;
-            //创建订单
-            $order_id = order_add_data(array(
-                'uid'=>$this->uid,
-                'seller_uid'=>$seller['uid'],
-                'seller_username'=>$seller['username'],
-                'shop_id'=>$shop['shop_id'],
-                'shop_name'=>$shop['shop_name'],
-                'order_no'=>$order_no,
-                'order_fee'=>$order_fee,
-                'shipping_fee'=>$shipping_fee,
-                'total_fee'=>$total_fee,
-                'create_time'=>time(),
-                'pay_type'=>$pay_type,
-                'shipping_type'=>$shipping_type,
-                'order_status'=>0,
-                'pay_status'=>0,
-                'evaluate_status'=>0,
-                'shipping_status'=>0,
-                'consignee'=>$address['consignee'],
-                'phone'=>$address['phone'],
-                'address'=>$formated_address,
-                'trade_no'=>$trade_no,
-                'remark'=>trim($_GET['remark'])
-            ));
+            //支付方式
+            $pay_type = $pay_type == 2 ? 2 : 1;
+            if ($pay_type == 1){//在线支付
+                //创建订单
+                $order_id = order_add_data(array(
+                    'buyer_uid'=>$this->uid,
+                    'buyer_name'=>$this->username,
+                    'seller_uid'=>$seller['uid'],
+                    'seller_name'=>$seller['username'],
+                    'shop_id'=>$shop['shop_id'],
+                    'shop_name'=>$shop['shop_name'],
+                    'order_no'=>$order_no,
+                    'order_fee'=>$order_fee,
+                    'shipping_fee'=>$shipping_fee,
+                    'total_fee'=>$total_fee,
+                    'create_time'=>time(),
+                    'pay_type'=>$pay_type,
+                    'shipping_type'=>$shipping_type,
+                    'order_status'=>0,
+                    'pay_status'=>0,
+                    'evaluate_status'=>0,
+                    'shipping_status'=>0,
+                    'consignee'=>$address['consignee'],
+                    'phone'=>$address['phone'],
+                    'address'=>$formated_address,
+                    'trade_no'=>$trade_no,
+                    'remark'=>trim($_GET['remark'])
+                ));
+                //创建订单操作记录
+                order_add_action(array(
+                    'uid'=>$this->uid,
+                    'username'=>$this->username,
+                    'order_id'=>$order_id,
+                    'action_name'=>L('checkout_success'),
+                    'action_time'=>time()
+                ));
+                //创建支付流水
+                trade_add_data(array(
+                    'payer_uid'=>$this->uid,
+                    'payer_name'=>$this->username,
+                    'payee_uid'=>$seller['uid'],
+                    'payee_name'=>$seller['username'],
+                    'trade_no'=>$trade_no,
+                    'trade_name'=>$item['name'],
+                    'trade_desc'=>$item['brief'] ? $item['brief'] : $item['name'],
+                    'trade_fee'=>$total_fee,
+                    'trade_type'=>'SHOPPING',
+                    'trade_status'=>'UNPAID',
+                    'trade_time'=>time(),
+                    'out_trade_no'=>$trade_no
+                ));
+            }else {//货到付款
+                //创建订单
+                $order_id = order_add_data(array(
+                    'buyer_uid'=>$this->uid,
+                    'buyer_name'=>$this->username,
+                    'seller_uid'=>$seller['uid'],
+                    'seller_name'=>$seller['username'],
+                    'shop_id'=>$shop['shop_id'],
+                    'shop_name'=>$shop['shop_name'],
+                    'order_no'=>$order_no,
+                    'order_fee'=>$order_fee,
+                    'shipping_fee'=>$shipping_fee,
+                    'total_fee'=>$total_fee,
+                    'create_time'=>time(),
+                    'pay_type'=>$pay_type,
+                    'shipping_type'=>$shipping_type,
+                    'order_status'=>0,
+                    'pay_status'=>0,
+                    'evaluate_status'=>0,
+                    'shipping_status'=>0,
+                    'consignee'=>$address['consignee'],
+                    'phone'=>$address['phone'],
+                    'address'=>$formated_address,
+                    'trade_no'=>$trade_no,
+                    'remark'=>trim($_GET['remark']),
+                    'is_commited'=>1,
+                    'is_accepted'=>0
+                ));
+                //创建订单操作记录
+                order_add_action(array(
+                    'uid'=>$this->uid,
+                    'username'=>$this->username,
+                    'order_id'=>$order_id,
+                    'action_name'=>L('order_commited'),
+                    'action_time'=>time()
+                ));
+            }
+
             //记录订单商品信息
             order_add_item(array(
                 'uid'=>$this->uid,
@@ -89,31 +160,19 @@ class OrderController extends BaseController{
                 'thumb'=>$item['thumb'],
                 'image'=>$item['image']
             ));
-            //创建订单操作记录
-            order_add_action(array(
-                'uid'=>$this->uid,
-                'username'=>$this->username,
-                'order_id'=>$order_id,
-                'action_name'=>L('checkout_success'),
-                'action_time'=>time()
-            ));
-            //创建支付流水
-            trade_add_data(array(
-                'uid'=>$this->uid,
-                'payee_uid'=>$seller['uid'],
-                'payee_name'=>$seller['username'],
-                'trade_no'=>$trade_no,
-                'trade_name'=>$item['name'],
-                'trade_desc'=>$item['brief'] ? $item['brief'] : $item['name'],
-                'trade_fee'=>$total_fee,
-                'trade_type'=>'SHOPPING',
-                'trade_status'=>'UNPAID',
-                'trade_time'=>time(),
-                'out_trade_no'=>$trade_no
-            ));
-            item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity");
-            shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity,`stock`=`stock`-$quantity");
-            $this->redirect(U('c=pay&order_id='.$order_id));
+
+            item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
+            shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity");
+            //发送短息提醒
+            if (Validate::ismobile($shop['phone'])){
+                $smsapi = new AlismsApi();
+                $smsapi->sendSms('粗耕', 'SMS_93285005', $shop['phone'], array('order_no'=>$order_no));
+            }
+            if ($pay_type == 1){
+                $this->redirect(U('c=pay&order_id='.$order_id));
+            }else {
+                $this->redirect(U('c=commit&order_id='.$order_id));
+            }
         }else {
             cookie('_token_', md5_16(random(10)));
             $total_fee = floatval($item['price']) * $quantity;
@@ -174,7 +233,7 @@ class OrderController extends BaseController{
                 cookie('_token_', null);
             }
             $shipping_type = intval($_GET['shipping_type']);
-            $pay_type = intval($_GET['pay_type']);
+            $pay_type = intval($_GET['pay_type']) == 2 ? 2 : 1;
             $remark_list = $_GET['remark_list'];
             foreach ($cart_item_list as $shop) {
                 $trade_no = trade_create_no();
@@ -191,10 +250,12 @@ class OrderController extends BaseController{
                 //总金额
                 $total_fee = $order_fee + $shipping_fee;
                 //创建订单
+                $is_commited = $pay_type == 2 ? 1 : 0;
                 $order_id = order_add_data(array(
-                    'uid'=>$this->uid,
+                    'buyer_uid'=>$this->uid,
+                    'buyer_name'=>$this->uid,
                     'seller_uid'=>$seller['owner_uid'],
-                    'seller_username'=>$seller['owner_username'],
+                    'seller_name'=>$seller['owner_username'],
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
                     'order_no'=>$order_no,
@@ -212,7 +273,9 @@ class OrderController extends BaseController{
                     'phone'=>$address['phone'],
                     'address'=>$formated_address,
                     'trade_no'=>$trade_no,
-                    'remark'=>$remark_list[$shop['shop_id']]
+                    'remark'=>$remark_list[$shop['shop_id']],
+                    'is_commited'=>$is_commited,
+                    'is_accepted'=>0
                 ));
 
                 $shop_total_num = 0;
@@ -242,26 +305,29 @@ class OrderController extends BaseController{
                     'uid'=>$this->uid,
                     'username'=>$this->username,
                     'order_id'=>$order_id,
-                    'action_name'=>L('checkout_success'),
+                    'action_name'=>$pay_type == 1 ? L('checkout_success') : L('order_commited'),
                     'action_time'=>time()
                 ));
-                //创建支付流水
-                if ($shop_total_num > 1){
-                    $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_num);
+                if ($pay_type == 1){
+                    //创建支付流水
+                    if ($shop_total_num > 1){
+                        $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_num);
+                    }
+                    trade_add_data(array(
+                        'payer_uid'=>$this->uid,
+                        'payer_name'=>$this->username,
+                        'payee_uid'=>$seller['owner_uid'],
+                        'payee_name'=>$seller['owner_username'],
+                        'trade_no'=>$trade_no,
+                        'trade_name'=>$trade_name,
+                        'trade_desc'=>$trade_name,
+                        'trade_fee'=>$total_fee,
+                        'trade_type'=>'SHOPPING',
+                        'trade_status'=>'UNPAID',
+                        'trade_time'=>time(),
+                        'out_trade_no'=>$trade_no
+                    ));
                 }
-                trade_add_data(array(
-                    'uid'=>$this->uid,
-                    'payee_uid'=>$seller['owner_uid'],
-                    'payee_name'=>$seller['owner_username'],
-                    'trade_no'=>$trade_no,
-                    'trade_name'=>$trade_name,
-                    'trade_desc'=>$trade_name,
-                    'trade_fee'=>$total_fee,
-                    'trade_type'=>'SHOPPING',
-                    'trade_status'=>'UNPAID',
-                    'trade_time'=>time(),
-                    'out_trade_no'=>$trade_no
-                ));
             }
             cart_delete_data(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)));
             $this->redirect(U('m=member&c=order&a=itemlist'));

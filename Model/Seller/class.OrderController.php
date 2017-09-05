@@ -57,43 +57,50 @@ class OrderController extends BaseController
     public function send(){
         $order_id = intval($_GET['order_id']);
         $order = order_get_data(array('order_id'=>$order_id, 'seller_uid'=>$this->uid));
-        $trade_status = order_get_trade_status($order);
-        if ($order) {
-            if ($trade_status != 2) {
-                $this->showError('order_has_send');
-            }else {
-                $shipping_type = intval($_GET['shipping_type']);
-                if ($shipping_type == 1){
-                    $express_id = intval($_GET['express_id']);
-                    $express_no = htmlspecialchars($_GET['express_no']);
-                    if ($express_id && $express_no) {
-                        $express = M('express')->where(array('id'=>$express_id))->getOne();
-                        order_add_shipping(array(
-                            'uid'=>$this->uid,
-                            'order_id'=>$order_id,
-                            'shipping_type'=>1,
-                            'express_id'=>$express_id,
-                            'express_name'=>$express['name'],
-                            'express_no'=>$express_no,
-                            'shipping_time'=>time()
-                        ));
-                    }else {
-                        $this->showError('invalid_parameter');
-                    }
-                }else {
-                    order_add_shipping(array(
-                        'uid'=>$this->uid,
-                        'order_id'=>$order_id,
-                        'shipping_type'=>2,
-                        'shipping_time'=>time()
-                    ));
-                }
-                //更新订单状态
-                order_update_data(array('order_id'=>$order_id), array('shipping_type'=>$shipping_type, 'shipping_status'=>1, 'shipping_time'=>time()));
-                $this->showSuccess('order_send_success');
-            }
-        }else {
+        if (!$order) {
             $this->showError('order_not_exists');
         }
+        if ($order['shipping_status']) {
+            $this->showError('order_has_send');
+        }
+
+        $shipping_type = intval($_GET['shipping_type']);
+        if ($order['pay_type'] == 1){
+            //更新订单状态
+            order_update_data(array('order_id'=>$order_id, 'seller_uid'=>$this->uid),
+                array('shipping_type'=>$shipping_type, 'shipping_status'=>1, 'shipping_time'=>time()));
+        }
+
+        if ($order['pay_type'] == 2 && $order['shipping_status'] == 0){
+            //更新订单状态
+            order_update_data(array('order_id'=>$order_id, 'seller_uid'=>$this->uid),
+                array('shipping_type'=>$shipping_type, 'shipping_status'=>1, 'shipping_time'=>time(), 'is_accepted'=>1));
+        }
+        if ($shipping_type == 1){
+            $express_id = intval($_GET['express_id']);
+            $express_no = htmlspecialchars($_GET['express_no']);
+            if ($express_id && $express_no) {
+                $express = M('express')->where(array('id'=>$express_id))->getOne();
+                order_add_shipping(array(
+                    'uid'=>$this->uid,
+                    'order_id'=>$order_id,
+                    'shipping_type'=>1,
+                    'express_id'=>$express_id,
+                    'express_name'=>$express['name'],
+                    'express_no'=>$express_no,
+                    'shipping_time'=>time()
+                ));
+            }else {
+                $this->showError('invalid_parameter');
+            }
+        }else {
+            order_add_shipping(array(
+                'uid'=>$this->uid,
+                'order_id'=>$order_id,
+                'shipping_type'=>2,
+                'shipping_time'=>time()
+            ));
+        }
+        $this->showSuccess('order_send_success');
     }
 }

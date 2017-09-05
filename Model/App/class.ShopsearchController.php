@@ -44,12 +44,12 @@ class ShopsearchController extends BaseController
             $datalist[$shop['shop_id']] = $shop;
         }
         $shop_ids = implodeids(array_keys($datalist));
-        $goods_list = M('goods_item')->field('shop_id, MIN(goods_price) AS price')
+        $itemlist = M('item')->field('shop_id, MIN(price) AS min_price')
             ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
-        foreach ($goods_list as $goods){
-            $datalist[$goods['shop_id']]['goods_price'] = formatAmount($goods['price']);
+        foreach ($itemlist as $item){
+            $datalist[$item['shop_id']]['min_price'] = formatAmount($item['min_price']);
         }
-        unset($shop_list, $shop, $goods_list, $goods, $shop_ids);
+        unset($shop_list, $shop, $itemlist, $item, $shop_ids);
         $this->showAjaxReturn(array_values($datalist));
     }
 }

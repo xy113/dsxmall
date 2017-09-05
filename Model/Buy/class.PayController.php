@@ -243,15 +243,4 @@ class PayController extends BaseController{
             return false;
         }
     }
-
-    /**
-     * 货到付款
-     */
-    public function daofu(){
-        $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'uid'=>$this->uid));
-        order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>3, 'pay_time'=>time()));
-        trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_type'=>'COD'));
-        $this->redirect(U('c=pay&a=order_query&order_id='.$order_id));
-    }
 }

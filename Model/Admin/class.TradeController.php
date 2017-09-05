@@ -35,27 +35,14 @@ class TradeController extends BaseController{
 			}
 		}else {
 			$condition = array();
-			$keyword = htmlspecialchars($_GET['keyword']);
-			if ($keyword) $condition['trade_name'] = array('LIKE', $keyword);
+			$q = htmlspecialchars($_GET['q']);
+			if ($q) $condition[] = "`trade_no`='$q' OR (`trade_name` LIKE '%$q%')";
 			
 			$pagesize = 20;
 			$totalnum = trade_get_count($condition);
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
 			$itemlist = trade_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize, 'trade_id DESC');
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "keyword=$keyword", 1);
-			
-			if ($itemlist) {
-				$uids = $datalist = array();
-				foreach ($itemlist as $item){
-					$datalist[$item['trade_id']] = $item;
-					array_push($uids, $item['uid'], $item['recip_uid']);
-				}
-				$itemlist = $datalist;
-				
-				$uids = $uids ? implodeids($uids) : 0;
-				$userlist = member_get_list(array('uid'=>array('IN', $uids)), $pagesize * 2);
-				unset($datalist, $uids, $item);
-			}
+			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", 1);
 			
 			include template('trade_list');
 		}

@@ -10,4 +10,10 @@ class IndexController extends BaseController{
         $_G['title'] = $_lang['home'];
 		include template('admin');
 	}
+
+	public function wellcome(){
+        global $G,$_lang;
+
+        include template('wellcome');
+    }
 }

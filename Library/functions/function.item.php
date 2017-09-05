@@ -16,7 +16,7 @@ function item_create_sn(){
  * @return array|bool|int|mysqli_result|null|string
  */
 function item_add_data($data, $return=0){
-    $id = M('item')->insert($data, true);
+    $id = M('item')->insert($data, true, true);
     return $return ? item_get_data(array('id'=>$id)) : $id;
 }
 

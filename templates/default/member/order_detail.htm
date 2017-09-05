@@ -36,10 +36,17 @@
             <td class="cell-name">交易流水</td>
             <td>{$order[trade_no]}</td>
         </tr>
+        {if $order[pay_type]==2}
+        <tr>
+            <td class="cell-name">订单状态</td>
+            <td>{if $order[shipping_status]}卖家已发货{else}买家已提交需求，等待卖家发货{/if}</td>
+        </tr>
+        {else}
         <tr>
             <td class="cell-name">订单状态</td>
             <td>{$trade_status_tips}</td>
         </tr>
+        {/if}
         </tbody>
     </table>
     <h3 class="section-title">收货人信息</h3>

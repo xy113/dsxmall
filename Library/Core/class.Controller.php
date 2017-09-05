@@ -199,8 +199,10 @@ abstract class Controller{
 	 * @param mixed $data
 	 */
 	protected function showAjaxError($errcode, $errmsg='', $data=null){
+	    global $_lang;
+	    $errmsg = isset($_lang[$errmsg]) ? $_lang[$errmsg] : $errmsg;
 		@header('Content-type: application/json');
-		$return = array('errcode'=>$errcode,'errmsg'=>L($errmsg));
+		$return = array('errcode'=>$errcode,'errmsg'=>$errmsg);
 		if (!is_null($data)) $return['data'] = $data;
 		echo json_encode($return, JSON_UNESCAPED_UNICODE);
 		exit();

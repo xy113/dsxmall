@@ -51,7 +51,7 @@
 .sidebar dl li a.cur{background-color: #0097D0; color: #fff;}
 .sidebar dl .on{background-color:#1296DB; color:#fff;}
 .mainframe{position: fixed; left: 160px; top: 40px; right: 0; bottom: 0; display: block; background-color: #fff; overflow: auto;}
-.mainframe .main-content{display:block; padding:20px; background-color: #fff;}
+.mainframe .main-content{display:block; padding:0; height: 100%; background-color: #fff;}
 .content-div{display:block; margin:10px 0;}
 .tab-console{display: block; position: relative; border-bottom: 1px #d7d7d7 solid;}
 .tab-console .item{display: block; padding: 10px 25px; float: left; font-size: 14px; cursor: pointer;}
@@ -190,3 +190,6 @@
 .trade-list-table .amount{text-align:right; width:100px;}
 .trade-list-table .amount span{font-weight:500; font-size:16px;}
 .trade-list-table .status{text-align:right;}
+
+.footer{display: block; padding: 30px 0;}
+.footer p{display: block; text-align: center;}

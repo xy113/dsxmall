@@ -65,19 +65,6 @@
         </div>
 
         <div class="pay-type-div">
-            <div class="type-radio-box">
-                <label>
-                    <input type="radio" class="radio" name="pay_type" value="3">
-                    <span>货到付款</span>
-                </label>
-            </div>
-            <div class="type-info">
-                <p>配送至: {$order[address]}</p>
-                <p>{$order[consignee]}(收), 电话:{$order[phone]}</p>
-            </div>
-        </div>
-
-        <div class="pay-type-div">
             <div class="type-radio-box">&nbsp;</div>
             <div class="type-info"><div class="confirm-pay-button" id="confirm-pay-button">确认支付</div></div>
         </div>
@@ -87,9 +74,6 @@
     <input type="hidden" name="order_id" value="{$order[order_id]}">
     <input type="hidden" name="pay_type" value="1" id="J_pay_type">
     <input type="hidden" name="pay_channel" value="" id="J_pay_channel">
-</form>
-<form method="post" id="J_Frmdaofu" action="{U:('c=pay&a=daofu')}">
-    <input type="hidden" name="order_id" value="{$order[order_id]}">
 </form>
 <script type="text/javascript">
     $(function () {
@@ -197,11 +181,6 @@
                     });
                     window.open("{U:('c=pay&a=alipay&order_id='.$order_id)}");
                 }
-
-            }
-
-            if (pay_type == 3) {
-                $("#J_Frmdaofu").submit();
             }
         });
     });
