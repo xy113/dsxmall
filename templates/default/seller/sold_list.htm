@@ -18,7 +18,7 @@
     </ul>
 </div>
 
-<div class="content-div">
+<div class="list-div">
     <table class="order-title-table" cellpadding="0" cellspacing="0" width="100%">
         <tbody>
         <tr>
@@ -37,8 +37,8 @@
             <thead>
             <tr>
                 <th>
-                    <span class="wrap-checkbox"><input type="checkbox"></span>
-                    <span class="wrap-time">{date:$order[create_time]|'Y-m-d'}</span>
+                    <span class="wrap-checkbox"><input type="checkbox" class="checkbox checkmark"></span>
+                    <span class="wrap-time">{date:$order[create_time]|'Y-m-d H:i'}</span>
                     <span class="wrap-order-no">{$order[order_no]}</span>
                 </th>
                 <th colspan="2">
@@ -55,7 +55,7 @@
                         <a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank"><img src="{img $item[thumb]}"></a>
                     </div>
                     <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[name]}</a></div>
+                        <div class="goods-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[title]}</a></div>
                         <div class="goods-attr">商品属性</div>
                     </div>
                 </td>
@@ -105,6 +105,38 @@
         </table>
     </div>
     {/loop}
-    <div class="pagination">{$pages}</div>
+    <div class="bottom-actions">
+        <div class="pagination float-right">{$pages}</div>
+        <label><input type="checkbox" class="checkbox checkall checkmark"> 全选</label>
+        <label><button type="button" class="btn" id="J_download">下载订单</button></label>
+    </div>
 </div>
+<iframe id="J_frame" src="" style="display: none;"></iframe>
+<script type="text/javascript">
+    var waiting = null;
+    function downloadOrder() {
+        $.ajax({
+            url:"{U:('c=sold&a=download&q='.$q)}",
+            dataType:'json',
+            success:function (response) {
+                if (response.errcode == 0){
+                    setTimeout(function () {
+                        downloadOrder();
+                    }, 500);
+                }else {
+                    waiting.close();
+                    $("#J_frame").attr('src', "{U:('c=sold&a=get_excel')}");
+                }
+            }
+        });
+    }
+    $(function () {
+        $("#J_download").on('click', function () {
+            DSXUI.showConfirm('订单下载过程可能需要花费几分钟，在此期间请不要关闭页面',function () {
+                waiting = DSXUI.showloading('正在导出数据...');
+                downloadOrder();
+            });
+        });
+    });
+</script>
 {template footer}

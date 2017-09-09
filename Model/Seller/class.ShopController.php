@@ -19,11 +19,47 @@ class ShopController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
-        $myshop = $this->shop;
-        $owner  = shop_get_owner(array('owner_uid'=>$this->uid));
-        $shop_info = shop_get_info(array('shop_id'=>$this->shop_id));
-        $_G['title'] = '我的店铺';
-        include template('shop_index');
+        if ($this->checkFormSubmit()){
+            $shop = $_GET['shop'];
+            if ($shop['shop_name'] && $shop['phone']){
+                shop_update_data(array('shop_id'=>$this->shop_id), $shop);
+                $shopContent = htmlspecialchars($_GET['shopContent']);
+                $res = shop_update_desc(array('shop_id'=>$this->shop_id), array('content'=>$shopContent, 'update_time'=>time()));
+                if (!$res) {
+                    shop_add_desc(array(
+                        'uid'=>$this->uid,
+                        'shop_id'=>$this->shop_id,
+                        'content'=>$shopContent,
+                        'update_time'=>time()
+                    ));
+                }
+                $this->showSuccess('save_succeed');
+            }else {
+                $this->showError('invalid_parameter');
+            }
+        }else {
+            $shop = shop_get_data(array('shop_id'=>$this->shop_id));
+            $desc = shop_get_desc(array('shop_id'=>$this->shop_id));
+            $editorname = 'shopContent';
+            $editorcontent = $desc['content'];
+            $_G['title'] = '我的店铺';
+            include template('shop_index');
+        }
+    }
+
+    /**
+     * 店铺认证
+     */
+    public function auth(){
+        global $_G,$_lang;
+
+        if ($this->checkFormSubmit()){
+
+        }else {
+
+            $_G['title'] = '店铺认证';
+            include template('shop_auth');
+        }
     }
 
     /**

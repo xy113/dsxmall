@@ -36,8 +36,8 @@
                         <a href="{$item[url]}" target="_blank" title="{$item[name]}"></a>
                     </div>
                     <div class="item-info">
-                        <h3><a href="{$item[url]}" target="_blank">{$item[name]}</a></h3>
-                        <p class="brief">{$item[brief]}</p>
+                        <h3><a href="{$item[url]}" target="_blank">{$item[title]}</a></h3>
+                        <p class="brief">{$item[subtitle]}</p>
                         <div class="shop"><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$item[shop_name]}</a></div>
                         <div class="dist">{$item[city]} {$item[county]}</div>
                     </div>
@@ -64,8 +64,8 @@
                 {loop $hot_sale_list $item}
                 <li>
                     <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
-                        <div class="g-name"><p>{$item[name]}</p></div>
-                        <a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank" title="{$item[name]}"></a>
+                        <div class="g-name"><p>{$item[title]}</p></div>
+                        <a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank" title="{$item[title]}"></a>
                     </div>
                     <div class="line">
                         <span class="sold">销量:{$item[sold]}</span>

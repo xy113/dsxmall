@@ -73,11 +73,11 @@ class ShopController extends BaseController{
     private function delShop($shop_id){
         shop_delete_data(array('shop_id'=>$shop_id));
         shop_delete_info(array('shop_id'=>$shop_id));
-        $itemlist = goods_get_item_list(array('shop_id'=>$shop_id), 0);
+        $itemlist = item_get_list(array('shop_id'=>$shop_id), 0);
         foreach ($itemlist as $item){
-            goods_delete_item(array('id'=>$item['id']));
-            goods_delete_desc(array('goods_id'=>$item['id']));
-            goods_delete_image(array('goods_id'=>$item['id']));
+            item_delete_data(array('id'=>$item['id']));
+            item_delete_desc(array('itemid'=>$item['id']));
+            item_delete_image(array('itemid'=>$item['id']));
         }
     }
 
@@ -86,7 +86,6 @@ class ShopController extends BaseController{
      */
     public function pending(){
         global $_G,$_lang;
-        G('menu', 'shop_pending');
 
         if ($this->checkFormSubmit()){
             $ids = $_GET['ids'];
@@ -161,8 +160,6 @@ class ShopController extends BaseController{
     }
 
     public function auth(){
-        G('menu', 'shop_pending');
-
         $shop_id = intval($_GET['shop_id']);
         $auth_status = strtoupper($_GET['auth_status']);
         $message = htmlspecialchars($_GET['message']);

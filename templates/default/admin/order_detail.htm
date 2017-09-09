@@ -24,7 +24,7 @@
     .order-item-table tbody .col3{width: 80px; vertical-align: top; text-align: center; font-size: 14px;}
     .order-item-table tbody .col4{width: 100px; vertical-align: top; text-align: center;}
     .order-item-table tbody .col5,.order-item-table tbody .col6,.order-item-table tbody .col7{
-        border-left: #e5e5e5 solid 1px; vertical-align: top; width: 100px; text-align: center;
+        border-left: #e5e5e5 solid 1px; vertical-align: top; width: 120px; text-align: center;
     }
     .order-item-table tbody .col7 .btn{
         height: 26px; line-height: 26px; border-radius: 3px;
@@ -41,42 +41,42 @@
     <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
         <tbody>
         <tr>
-            <td class="cell-name" width="80">订单编号</td>
+            <td width="80">订单编号</td>
             <td>{$order[order_no]}</td>
         </tr>
         <tr>
-            <td class="cell-name">下单时间</td>
+            <td>下单时间</td>
             <td>{date:$order[create_time]|'Y-m-d H:i::s'}</td>
         </tr>
         <tr>
-            <td class="cell-name">订单金额</td>
+            <td>订单金额</td>
             <td>{amount:$order[total_fee]}</td>
         </tr>
         <tr>
-            <td class="cell-name">付款方式</td>
+            <td>付款方式</td>
             <td>{$_lang[pay_types][$order[pay_type]]}</td>
         </tr>
         <tr>
-            <td class="cell-name">支付状态</td>
+            <td>支付状态</td>
             <td>{if $order[pay_status]}已支付{else}未支付{/if}</td>
         </tr>
         {if $order[pay_time]}
         <tr>
-            <td class="cell-name">付款时间</td>
+            <td>付款时间</td>
             <td>{date:$order[pay_time]|'Y-m-d H:i::s'}</td>
         </tr>
         {/if}
         <tr>
-            <td class="cell-name">交易流水</td>
+            <td>交易流水</td>
             <td>{$order[trade_no]}</td>
         </tr>
         {if $order[shipping_status]}
         <tr>
-            <td class="cell-name">发货状态</td>
+            <td>发货状态</td>
             <td>已发货</td>
         </tr>
         <tr>
-            <td class="cell-name">发货时间</td>
+            <td>发货时间</td>
             <td>{date:$order[shipping_time]|'Y-m-d H:i::s'}</td>
         </tr>
         {/if}
@@ -86,15 +86,15 @@
     <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
         <tbody>
         <tr>
-            <td class="cell-name" width="80">收货人</td>
+            <td width="80">收货人</td>
             <td>{$order[consignee]}</td>
         </tr>
         <tr>
-            <td class="cell-name">联系电话</td>
+            <td>联系电话</td>
             <td>{$order[phone]}</td>
         </tr>
         <tr>
-            <td class="cell-name">收货地址</td>
+            <td>收货地址</td>
             <td>{$order[address]}</td>
         </tr>
         </tbody>
@@ -105,27 +105,27 @@
         <tbody>
         {if $shipping[shipping_type]==1}
         <tr>
-            <td class="cell-name" width="80">发货方式</td>
+            <td width="80">发货方式</td>
             <td>快递</td>
         </tr>
         <tr>
-            <td class="cell-name">快递公司</td>
+            <td>快递公司</td>
             <td>{$shipping[express_name]}</td>
         </tr>
         <tr>
-            <td class="cell-name">快递单号</td>
+            <td>快递单号</td>
             <td>
                 <span>{$shipping[express_no]}</span>
             </td>
         </tr>
         {else}
         <tr>
-            <td class="cell-name" width="80">发货方式</td>
+            <td width="80">发货方式</td>
             <td>虚拟商品，无需物流</td>
         </tr>
         {/if}
         <tr>
-            <td class="cell-name">发货时间</td>
+            <td>发货时间</td>
             <td>{date:$shipping[shipping_time]|'Y-m-d H:i::s'}</td>
         </tr>
         </tbody>
@@ -138,13 +138,14 @@
                 <td>宝贝</td>
                 <td width="100">单价</td>
                 <td width="80">数量</td>
-                <td width="100">实付款</td>
+                <td width="120">实付款</td>
             </tr>
         </tbody>
     </table>
     <div class="order-item-wrap" id="order-item-{$order_id}">
         <table class="order-item-table" cellspacing="0" cellpadding="0" width="100%">
             <tbody>
+            {eval $index=0}
             {loop $itemlist $item}
             <tr>
                 <td class="col1">
@@ -152,7 +153,7 @@
                         <img src="{img $item[thumb]}">
                     </div>
                     <div style="margin-left: 90px; overflow: hidden;">
-                        <div class="goods-name">{$item[name]}</div>
+                        <div class="goods-name">{$item[title]}</div>
                         <div class="goods-attr">商品属性</div>
                     </div>
                 </td>
@@ -162,8 +163,11 @@
                 </td>
                 <td class="col3">x{$item[quantity]}</td>
                 <td class="col5">
-                    <p><strong style="color: #FF0000;">￥{amount:$item[total_fee]}</strong></p>
-                    <p style="font-size: 11px;">(含运费:￥10.00)</p>
+                    {if $index==0}
+                    <p><strong style="color: #FF0000;">￥{amount:$order[total_fee]}</strong></p>
+                    <p style="font-size: 11px;">(含运费:￥{amount:$order[shipping_fee]})</p>
+                    {/if}
+                    {eval $index++}
                 </td>
             </tr>
             {/loop}

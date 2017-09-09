@@ -10,11 +10,11 @@ class Upload{
     public function __construct($inputname = 'filedata'){
         $this->file = &$_FILES[$inputname];
     }
-    
+
     /**
      * 保存文件
-     * @param string $filename
-     * @return boolean
+     * @param string $saveName
+     * @return bool
      */
     protected function save($saveName = ''){
     	if (!$this->savepath) $this->savepath = C('ATTACHDIR');
@@ -54,10 +54,10 @@ class Upload{
     protected function setfilename(){
     	return date('YmdHis').rand(100,999).rand(100,999).'.'.$this->getfileextension();
     }
-    
+
     /**
      * 获取文件扩展名
-     * @param string $file
+     * @return string
      */
     protected function getfileextension(){
     	$file = $this->file['name'];

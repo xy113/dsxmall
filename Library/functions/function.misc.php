@@ -901,6 +901,65 @@ function notice_get_list($condition, $count=20, $offset=0, $order=null, $field='
     return $itemlist ? $itemlist : array();
 }
 
+/*快递管理*/
+/**
+ * @param $data
+ * @param bool $return
+ * @return array|bool|int|mysqli_result|null|resource|string
+ */
+function express_add_data($data, $return=false){
+    $id = M('express')->insert($data, true);
+    return $return ? express_get_data(array('id'=>$id)) : $id;
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function express_delete_data($condition){
+    return $condition ? M('express')->where($condition)->delete() : false;
+}
+
+/**
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function express_update_data($condition, $data){
+    return M('express')->where($condition)->update($data);
+}
+
+/**
+ * @param $condition
+ * @return array|null
+ */
+function express_get_data($condition){
+    $data = M('express')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * @param $condition
+ * @return mixed
+ */
+function express_get_count($condition){
+    return M('express')->where($condition)->count();
+}
+
+/**
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @param null $order
+ * @return array
+ */
+function express_get_list($condition, $count=20, $offset=0, $order=null){
+    $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
+    !$order && $order = 'displayorder ASC,id ASC';
+    $itemlist = M('express')->where($condition)->order($order)->limit($limit)->select();
+    return $itemlist ? $itemlist : array();
+}
+
 /*
  * APNS
  */

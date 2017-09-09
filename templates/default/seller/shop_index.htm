@@ -1,134 +1,116 @@
 {template header}
-<div class="console-title">
-    <h2>店铺设置</h2>
+<div class="navigation">
+    <a>我是卖家</a>
+    <span>></span>
+    <a>店铺设置</a>
+    <span>></span>
+    <a>基本设置</a>
 </div>
 <div class="content-div">
-    <form method="post" id="shopForm">
-        <input type="hidden" name="formsubmit" value="yes">
-        <input type="hidden" name="formhash" value="{FORMHASH}">
-        <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
-            <tbody>
-            <tr>
-                <td class="cell-name" width="80">LOGO</td>
-                <td width="320"><img src="{img $myshop[shop_logo]}" width="150"></td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">店铺名称</td>
-                <td id="shop_name">{$myshop[shop_name]}</td>
-                <td class="cell-tips"><a href="javascript:;" id="edit_name">修改</a></td>
-            </tr>
-            <tr>
-                <td class="cell-name">手机号码</td>
-                <td id="shop_phone">{$myshop[phone]}</td>
-                <td class="cell-tips"><a href="javascript:;" id="edit_phone">修改</a></td>
-            </tr>
-            <tr>
-                <td class="cell-name">所在位置</td>
-                <td>{$myshop[province]} {$myshop[city]} {$myshop[county]} {$myshop[street]}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">开店时间</td>
-                <td>{date:$myshop[create_time]|'Y年m月d日'}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">店铺访问</td>
-                <td>{$myshop[view_num]}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">店主姓名</td>
-                <td>{$owner[owner_name]}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">证件号码</td>
-                <td>{$owner[id_card_no]}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            <tr>
-                <td class="cell-name">证件照片</td>
-                <td colspan="2">
-                    <img src="{img $owner[id_card_pic_1]}" width="150">
-                    <img src="{img $owner[id_card_pic_2]}" width="150">
-                    <img src="{img $owner[id_card_pic_3]}" width="150">
-                </td>
-            </tr>
-            <tr>
-                <td class="cell-name">营业执照</td>
-                <td><img src="{img $shop_info[license_pic]}" width="150"></td>
-                <td class="cell-tips"></td>
-            </tr>
-            {if $shop_info[other_card_pic]}
-            <tr>
-                <td class="cell-name">其他证件</td>
-                <td><img src="{img $shop_info[other_card_pic]}" width="150"></td>
-                <td class="cell-tips"></td>
-            </tr>
-            {/if}
-            <tr>
-                <td class="cell-name">经营范围</td>
-                <td>{$shop_info[business_scope]}</td>
-                <td class="cell-tips"></td>
-            </tr>
-            </tbody>
-        </table>
-    </form>
+    <div class="tab-console">
+        <span class="item cur">基本信息</span>
+        <span class="item">店铺认证</span>
+    </div>
+    <div class="form-div">
+        <form method="post" id="shopForm" autocomplete="off">
+            <input type="hidden" name="formsubmit" value="yes">
+            <input type="hidden" name="formhash" value="{FORMHASH}">
+            <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
+                <tbody>
+                <tr>
+                    <td class="cell-name" width="80">店铺名称</td>
+                    <td><input type="text" name="shop[shop_name]" id="shop_name" class="input-text w300" value="{$shop[shop_name]}"></td>
+                </tr>
+                <tr>
+                    <td class="cell-name">联系电话</td>
+                    <td><input type="text" name="shop[phone]" id="phone" class="input-text w300" value="{$shop[phone]}"></td>
+                </tr>
+                <tr>
+                    <td class="cell-name">店铺标志</td>
+                    <td>
+                        <input type="hidden" name="shop[shop_logo]" value="{$shop[shop_logo]}" id="shop_logo">
+                        <img src="{img $shop[shop_logo]}" width="100" height="100" id="shop_logo_img">
+                        <p>
+                            <span class="button button-cancel" style="border-radius: 5px;" id="upload-btn">上传图标</span>
+                            <span>文件格式GIF、JPG、JPEG、PNG文件大小100K以内，建议尺寸150PX*150PX</span>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell-name">店铺简介</td>
+                    <td>
+                        <textarea class="textarea" name="shop[intro]" style="width: 300px; height: 80px;" placeholder="【掌柜签名】/【店铺动态】/【主营宝贝】">{$shop[intro]}</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell-name">经营地址</td>
+                    <td>
+                        <select class="select" name="shop[province]" id="province" style="width: auto;">
+                            <option value="">请选择</option>
+                        </select>
+                        <select class="select" name="shop[city]" id="city" style="width: auto;">
+                            <option value="">请选择</option>
+                        </select>
+                        <select class="select" name="shop[county]" id="county" style="width: auto;">
+                            <option value="">请选择</option>
+                        </select>
+                        <input type="text" name="shop[street]" id="street" class="input-text w300" value="{$shop[street]}" placeholder="街道地址">
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell-name">主要货源</td>
+                    <td>
+                        <label><input type="radio" class="radio" name="shop[main_source]" value="1"{if $shop[main_source]=="1"||!$shop[main_source]} checked{/if}> 自己生产</label>
+                        <label><input type="radio" class="radio" name="shop[main_source]" value="2"{if $shop[main_source]=="2"} checked{/if}> 代工生产</label>
+                        <label><input type="radio" class="radio" name="shop[main_source]" value="3"{if $shop[main_source]=="3"} checked{/if}> 线下批发</label>
+                        <label><input type="radio" class="radio" name="shop[main_source]" value="4"{if $shop[main_source]=="4"} checked{/if}> 分销代销</label>
+                        <label><input type="radio" class="radio" name="shop[main_source]" value="5"{if $shop[main_source]=="5"} checked{/if}> 自由渠道</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="cell-name">店铺介绍</td>
+                    <td>
+                        <div style="width: 660px;">{template editor}</div>
+                    </td>
+                    <td class="cell-tips"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td width="80"></td>
+                    <td colspan="2"><button type="submit" class="button btn-100" id="button-submit">提交</button></td>
+                </tr>
+                </tfoot>
+            </table>
+        </form>
+    </div>
 </div>
 <script type="text/javascript">
     $(function () {
-        function editField(id, callback) {
-            var defaultVal = $(id).html();
-            var input = $("<input/>").attr({
-                type:'text',
-                class:'input-text w300',
-                value:defaultVal,
-                id:'editing-textField'
-            }).blur(function () {
-                var val = $(this).val();
-                if (val == defaultVal){
-                    $(id).html(defaultVal);
-                }else {
-                    $(id).html(val);
-                    if (callback) callback(val);
+        var district = new DistrictSelector({
+            province:'{$shop[province]}',
+            city:'{$shop[city]}',
+            county:'{$shop[county]}'
+        });
+        $("#upload-btn").on('click', function () {
+            DSXUI.showImagePickerView({
+                onPicked:function (data) {
+                    $("#shop_logo_img").attr('src', data.imageurl);
+                    $("#shop_logo").val(data.image);
                 }
-            });
-            if ($("#editing-textField").length > 0){
-                $("#editing-textField").blur();
-                return;
-            }else {
-                $(id).html(input);
-            }
-        }
-        $("#edit_name").on('click', function () {
-            editField('#shop_name', function (val) {
-                $.ajax({
-                    type:'POST',
-                    url:"{U:('c=shop&a=update_shop')}",
-                    data:{shop_name:val},
-                    success:function () {
-
-                    }
-                });
             });
         });
-        $("#edit_phone").on('click', function () {
-            editField('#shop_phone', function (val) {
-                if (!DSXValidate.IsMobile(val)){
-                    DSXUI.error('手机号输入错误');
-                    return false;
-                }
-                $.ajax({
-                    type:'POST',
-                    url:"{U:('c=shop&a=update_shop')}",
-                    data:{phone:val},
-                    success:function () {
-
-                    }
-                });
-            });
+        $("#shopForm").on('submit', function () {
+            var shop_name = $.trim($("#shop_name").val());
+            if (!shop_name) {
+                DSXUI.error('请输入店铺名称');
+                return false;
+            }
+            var phone = $.trim($("#phone").val());
+            if (!DSXValidate.IsMobile(phone)){
+                DSXUI.error('手机号码输入错误');
+                return false;
+            }
         });
     });
 </script>

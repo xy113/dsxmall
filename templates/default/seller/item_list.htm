@@ -1,12 +1,16 @@
 {template header}
-<div class="console-title">
-    <a href="{U:('c=item&a=sell')}" class="button float-right">出售宝贝</a>
-    <h2>出售中的宝贝</h2>
+<div class="navigation">
+    <a>我是卖家</a>
+    <span>></span>
+    <a>宝贝管理</a>
+    <span>></span>
+    <a>出售中的宝贝</a>
 </div>
-<div class="content-div">
-    <form method="post" id="listForm" autocomplete="off" action="{U:('c=item&a=batch_update')}">
+<div class="list-div">
+    <form method="post" id="listForm" autocomplete="off">
         <input type="hidden" name="formsubmit" value="yes">
         <input type="hidden" name="formhash" value="{FORMHASH}">
+        <input type="hidden" name="eventType" value="" id="J_eventType">
         <table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable">
             <thead>
             <tr>
@@ -17,17 +21,17 @@
                 <th>销量</th>
                 <th>上架时间</th>
                 <th>状态</th>
-                <th width="80">操作</th>
+                <th width="80" class="align-center">操作</th>
             </tr>
             </thead>
             <tbody>
             {loop $itemlist $item}
             <tr id="row_{$item[id]}">
-                <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$item[id]}"></td>
-                <td><a href="{U:('m=item&c=item&id='.$goods['id'])}" target="_blank"><div class="bg-cover asyncload" data-original="{img $item[thumb]}" style="width: 80px; height: 80px;"></div></a></td>
+                <td><input type="checkbox" class="checkbox checkmark" name="items[]" value="{$item[itemid]}"></td>
+                <td><a href="{U:('m=item&c=item&itemid='.$item['itemid'])}" target="_blank"><div class="bg-cover asyncload" data-original="{img $item[thumb]}" style="width: 80px; height: 80px;"></div></a></td>
                 <td>
-                    <h3 style="font-size: 12px;"><a href="{U:('m=item&c=item&id='.$item['id'])}" target="_blank">{$item[name]}</a></h3>
-                    <p style="margin-top: 5px; color: #888; font-size: 11px;">{$item[brief]}</p>
+                    <h3 style="font-size: 12px;"><a href="{U:('m=item&c=item&itemid='.$item['itemid'])}" target="_blank">{$item[title]}</a></h3>
+                    <p style="margin-top: 5px; color: #888; font-size: 11px;">{$item[subtitle]}</p>
                 </td>
                 <td>{amount:$item[price]}</td>
                 <td>{$item[sold]}</td>
@@ -39,26 +43,20 @@
                     已下架
                     {/if}
                 </td>
-                <td class="actions">
-                    <a href="{U:('c=item&a=edit&id='.$item[id])}">编辑</a>
-                    <a rel="delete" data-id="{$item[id]}">删除</a>
+                <td class="align-center">
+                    <a href="{U:('c=item&a=publish&catid='.$item['catid'].'&itemid='.$item[itemid])}">编辑宝贝</a>
                 </td>
             </tr>
             {/loop}
             </tbody>
             <tfoot>
             <tr>
-                <td colspan="20">
+                <td colspan="20" class="operations">
                     <div class="pagination float-right">{$pages}</div>
                     <label><input type="checkbox" class="checkbox checkall checkmark"> 全选</label>
-                    <label><input type="radio" class="radio" name="option" value="delete"> 删除</label>
-                    <label><input type="radio" class="radio" name="option" value="on_sale" checked> 上架</label>
-                    <label><input type="radio" class="radio" name="option" value="off_sale"> 下架</label>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="20">
-                    <input type="submit" class="button" toggle-status="true" value="提交" id="submit-button">
+                    <label><button type="button" class="btn" data-action="delete">删除</button></label>
+                    <label><button type="button" class="btn" data-action="on_sale">上架</button></label>
+                    <label><button type="button" class="btn" data-action="off_sale">下架</button></label>
                 </td>
             </tr>
             </tfoot>
@@ -67,22 +65,10 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("a[rel=delete]").on('click', function (e) {
-            var itemid = $(this).attr('data-id');
-            DSXUI.confirmDialog({
-                title:'删除商品',
-                text:'你确定要删除此商品吗?',
-                onConfirm:function (dlg) {
-                    $.ajax({
-                        url:"{U:('c=item&a=delete')}",
-                        data:{itemid:itemid},
-                        dataType:'json',
-                        success:function (response) {
-                            $("#row_"+itemid).remove();
-                        }
-                    });
-                }
-            });
+        $(".operations .btn").on('click', function () {
+            var eventType = $(this).attr('data-action');
+            $("#J_eventType").val(eventType);
+            $("#listForm").submit();
         });
     });
 </script>

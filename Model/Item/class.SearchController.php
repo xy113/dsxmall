@@ -26,13 +26,13 @@ class SearchController extends BaseController{
         $catid = intval($_GET['catid']);
         if ($catid) {
             $params['catid'] = $catid;
-            $condition.= " AND (i.catid_1='$catid' OR i.catid_2='$catid' OR i.catid_3='$catid')";
+            $condition.= " AND i.catid='$catid'";
             $item_cat = item_get_cat(array('catid'=>$catid));
         }
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) {
             $params['q'] = $q;
-            $condition.= " AND (i.goods_name LIKE '%$q%' OR s.shop_name LIKE '%$q%')";
+            $condition.= " AND (i.title LIKE '%$q%' OR s.shop_name LIKE '%$q%')";
         }
         $db = DB();
         $sql = "SELECT COUNT(*) AS total_count FROM ".$db->table('item')." i LEFT JOIN ".$db->table('shop').
@@ -55,15 +55,15 @@ class SearchController extends BaseController{
         $query = $db->query($sql);
         $itemlist = array();
         while ($item = $db->fetch_array($query)){
-            $item['url'] = U('m=item&c=item&id='.$item['id']);
-            $itemlist[$item['id']] = $item;
+            $item['url'] = U('m=item&c=item&itemid='.$item['itemid']);
+            $itemlist[$item['itemid']] = $item;
         }
         $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($params), true);
         unset($sql, $query, $data, $item, $condition, $params, $orderby);
 
         //掌柜热卖
         if ($catid) {
-            $hot_sale_list = item_get_list("`on_sale`=1 AND (catid_1='$catid' OR catid_2='$catid' OR catid_3='$catid')", 9, 0, 'sold DESC');
+            $hot_sale_list = item_get_list("`on_sale`=1 AND catid='$catid'", 9, 0, 'sold DESC');
         }else {
             $hot_sale_list = item_get_list(array('on_sale'=>1), 9, 0, 'sold DESC');
         }

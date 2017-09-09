@@ -25,16 +25,16 @@ class CollectionController extends BaseController
             }else {
                 //商品收藏
                 if ($datatype == 'item'){
-                    $item = item_get_data(array('id'=>$dataid), 'name, thumb');
+                    $item = item_get_data(array('itemid'=>$dataid), 'title, thumb');
                     collection_add_data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,
                         'datatype'=>$datatype,
-                        'title'=>$item['name'],
+                        'title'=>$item['title'],
                         'image'=>$item['thumb'],
                         'create_time'=>time()
                     ));
-                    item_update_data(array('id'=>$dataid), '`collection_num`=`collection_num`+1');
+                    item_update_data(array('itemid'=>$dataid), '`collection_num`=`collection_num`+1');
                 }
 
                 //店铺收藏

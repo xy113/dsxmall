@@ -40,8 +40,11 @@
                 <td>{$item[owner_username]}</td>
                 <td>{$item[phone]}</td>
                 <td>
-                    {if $item[shop_status]=='OPEN'}营业中{else}已打烊{/if}
-
+                    {if $item[shop_status]=='OPEN'}
+                    <span style="color: #4cae4c;">营业中</span>
+                    {else}
+                    <span style="color: #ff0000">已打烊</span>
+                    {/if}
                 </td>
                 <td>{date:$item[create_time]|'Y年m月d日'}</td>
             </tr>

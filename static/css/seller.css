@@ -1,34 +1,43 @@
 /* CSS Document */
 @import "common.css";
-.membercp-header{background-color:#0098CE; color:#fff; height:40px; display:block; padding: 0 20px; margin: 0;}
-.membercp-header .logo{font-size:20px; line-height:40px; float:left; margin-right:50px;}
-.membercp-header .right-menu{font-size:12px; overflow:hidden; padding-left:2px; float: right;}
+.area{width: 1180px; display: block; margin: 0 auto;}
+.top{height: 35px; display: block; background-color: #F2F2F2; line-height: 35px; font-size: 12px; color: #666;}
+.membercp-header{background-color:#0088E8; color:#fff; height:60px; display:block; padding: 0 20px; margin: 0;}
+.membercp-header .header{height: 60px;}
+.membercp-header .logo{float:left; padding-top: 10px;}
+.membercp-header .logo img{height: 40px; width: auto; display: block; border: 0;}
+.membercp-header .right-menu{font-size:12px; overflow:hidden; margin-left: 180px; padding: 20px 0 0;}
 .membercp-header .right-menu a{
     display:inline-block; padding:0 20px; float:left;
-    font-size:14px; color:#fff; height:40px;
-    line-height:40px; border-left:1px #008fbf solid;
-    border-right:1px #008fbf solid; margin-left:-1px;
+    font-size:14px; color:#fff;  line-height:20px;
 }
-.sidebar{width:160px; background:#EAEDF1; position:absolute; left:0; top:40px; bottom:0;}
+.sidebar{width:160px; background:#fff; float: left; padding: 0; border: 1px #DDD solid;}
 .sidebar .sidebar-content{display:block; padding:0; height: 100%; position: relative; overflow: hidden;}
 .sidebar .scroll{display: block; position: absolute; left: 0; top: 0; right: -20px; bottom: 0; overflow: auto;}
 .sidebar .menus{display: block; padding: 10px 0 20px 0;}
 .sidebar dl{display:block;}
 .sidebar dl dd{font-size:12px; font-weight:500;}
-.sidebar dl dd a{display:block; padding:8px 22px; font-size:14px;}
+.sidebar dl dd a{display:block; padding:8px 22px; font-size:12px;}
 .sidebar dl dd a:hover{color:#000;}
-.sidebar dl dd .iconfont{display:inline-block; margin-right: 3px; vertical-align: -2px;}
+.sidebar dl dd .iconfont{display: inline-block; vertical-align: -1px; font-size: 16px; margin-right: 3px;}
 .sidebar dl dt{}
 .sidebar dl ul{}
 .sidebar dl li{display:block;}
-.sidebar dl li a{display:block; padding:7px 20px 7px 31px; font-size:12px;}
+.sidebar dl li a{display:block; padding:7px 20px 7px 41px; font-size:12px;}
 .sidebar dl li a:hover{background:#e2e2e2; color:#000;}
 .sidebar dl li a.cur {background-color: #0097d0; color: #fff;}
-.mainframe{position: absolute; left: 160px; top: 40px; right: 0; bottom: 0px;}
-.mainframe .main-content{display:block; padding: 0px; height: 100%; overflow: auto;}
-.mainframe .main-content .scrollView{display: block; padding: 20px;}
+.mainframe{margin-left: 175px;}
+.mainframe .main-content{padding: 0; overflow: hidden; min-height: 500px;}
+.mainframe .main-content:before{clear: none; content: none;}
+.mainframe .main-content:after{clear: both; content: ""; display: block;}
+.mainframe .content-div{display:block; margin:10px 0;}
+.table-border-wrap{border: 1px #DDD solid;}
 
-.content-div{display:block; margin:10px 0;}
+/**==导航==**/
+.navigation{padding: 10px; border: 1px #DDD solid; font-size: 12px; color: #666; display: block; margin-bottom: 15px; background-color: #fafafa;}
+.navigation span{margin: 0 5px; color: #999;}
+
+.content-div{display:block; margin:0; padding: 0; border: 1px #DDD solid; background-color: #fff;}
 .console-title{display:block; padding:2px 0 10px; border-bottom:1px #CCC solid; margin-bottom:20px;}
 .console-title .tab{display:inline-block;}
 .console-title .tab li{float:left; margin-right:10px; font-size:12px; border-radius:2px;}
@@ -43,30 +52,53 @@
     margin-top: 5px; border-left: 3px #86B6E2 solid; padding-left: 6px; float: left;
 }
 
-.tab-console{display: block; position: relative; border-bottom: 1px #d7d7d7 solid;}
+.tab-console{display: block; position: relative; border-bottom: 1px #d7d7d7 solid; padding: 20px 30px 0;}
 .tab-console .item{display: block; padding: 10px 25px; float: left; font-size: 14px; cursor: pointer;}
 .tab-console .cur{padding: 10px 25px 11px; margin-bottom: -1px; border: 1px #d7d7d7 solid; border-bottom: none; background-color: #fff;}
+.form-div{display: block; padding: 20px;}
+.list-div{display: block; clear: both; background-color: #fff;}
 
+/*===分页===*/
+.pagination{display:block; padding:0; text-align:right; font-size:12px;}
+.pagination a,.pagination span{display:inline-block; margin-left:3px; padding:3px 5px; border:#EDEDED 1px solid; background-color: #fff;}
+.pagination span.cur{background-color:#0098CE; color:#fff; border-color:#0098CE;}
+.pagination a:hover{border-color:#0098CE; color:#0098CE;}
+
+.foot-bar{display: block; padding: 10px 0;}
+
+/*==列表==*/
 .listtable{}
 .listtable td,.listtable th{padding:10px 10px 10px 0; text-align:left; font-size:12px;}
 .listtable td .title{font-size:12px; font-weight:400; line-height:1.1;}
 .listtable td .info{font-size:10px; color:#999; display:block; margin-top:5px;}
 .listtable td .pic{width:50px; height:50px; float:left; border-radius:100%; background-size:cover;}
 .listtable td .pic img{width:100%; height:100%; display:block; border-radius:100%;}
-.listtable thead th{background-color:#F8F8F8;}
+.listtable thead th{background-color:#F6FAFD; border-top: 2px #5997D4 solid;}
 .listtable tbody td{border-bottom:1px #EDEDED solid;}
 .listtable tbody tr:hover td{background-color:#FeFeF0;}
-.listtable .head-first{padding-left:10px;}
-.listtable .first{padding-left:10px;}
-.listtable .t-right{text-align:right;}
+.listtable label{margin-right: 5px; height: 24px; line-height: 24px;}
+.listtable .operations{background-color: #F3F3F3; padding: 7px 0; border-bottom: 1px #DDD solid;}
+.listtable .operations .btn{height: 24px; line-height: 24px; cursor: pointer; padding: 0 10px; border: 1px #e0e0e0 solid; background-color: #f0f0f0; font-size: 12px;}
+.listtable .operations .btn:hover{background-color: #e5e5e5; color: #222;}
+.listtable .align-right{text-align: right;}
+.listtable .align-center{text-align: center;}
 
-.formtable{}
-.formtable td,.formtable th{padding:10px 0; font-size:13px; text-align:left;}
-.formtable .cell-name{text-align:right; padding-right:10px;}
+.bottom-actions{display: block; margin-top: 10px; padding-left: 15px;}
+.bottom-actions label{margin-right: 10px;}
+.bottom-actions .btn{border: 1px #DDD solid; border-radius: 4px; cursor: pointer; height: 26px; line-height: 26px; display: inline-block; font-size: 12px; padding: 0 10px; background-color: #fff;}
+.bottom-actions .btn:hover{background-color: #f5f5f5;}
+
+/*=分类练级菜单=*/
+.cate-sascading{width: 720px; display: block; margin: 0 auto; clear: right;}
+.cate-sascading td{text-align: center; padding: 7px 5px; font-size: 14px;}
+.cate-sascading td .select{width: 230px; height: 330px;}
+.cate-sascading td .select option{padding: 3px 5px; font-size: 14px; display: block; border-bottom: 1px #d5d5d5 solid;}
 
 .button{box-sizing:border-box; padding:0 15px; display:inline-block; font-size:12px; border-radius:1px; cursor:pointer; vertical-align:middle;}
 .button,a.button{background-color:#0098CE; color:#fff; border:0;}
 .button:hover{background-color:#008FBF; color:#fff;}
+.button-cancel,a.button-cancel{background-color: #f5f5f5; color: #333; border: 1px #CCCCCC solid;}
+.button-cancel:hover,a.button-cancel:hover{background-color: #f0f0f0; color: #000;}
 .input-text:hover,textarea:hover,select:hover{border-color:#64A402;}
 
 .toolbar{display:block; padding:2px 0 10px; border-bottom:1px #CCC solid; margin-bottom:20px;}
@@ -78,8 +110,11 @@
 .toolbar .button{height:28px; line-height:26px;}
 .toolbar .input-text{font-size:12px;}
 
+/*==表单==*/
+.formtable{}
 .formtable{table-layout:auto;}
-.formtable th, td{padding:8px 0; text-align:left; font-size:12px;}
+.formtable th, .formtable td{padding:8px 0; text-align:left; font-size:12px;}
+.formtable .cell-name{text-align:right; padding-right:10px;}
 .formtable .a-bind-link{color:#008FBF;}
 .formtable .a-bind-link:hover{text-decoration:underline;}
 .formtable .img-upload-box{
@@ -116,6 +151,18 @@
     background-size: 50px 50px; float: left; position: relative; cursor: pointer;
 }
 .formtable .image-upload-button .file{position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; opacity: 0; cursor: pointer;}
+
+.formtable .item-image-list{display: block;}
+.formtable .item-image-list li{width: 100px; height: 100px; float: left; margin-right: 10px; position: relative; border: 1px #DDD solid; background-color: #f5f5f5;}
+.formtable .item-image-list li .preview{
+    display: block; position: absolute; left: 0; top: 0;
+    width: 100%; height: 100%; cursor: pointer;
+    background-image: none; background-color: transparent;
+}
+.formtable .item-image-list li .iconfont{
+    color: #ccc; width: 80px; height: 80px; line-height: 80px; display: block; font-size: 80px; margin: 10px auto 0;
+    text-align: center;
+}
 
 .avatar-div{width:300px; float:left; margin-right:50px;}
 .avatar-div .avatar{width:240px; height:240px; margin:0 auto; display:block;}
@@ -161,11 +208,6 @@
 .trade-list-table .amount{text-align:right; width:100px;}
 .trade-list-table .amount span{font-weight:500; font-size:16px;}
 .trade-list-table .status{text-align:right;}
-
-.pages{display:block; padding:10px 0; text-align:right; font-size:12px;}
-.pages a,.pages span{display:inline-block; margin-left:3px; padding:3px 5px; border:#EDEDED 1px solid;}
-.pages span.cur{background-color:#0098CE; color:#fff; border-color:#0098CE;}
-.pages a:hover{border-color:#0098CE; color:#0098CE;}
 
 /*===订单列表===*/
 .order-title-table{background-color: #F2F2F2; font-size: 13px; border: 1px #e5e5e5 solid; clear: both;}

@@ -19,7 +19,7 @@ class CartController extends BaseController
         $quantity = intval($_GET['quantity']);
         if (!$itemid) $itemid = intval($_GET['goods_id']);
         if (!$quantity) $quantity = intval($_GET['goods_number']);
-        $item = item_get_data(array('id'=>$itemid));
+        $item = item_get_data(array('itemid'=>$itemid));
         if ($item) {
             if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
                 cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
@@ -30,8 +30,8 @@ class CartController extends BaseController
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
                     'itemid'=>$itemid,
-                    'name'=>$item['name'],
                     'quantity'=>$quantity,
+                    'title'=>$item['title'],
                     'price'=>$item['price'],
                     'thumb'=>$item['thumb'],
                     'image'=>$item['image'],
@@ -61,9 +61,9 @@ class CartController extends BaseController
         $total_num = $total_fee = 0;
         if ($cart_item_list) {
             $price_list = array();
-            $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, price');
+            $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid, price');
             foreach ($itemlist as $item){
-                $price_list[$item['id']] = $item['price'];
+                $price_list[$item['itemid']] = $item['price'];
             }
             $datalist = array();
             foreach ($cart_item_list as $cartitem){
@@ -117,7 +117,7 @@ class CartController extends BaseController
         $shop_list = array();
         $itemids = $itemids ? implodeids($itemids) : 0;
         $price_list = array();
-        $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id AS itemid, price');
+        $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid, price');
         foreach ($itemlist as $item){
             $price_list[$item['itemid']] = $item['price'];
         }
@@ -127,7 +127,7 @@ class CartController extends BaseController
         $cart_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0, 0, null);
         foreach ($cart_list as $cartitem){
             if (isset($price_list[$cartitem['itemid']])){
-                $cartitem['goods_price'] = $price_list[$cartitem['itemid']];
+                $cartitem['price'] = $price_list[$cartitem['itemid']];
                 $cartitem['total_fee'] = floatval($cartitem['price']) * intval($cartitem['quantity']);
                 $shop_list[$cartitem['shop_id']]['shop_id'] = $cartitem['shop_id'];
                 $shop_list[$cartitem['shop_id']]['shop_name'] = $cartitem['shop_name'];
@@ -194,7 +194,7 @@ class CartController extends BaseController
                 'phone'=>$address['phone'],
                 'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
                 'trade_no'=>$trade_no,
-                'order_remark'=>$shop['remark'],
+                'remark'=>$shop['remark'],
                 'is_commited'=>$is_commited,
                 'is_accepted'=>0
             ));
@@ -204,19 +204,19 @@ class CartController extends BaseController
             if ($shop['items']){
                 foreach ($shop['items'] as $itemid=>$item){
                     //记录订单商品信息
-                    if (!$trade_name) $trade_name = $item['name'];
+                    if (!$trade_name) $trade_name = $item['title'];
                     order_add_item(array(
                         'uid'=>$this->uid,
                         'order_id'=>$order_id,
                         'itemid'=>$itemid,
-                        'name'=>$item['name'],
+                        'title'=>$item['title'],
                         'market_price'=>$item['market_price'],
                         'price'=>$item['price'],
                         'quantity'=>$item['quantity'],
                         'thumb'=>$item['thumb'],
                         'image'=>$item['image']
                     ));
-                    item_update_data(array('id'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
+                    item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
                     $shop_total_num+= $item['quantity'];
 
                 }

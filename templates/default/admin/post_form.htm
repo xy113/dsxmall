@@ -5,7 +5,7 @@
 <div class="console-title">
 	<div class="float-right">
     	<a href="{echo U('c=postcat')}" class="button">分类管理</a>
-        <a href="{echo U('a=itemlist')}" class="button">返回列表</a>
+        <a href="{echo U('c=post&a=itemlist')}" class="button">返回列表</a>
     </div>
     <h2>发布文章</h2>
 </div>
@@ -27,7 +27,7 @@
       <td rowspan="4" width="160">
         <input type="hidden" id="postImage" name="newpost[image]" value="{$article[image]}">
         <div class="post-image-box" title="点击更换图片">
-        <img src="{echo image($article[image])}" id="postImageView"></div>
+        <img src="{echo image($article[image])}" id="postImageView" width="120" height="120"></div>
       </td>
     </tr>
     <tr>
@@ -63,7 +63,7 @@
     <tr>
       <td width="80">内容摘要</td>
       <td><textarea style="width:100%;" name="newpost[summary]">{$article[summary]}</textarea></td>
-      <td width="200"><input type="submit" class="submit button-publish f-right" value="{if $_G[a]=='edit'}更新{else}发布{/if}" id="publishButton"></td>
+      <td width="200"><input type="submit" class="button button-publish f-right" value="{if $_G[a]=='edit'}更新{else}发布{/if}" id="publishButton"></td>
     </tr>
   </table>
   {eval $editorname='content';}

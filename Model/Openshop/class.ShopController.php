@@ -15,7 +15,7 @@ class ShopController extends BaseController{
 
         $shop = shop_get_data(array('owner_uid'=>$this->uid));
         if ($shop['auth_status'] == 'SUCCESS'){
-            $this->redirect(U('m=seller&c=index'));
+            //$this->redirect(U('m=seller&c=index'));
         }
 
         cookie('_formcode', md5(time()));

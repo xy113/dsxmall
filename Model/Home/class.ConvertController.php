@@ -12,20 +12,30 @@ class ConvertController extends BaseController{
      *
      */
     public function index(){
-
+        $this->convertMember();
     }
 
     private function convertMember(){
-        $db = $this->getDB();
-        $sql = "SELECT * FROM ".$db->table('member')." ORDER BY uid ASC";
-        $query = $db->query($sql);
-        //$itemlist = array();
-        while ($data = $db->fetch_array($query)){
-            if ($data['uid'] != '1000000'){
+        $i = 0;
+        $datalist = M('member_old')->where('uid>1000000')->order('uid')->select();
+        foreach ($datalist as $data){
+            $check = member_get_data(array('uid'=>$data['uid']));
+            if ($check) {
+                if ($check['username'] != $data['username']){
+                    $i++;
+                    member_update_data(array('uid'=>$data['uid']), "uid=uid+100");
+                    member_add_data($data);
+                    member_add_info(array('uid'=>$data['uid']));
+                    member_add_status(array('uid'=>$data['uid']));
+                }
+            }else {
                 member_add_data($data);
+                member_add_info(array('uid'=>$data['uid']));
+                member_add_status(array('uid'=>$data['uid']));
             }
         }
-
+        echo $i;
+        /*
         $sql = "SELECT * FROM ".$db->table('member_status')." ORDER BY uid ASC";
         $query = $db->query($sql);
         //$itemlist = array();
@@ -44,6 +54,7 @@ class ConvertController extends BaseController{
             }
         }
         echo 'complete!';
+        */
     }
 
     private function convartCat(){

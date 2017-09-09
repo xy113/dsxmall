@@ -29,7 +29,7 @@ class OrderController extends BaseController{
         $pay_type = intval($_GET['pay_type']);
         $item = $shop = array();
         if ($itemid && $quantity) {
-            $item = item_get_data(array('id'=>$itemid));
+            $item = item_get_data(array('itemid'=>$itemid));
             if ($quantity > $item['stock']){
                 $this->showError('stock_no_enough');
             }
@@ -102,8 +102,8 @@ class OrderController extends BaseController{
                     'payee_uid'=>$seller['uid'],
                     'payee_name'=>$seller['username'],
                     'trade_no'=>$trade_no,
-                    'trade_name'=>$item['name'],
-                    'trade_desc'=>$item['brief'] ? $item['brief'] : $item['name'],
+                    'trade_name'=>$item['title'],
+                    'trade_desc'=>$item['title'],
                     'trade_fee'=>$total_fee,
                     'trade_type'=>'SHOPPING',
                     'trade_status'=>'UNPAID',
@@ -152,8 +152,8 @@ class OrderController extends BaseController{
             order_add_item(array(
                 'uid'=>$this->uid,
                 'order_id'=>$order_id,
-                'itemid'=>$item['id'],
-                'name'=>$item['name'],
+                'itemid'=>$item['itemid'],
+                'title'=>$item['title'],
                 'market_price'=>$item['market_price'],
                 'price'=>$item['price'],
                 'quantity'=>$quantity,
@@ -161,7 +161,7 @@ class OrderController extends BaseController{
                 'image'=>$item['image']
             ));
 
-            item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
+            item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
             shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity");
             //发送短息提醒
             if (Validate::ismobile($shop['phone'])){
@@ -202,9 +202,9 @@ class OrderController extends BaseController{
         $total_count = $total_fee = 0;
         if ($cart_item_list) {
             $price_list = array();
-            $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id, price');
+            $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid, price');
             foreach ($itemlist as $item){
-                $price_list[$item['id']] = $item['price'];
+                $price_list[$item['itemid']] = $item['price'];
             }
             unset($itemlist, $item);
 
@@ -287,14 +287,14 @@ class OrderController extends BaseController{
                         'uid'=>$this->uid,
                         'order_id'=>$order_id,
                         'itemid'=>$itemid,
-                        'name'=>$item['name'],
+                        'title'=>$item['title'],
                         'market_price'=>$item['market_price'],
                         'price'=>$item['price'],
                         'quantity'=>$item['quantity'],
                         'thumb'=>$item['thumb'],
                         'image'=>$item['image']
                     ));
-                    item_update_data(array('id'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
+                    item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
                     $shop_total_num+= $item['quantity'];
 
                 }

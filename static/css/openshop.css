@@ -3,7 +3,7 @@ html,body{background-color: #F2F2F2;}
 .area{display: block; margin: 0 auto; width: 1000px;}
 .top{background-color:#008FED; height:60px; display:block; color:#fff;}
 .top .h1{font-size:22px; font-weight:900; float:left; color:#fff; margin-top:16px;}
-.top .h3{font-size:17px; font-weight:600; float:right; color:#fff; margin-top:20px;}
+.top .h3{font-size:17px; font-weight:600; float:right; color:#fff; margin-top:10px;}
 .store-form-div{background-color:#fff; display:block;}
 .store-form-div .form-content{display:block; padding:20px 40px;}
 .store-form-div .form-group{display:block; padding:7px 0;}

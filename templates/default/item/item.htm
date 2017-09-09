@@ -6,7 +6,7 @@
         <span> > </span>
         <a>水果</a>
         <span> > </span>
-        <span>{$item_data[short_name]}</span>
+        <span>{$item_data[short_title]}</span>
     </div>
 </div>
 <div style="height: 10px; clear: both;"></div>
@@ -39,15 +39,15 @@
         </div>
     </div>
     <form method="post" id="J_Frmbuy" action="{U:('m=buy&c=order&a=buy_now')}">
-        <input type="hidden" name="itemid" value="{$item_data[id]}">
+        <input type="hidden" name="itemid" value="{$item_data[itemid]}">
         <input type="hidden" name="quantity" value="1" id="J_quantity">
         <input type="hidden" name="shipping_type" value="1" id="J_shipping_type">
         <input type="hidden" name="pay_type" value="1" id="J_pay_type">
         <input type="hidden" name="from" value="item_detail">
     </form>
     <div class="iteminfo-wrap">
-        <h1 class="item-name">{$item_data[name]}</h1>
-        <div class="item-brief">{$item_data[brief]}</div>
+        <h1 class="item-name">{$item_data[title]}</h1>
+        <div class="item-brief">{$item_data[subtitle]}</div>
         <div class="price-wrap">
             <div class="item-group" style="padding: 5px 10px;">
                 <div class="label">市 场 价</div>
@@ -113,7 +113,7 @@
         </div>
         <div class="item-group">
             <div class="share"><i class="iconfont icon-share"></i><span>分享</span></div>
-            <div class="favorite" collection="true" data-id="{$item_data[id]}" data-type="goods"><i class="iconfont icon-favor_fill_light"></i><span>收藏商品({$item_data[collection_num]})</span></div>
+            <div class="favorite" collection="true" data-id="{$item_data[itemid]}" data-type="item"><i class="iconfont icon-favor_fill_light"></i><span>收藏商品({$item_data[collection_num]})</span></div>
         </div>
     </div>
     <!--goodsinfo end-->
@@ -192,18 +192,18 @@
 <script type="text/javascript">
     $(function () {
         $("#operate-left").on('click', function () {
-            var goods_number = parseInt($("#quantity").val());
-            if (goods_number <= 1) {
+            var quantity = parseInt($("#quantity").val());
+            if (quantity <= 1) {
                 return;
             }else {
-                goods_number--;
-                $("#quantity").val(goods_number);
+                quantity--;
+                $("#quantity").val(quantity);
             }
         });
         $("#operate-right").on('click', function () {
-            var goods_number = parseInt($("#quantity").val());
-            goods_number++;
-            $("#quantity").val(goods_number);
+            var quantity = parseInt($("#quantity").val());
+            quantity++;
+            $("#quantity").val(quantity);
         });
         $("#btn-buy-now").on('click', function (e) {
             var submitForm = function () {
@@ -225,7 +225,7 @@
         });
         $("#add-to-cart").on('click', function () {
             DSXUtil.checkLogin(function (data) {
-                var itemid = "{$item_data[id]}";
+                var itemid = "{$item_data[itemid]}";
                 var quantity = $("#quantity").val();
                 $.ajax({
                     url:"{U:('m=cart&c=index&a=add')}",

@@ -6,11 +6,11 @@
 </div>
 <script type="text/template" id="itemTpl">
     <li>
-        <div class="list-item" id="item_{item[id]}" handler="viewItem" data-id="{item[id]}">
-            <div class="g-pic bg-cover lazyload" id="pic_{item[id]}" data-original="{item[thumb]}"></div>
+        <div class="list-item" id="item_{item[itemid]}" handler="viewItem" data-id="{item[itemid]}">
+            <div class="g-pic bg-cover lazyload" id="pic_{item[itemid]}" data-original="{item[thumb]}"></div>
             <div class="g-info">
-                <h3>{item[name]}</h3>
-                {if $item[brief]}<div class="brief">{$item[brief]}</div>{/if}
+                <h3>{item[title]}</h3>
+                {if $item[subtitle]}<div class="brief">{$item[subtitle]}</div>{/if}
                 <div class="shop">{item[shop_name]}</div>
                 <div class="brief">{item[city]} {item[county]}</div>
                 <div class="price">
@@ -54,7 +54,7 @@
                                     return data[k];
                                 }
                             });
-                            item_ids.push(data.id);
+                            item_ids.push(data.itemid);
                         });
                         if (isRefreshing) {
                             $("#item-list-ul").html(items);
@@ -71,17 +71,16 @@
                             effect:'fadeIn',
                             placeholder:'/static/images/common/placeholder.png'
                         });*/
-                        $(item_ids).each(function (i, id) {
-                            $("#pic_"+id).lazyload({
+                        $(item_ids).each(function (i, itemid) {
+                            $("#pic_"+itemid).lazyload({
                                 effect:'fadeIn',
                                 placeholder:'/static/images/common/placeholder.png'
                             });
                         });
                         onBridgeReady(function (bridge) {
-                            $(item_ids).each(function (i, id) {
-                                $("#item_"+id).on(tap, function (e) {
-                                    var id = $(this).attr('data-id');
-                                    bridge.callHandler('viewItem', id);
+                            $(item_ids).each(function (i, itemid) {
+                                $("#item_"+itemid).on(tap, function (e) {
+                                    bridge.callHandler('viewItem', itemid);
                                 });
                             });
                         });

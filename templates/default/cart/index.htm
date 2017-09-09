@@ -40,10 +40,10 @@
                                     <input type="hidden" id="J_price_{$itemid}" value="{$item[price]}">
                                     <div class="chk"><input type="checkbox" class="checkbox checkmark J_CheckBoxItem" name="items[]" value="{$itemid}"></div>
                                     <div class="g-pic bg-cover lazyload" data-original="{img $item[thumb]}">
-                                        <a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank"></a>
+                                        <a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank"></a>
                                     </div>
                                     <div class="g-info">
-                                        <div class="g-name"><a href="{U:('m=item&c=item&id='.$itemid)}" target="_blank">{$item[name]}</a></div>
+                                        <div class="g-name"><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank">{$item[title]}</a></div>
                                     </div>
                                 </td>
                                 <td width="100"></td>

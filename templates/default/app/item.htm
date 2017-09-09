@@ -18,8 +18,8 @@
 
 <div class="item">
     <div class="item-info">
-        <div class="name">{$item_data[name]}</div>
-        {if $item_data[brief]}<p class="brief">{$item_data[brief]}</p>{/if}
+        <div class="name">{$item_data[title]}</div>
+        {if $item_data[subtitle]}<p class="brief">{$item_data[subtitle]}</p>{/if}
         <div class="shop-price">
             <span>￥</span>
             <strong>{amount:$item_data[price]}</strong>
@@ -82,8 +82,8 @@
             {loop $hot_sale_list $item}
             <li>
                 <div class="bd">
-                    <div class="pic bg-cover lazyload" data-original="{img $item[thumb]}" handler="viewItem" data-id="{$item[id]}"></div>
-                    <div class="name">{$item[name]}</div>
+                    <div class="pic bg-cover lazyload" data-original="{img $item[thumb]}" handler="viewItem" data-id="{$item[itemid]}"></div>
+                    <div class="name">{$item[title]}</div>
                     <div class="line">
                         <span>已售{$item[sold]}件</span>
                         <strong>￥{amount:$item[price]}</strong>

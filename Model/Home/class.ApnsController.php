@@ -19,16 +19,16 @@ class ApnsController extends BaseController
      *
      */
     public function index(){
-        $notice = new ApnsOrderActivityNotification();
-        $notice->setText('你的订单已发货');
-        $notice->setOrder_id("139");
-        $notice->setBadge(5);
+//        $notice = new ApnsOrderActivityNotification();
+//        $notice->setText('你的订单已发货');
+//        $notice->setOrder_id("139");
+//        $notice->setBadge(5);
 
-//        $notice = new ApnsNotification();
-//        $notice->setText("APP已出新版本，请及时更新");
+        $notice = new ApnsNotification();
+        $notice->setText("粗耕已出新版本，请及时更新");
 
-        $push = new ApnsPush(1);
-        $push->setDeviceToken('39010d99134a5187a0900f7c1cfcf17a807e48686fea085b2d5241c8fe6cafc4');
+        $push = new ApnsPush(0);
+        $push->setDeviceToken('58cc6c5435a794762bd7b3ebcdfbe3f7371e435b49a63b553c438e9402bcca28');
         $push->send($notice);
     }
 }

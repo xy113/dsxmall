@@ -16,8 +16,8 @@ function item_create_sn(){
  * @return array|bool|int|mysqli_result|null|string
  */
 function item_add_data($data, $return=0){
-    $id = M('item')->insert($data, true, true);
-    return $return ? item_get_data(array('id'=>$id)) : $id;
+    $itemid = M('item')->insert($data, true, true);
+    return $return ? item_get_data(array('itemid'=>$itemid)) : $itemid;
 }
 
 /**
@@ -71,7 +71,7 @@ function item_get_count($condition, $field='*'){
  */
 function item_get_list($condition, $count=20, $offset=0, $order=null, $field='*'){
     $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
-    !$order && $order = 'id DESC';
+    !$order && $order = 'itemid DESC';
     $itemlist = M('item')->field($field)->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }

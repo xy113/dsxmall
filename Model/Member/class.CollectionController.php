@@ -123,17 +123,17 @@ class CollectionController extends BaseController
                 $this->showAjaxReturn();
             }else {
                 //商品收藏
-                if ($datatype == 'goods'){
-                    $goods = goods_get_item(array('id'=>$dataid), 'goods_name, goods_thumb');
+                if ($datatype == 'item'){
+                    $item = item_get_data(array('itemid'=>$dataid), 'name, thumb');
                     collection_add_data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,
                         'datatype'=>$datatype,
-                        'title'=>$goods['goods_name'],
-                        'image'=>$goods['goods_thumb'],
+                        'title'=>$item['title'],
+                        'image'=>$item['thumb'],
                         'create_time'=>time()
                     ));
-                    goods_update_item(array('id'=>$dataid), '`collection_num`=`collection_num`+1');
+                    item_update_data(array('itemid'=>$dataid), '`collection_num`=`collection_num`+1');
                 }
 
                 //店铺收藏

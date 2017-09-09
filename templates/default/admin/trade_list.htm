@@ -59,6 +59,7 @@
           <td colspan="10">
               <span class="pagination float-right">{$pages}</span>
               <input type="submit" class="button" value="{$_lang[submit]}">
+              <input type="button" class="button" value="下载记录" id="J_download">
               <input type="button" class="button button-cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
           </td>
       </tr>
@@ -66,4 +67,32 @@
     </table>
     </form>
 </div>
+<iframe id="J_frame" src="" style="display: none;"></iframe>
+<script type="text/javascript">
+    var waiting = null;
+    function downloadRecord() {
+        $.ajax({
+            url:"{U:('c=trade&a=download&q='.$q)}",
+            dataType:'json',
+            success:function (response) {
+                if (response.errcode == 0){
+                    setTimeout(function () {
+                        downloadRecord();
+                    }, 500);
+                }else {
+                    waiting.close();
+                    $("#J_frame").attr('src', "{U:('c=trade&a=get_excel')}");
+                }
+            }
+        });
+    }
+    $(function () {
+        $("#J_download").on('click', function () {
+            DSXUI.showConfirm('下载过程可能需要花费几分钟，在此期间请不要关闭页面',function () {
+                waiting = DSXUI.showloading('正在导出数据...');
+                downloadRecord();
+            });
+        });
+    });
+</script>
 {template footer}

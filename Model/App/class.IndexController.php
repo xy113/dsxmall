@@ -16,8 +16,8 @@ class IndexController extends BaseController{
      */
     public function batchget(){
         $offset = (G('page') - 1) * 20;
-        $fields = 'id, name, thumb, price, market_price, sold';
-        $itemlist = item_get_list(array('on_sale'=>1), 20, $offset, 'id DESC', $fields);
+        $fields = 'itemid, title, thumb, price, market_price, sold';
+        $itemlist = item_get_list(array('on_sale'=>1, 'catid<>74'), 20, $offset, 'itemid DESC', $fields);
         $datalist = array();
         foreach ($itemlist as $item){
             $item['thumb'] = image($item['thumb']);

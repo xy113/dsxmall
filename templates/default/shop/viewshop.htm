@@ -8,10 +8,10 @@
                     {loop $hot_item_list $item}
                     <li>
                         <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
-                            <a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank" title="{$item[name]}"></a>
+                            <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" title="{$item[title]}"></a>
                         </div>
                         <div class="g-info">
-                            <p><a href="{U:('m=item&c=item&id='.$item[id])}" target="_blank">{$item[name]}</a></p>
+                            <p><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></p>
                             <p class="price">￥<strong>{amount:$item[price]}</strong></p>
                             <p>已售出{$item[sold]}件</p>
                         </div>
@@ -37,9 +37,9 @@
                 <li>
                     <div class="bd">
                         <div class="g-pic bg-cover asyncload" data-original="{img $item[thumb]}">
-                            <a href="{U:('m=item&c=item&id='.$item[id])}" title="{$item[name]}" target="_blank"></a>
+                            <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" title="{$item[name]}" target="_blank"></a>
                         </div>
-                        <div class="g-name"><a href="{U:('m=item&c=item&id='.$item[id])}" title="{$item[name]}" target="_blank">{$item[name]}</a></div>
+                        <div class="g-name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" title="{$item[title]}" target="_blank">{$item[title]}</a></div>
                         <div class="line">
                             <span class="sold">已售出{$item[sold]}件</span>
                             <div class="price"><span>￥</span><strong>{amount:$item[price]}</strong></div>
@@ -53,4 +53,7 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    $.get("{U:('c=service&a=update_visit&shop_id='.$shop_id)}");
+</script>
 {template footer_common}

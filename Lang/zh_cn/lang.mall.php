@@ -14,6 +14,7 @@ return array(
     /*商品部分*/
     'item_manage'=>'商品管理',
     'sell_item'=>'出售宝贝',
+    'publish_item'=>'发布宝贝',
     'edit_item'=>'编辑宝贝',
     'on_sale_item'=>'出售中的宝贝',
     'item_cat'=>'商品分类',
@@ -33,6 +34,11 @@ return array(
     'pay_type_option'=>array(
         '1'=>'在线支付',
         '2'=>'货到付款'
+    ),
+    'trade_pay_types'=>array(
+        'balance'=>'余额支付',
+        'wxpay'=>'微信支付',
+        'alipay'=>'支付宝支付'
     ),
     'can_not_buy'=>'抱歉, 不能完成购买',
     'checkout_success'=>'下单成功',

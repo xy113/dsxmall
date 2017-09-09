@@ -13,7 +13,7 @@
             <input type="text" class="input-text" name="keyword" value="{$keyword}">
             <input type="submit" class="button" value="{$_lang[search]}">
             <a href="{echo U('c=postcat')}" class="button">分类管理</a>
-            <a href="{echo U('a=add')}" class="button">发布文章</a>
+            <a href="{echo U('c=post&a=add')}" class="button">发布文章</a>
         </form>
     </div>
     <h2>文章管理->文章列表</h2>
@@ -48,7 +48,7 @@
         <td>{$item[viewnum]}</td>
         <td>{$item[formatted_pubtime]}</td>
         <td>{$item[status_name]}</td>
-        <td><a href="{echo U('a=edit&id='.$id)}">编辑</a></td>
+        <td><a href="{echo U('c=post&a=edit&id='.$id)}">编辑</a></td>
       </tr>
       {/loop}
       </tbody>

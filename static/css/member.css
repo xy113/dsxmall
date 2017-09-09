@@ -78,7 +78,7 @@
     margin-top: 5px; border-left: 3px #86B6E2 solid; padding-left: 6px; float: left;
 }
 
-.section-title{padding: 10px; font-size: 14px; display: block;}
+.section-title{padding: 10px 0; font-size: 14px; display: block;}
 
 .avatar-div{width:300px; float:left; margin-right:50px;}
 .avatar-div .avatar{width:240px; height:240px; margin:0 auto; display:block;}

@@ -2,15 +2,15 @@
 <div class="item">
     <div class="item-vertical-list">
         <ul id="item-list-ul">
-            {loop $itemlist $item}
+            {loop $collection_list $itemid $item}
             <li>
-                <div class="list-item" id="item_{$item[dataid]}" handler="viewItem" data-id="{$item[dataid]}">
-                    <div class="g-pic bg-cover lazyload" id="pic_{$item[dataid]}" data-original="{$item[goods_thumb]}"></div>
+                <div class="list-item" id="item_{$itemid}" handler="viewItem" data-id="{$itemid}">
+                    <div class="g-pic bg-cover lazyload" id="pic_{$itemid}" data-original="{$item[thumb]}"></div>
                     <div class="g-info">
-                        <h3>{$item[goods_name]}</h3>
+                        <h3>{$item[title]}</h3>
                         <div class="price">
                             <span>￥</span>
-                            <strong>{amount:$item[goods_price]}</strong>
+                            <strong>{amount:$item[price]}</strong>
                         </div>
                         <span class="sold">已售{$item[sold]}件</span>
                     </div>

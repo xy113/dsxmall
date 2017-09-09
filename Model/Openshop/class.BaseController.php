@@ -15,6 +15,7 @@ class BaseController extends Controller{
      */
     function __construct()
     {
+        exit();
         parent::__construct();
         if (!$this->isLogin()){
             member_show_login();
@@ -22,7 +23,7 @@ class BaseController extends Controller{
             $this->myshop = shop_get_data(array('owner_uid'=>$this->uid));
             if ($this->myshop) {
                 if ($this->myshop['auth_status'] == 'SUCCESS'){
-                    $this->redirect(U('m=seller&c=index'));
+                    //$this->redirect(U('m=seller&c=index'));
                 }
                 //print_r($this->myshop);exit();
                 if ($this->myshop['auth_status'] == 'PENDING'){

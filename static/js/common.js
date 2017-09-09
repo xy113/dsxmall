@@ -710,4 +710,13 @@ var DSXUI = {
             });
         });
     });
+
+    $(".showqrcode").mouseenter(function () {
+        var src = $(this).find('img').attr('src');
+        var offset = $(this).offset();
+        var img = $("<img/>").width(200).height(200).attr('id','J-qrcode-preview').attr('src', src).appendTo(document.body);
+        img.css({'z-index':9999, 'left':offset.left + $(this).width() - 200, 'top':offset.top+$(this).height(),'position':'fixed', 'border':'1px #DDD solid'});
+    }).mouseleave(function () {
+        $("#J-qrcode-preview").remove();
+    });
 });

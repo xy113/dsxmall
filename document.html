@@ -189,9 +189,10 @@
     参数1：uid=用户ID
     参数2：itemid=商品ID
     参数3：quantity=购买数量
-    参数4：pay_type=付款方式，1=余额支付，2=在线支付，3=货到付款
+    参数4：pay_type=付款方式，1=在线支付，2=货到付款
     参数5：shipping_type=配送方式，1=快递，2=物流，3=自取或无物流
     参数6：remark=买家留言
+    参数7：address_id 收货地址ID
 
     3.21 获取订单信息:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=get
     请求方式：GET
@@ -202,7 +203,7 @@
     请求方式：POST
     参数1：uid=用户ID
     参数2：order_id=订单ID
-    参数2：pay_type=付款方式
+    参数2：pay_type=付款方式 余额支付:balance, 微信支付:wxpay,支付宝支付:alipay
 
     3.23 订单确认:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=order&a=confirm
     请求方式：POST
@@ -228,6 +229,9 @@
     //企业店铺菜单跳转到店铺搜索页
     //定向采购菜单跳转到定向采购页面（功能未做先跳转到指定链接页面）
     //资讯菜单跳转到资讯列表页
+
+    4.1.6 订单操作：executeOrderAction
+    action的值:pay=立即支付，notice=提醒发货,confirm=确认订单，evaluate=评价，refund=退款，viewdetail=查看订单详情
 </pre>
 </body>
 </html>

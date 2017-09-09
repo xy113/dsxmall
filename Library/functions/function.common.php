@@ -731,7 +731,7 @@ function template($file, $tpldir = '', $theme='') {
 
 /**
  * 序列号ID
- * @param string $array
+ * @param mixed $array
  * @return string
  */
 function implodeids($array) {

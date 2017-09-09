@@ -74,134 +74,144 @@ function shop_get_list($condition, $count=20, $offset=0, $order=null, $field='*'
 }
 
 /**
- * 添加店主信息
+ * 添加店铺记录
  * @param $data
- * @param int $return
- * @return bool|int|mysqli_result|string|void
+ * @return bool|int|mysqli_result|string
  */
-function shop_add_owner($data, $return=0){
-    $id = M('shop_owner')->insert($data, true);
-    return $return ? shop_get_owner(array('id'=>$id)) : $id;
+function shop_add_record($data){
+    return M('shop_record')->insert($data, true);
 }
 
 /**
- * 删除店主信息
+ * 删除店铺记录
  * @param $condition
  * @return bool|int
  */
-function shop_delete_owner($condition){
-    return $condition ? M('shop_owner')->where($condition)->delete() : false;
+function shop_delete_record($condition){
+    return $condition ? M('shop_record')->where($condition)->delete() : false;
 }
 
 /**
- * 更新店主信息
+ * 更新店铺记录
  * @param $condition
  * @param $data
  * @return bool|int
  */
-function shop_update_owner($condition, $data){
-    return M('shop_owner')->where($condition)->update($data);
+function shop_update_record($condition, $data){
+    return M('shop_record')->where($condition)->update($data);
 }
 
 /**
- * 获取店主信息
  * @param $condition
- * @param string $field
  * @return array|null
  */
-function shop_get_owner($condition, $field='*'){
-    $data = M('shop_owner')->where($condition)->field($field)->getOne();
+function shop_get_record($condition){
+    $data = M('shop_record')->where($condition)->getOne();
     return $data ? $data : array();
 }
 
 /**
- * 获取店主数量
- * @param $condition
- * @param string $field
- * @return mixed
- */
-function shop_get_owner_count($condition, $field='*'){
-    return M('shop_owner')->where($condition)->count($field);
-}
-
-/**
- * 获取店主列表
+ * 获取店铺记录列表
  * @param $condition
  * @param int $count
  * @param int $offset
  * @param null $order
- * @param string $field
  * @return array
  */
-function shop_get_owner_list($condition, $count=20, $offset=0, $order=null, $field='*'){
+function shop_get_record_list($condition, $count=20, $offset=0, $order=null){
     $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
     !$order && $order = 'id DESC';
-    $itemlist = M('shop_owner')->field($field)->where($condition)->order($order)->limit($limit)->select();
+    $itemlist = M('shop_record')->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }
 
 /**
- * 添加店铺资料
  * @param $data
- * @param int $return
- * @return bool|int|mysqli_result|string|void
+ * @return bool|int|mysqli_result|string
  */
-function shop_add_info($data, $return=0){
-    $id = M('shop_info')->insert($data, true);
-    return $return ? shop_get_info(array('id'=>$id)) : $id;
+function shop_add_desc($data){
+    return M('shop_desc')->insert($data, false, true);
 }
 
 /**
- * 删除店铺资料
- * @param $condition
- * @return bool|int
- */
-function shop_delete_info($condition){
-    return $condition ? M('shop_info')->where($condition)->delete() : false;
-}
-
-/**
- * 更新店铺资料
  * @param $condition
  * @param $data
  * @return bool|int
  */
-function shop_update_info($condition, $data){
-    return M('shop_info')->where($condition)->update($data);
+function shop_update_desc($condition, $data){
+    return M('shop_desc')->where($condition)->update($data);
 }
 
 /**
  * @param $condition
- * @param string $field
+ * @return bool|int
+ */
+function shop_delete_desc($condition){
+    return $condition ? M('shop_desc')->where($condition)->delete() : false;
+}
+
+/**
+ * @param $condition
  * @return array|null
  */
-function shop_get_info($condition, $field='*'){
-    $data = M('shop_info')->where($condition)->field($field)->getOne();
+function shop_get_desc($condition){
+    return M('shop_desc')->where($condition)->getOne();
+}
+
+/**
+ * @param $data
+ * @param bool $return
+ * @return bool|int|mysqli_result|string|void
+ */
+function shop_add_auth($data, $return=false){
+    $id = M('shop_auth')->insert($data, true);
+    return $return ? shop_get_auth(array('id'=>$id)) : $id;
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function shop_delete_auth($condition){
+    return $condition ? M('shop_auth')->where($condition)->delete() : false;
+}
+
+/**
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function shop_update_auth($condition, $data){
+    return M('shop_auth')->where($condition)->update($data);
+}
+
+/**
+ * @param $condition
+ * @return array|null
+ */
+function shop_get_auth($condition){
+    $data = M('shop_auth')->where($condition)->getOne();
     return $data ? $data : array();
 }
 
 /**
- * 获取店铺资料数量
  * @param $condition
- * @param string $field
  * @return mixed
  */
-function shop_get_info_count($condition, $field='*'){
-    return M('shop_info')->where($condition)->count($field);
+function shop_get_auth_count($condition){
+    return M('shop_auth')->where($condition)->count();
 }
 
 /**
- * 获取店铺资料列表
  * @param $condition
  * @param int $count
  * @param int $offset
  * @param null $order
- * @param string $field
  * @return array
  */
-function shop_get_info_list($condition, $count=20, $offset=0, $order=null, $field='*'){
+function shop_get_auth_list($condition, $count=20, $offset=0, $order=null){
     $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
     !$order && $order = 'id DESC';
-    $itemlist = M('shop_info')->field($field)->where($condition)->order($order)->limit($limit)->select();
+    $itemlist = M('shop_auth')->where($condition)->order($order)->limit($limit)->select();
     return $itemlist ? $itemlist : array();
 }

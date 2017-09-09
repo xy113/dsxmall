@@ -23,7 +23,7 @@ class OrderController extends BaseController
 
         $item = $shop = array();
         if ($itemid && $quantity) {
-            $item = item_get_data(array('id'=>$itemid));
+            $item = item_get_data(array('itemid'=>$itemid));
             $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
         } else{
             $this->showAjaxError(1,'can_not_buy');
@@ -73,8 +73,8 @@ class OrderController extends BaseController
         order_add_item(array(
             'uid'=>$this->uid,
             'order_id'=>$order_id,
-            'itemid'=>$item['id'],
-            'name'=>$item['name'],
+            'itemid'=>$item['itemid'],
+            'title'=>$item['title'],
             'market_price'=>$item['market_price'],
             'price'=>$item['price'],
             'quantity'=>$quantity,
@@ -97,8 +97,8 @@ class OrderController extends BaseController
                 'payee_uid'=>$seller['uid'],
                 'payee_name'=>$seller['username'],
                 'trade_no'=>$trade_no,
-                'trade_name'=>$item['name'],
-                'trade_desc'=>$item['brief'] ? $item['brief'] : $item['name'],
+                'trade_name'=>$item['title'],
+                'trade_desc'=>$item['title'],
                 'trade_fee'=>$total_fee,
                 'trade_type'=>'SHOPPING',
                 'trade_status'=>'UNPAID',
@@ -106,7 +106,7 @@ class OrderController extends BaseController
                 'out_trade_no'=>$trade_no
             ));
         }
-        item_update_data(array('id'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
+        item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
         shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity");
         $this->showAjaxReturn(array('order_id'=>$order_id));
     }
@@ -121,7 +121,8 @@ class OrderController extends BaseController
         if ($order) {
             $order['create_time'] = date('Y-m-d H:i:s', $order['create_time']);
             $item = order_get_item(array('order_id'=>$order_id));
-            $item['goods_name'] = $item['name'];
+            $item['name'] = $item['title'];
+            $item['goods_name'] = $item['title'];
             $item['goods_number'] = $item['quantity'];
             $this->showAjaxReturn(array(
                 'item'=>$item,

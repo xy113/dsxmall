@@ -43,12 +43,12 @@ class CollectionController extends BaseController
 
             $itemids = $itemids ? implodeids($itemids) : 0;
             if ($itemids) {
-                $itemlist = item_get_list(array('id'=>array('IN', $itemids)), 0, 0, null, 'id,name,price,thumb,sold');
+                $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid,title,price,thumb,sold');
                 foreach ($itemlist as $item){
-                    $collection_list[$item['id']]['name']  = $item['name'];
-                    $collection_list[$item['id']]['price'] = $item['price'];
-                    $collection_list[$item['id']]['thumb'] = image($item['thumb']);
-                    $collection_list[$item['id']]['sold']  = $item['sold'];
+                    $collection_list[$item['itemid']]['title'] = $item['title'];
+                    $collection_list[$item['itemid']]['price'] = $item['price'];
+                    $collection_list[$item['itemid']]['thumb'] = image($item['thumb']);
+                    $collection_list[$item['itemid']]['sold']  = $item['sold'];
                 }
             }
             unset($itemids, $itemlist, $item);

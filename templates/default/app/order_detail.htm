@@ -21,7 +21,7 @@
             <div class="order-item">
                 <div class="pic bg-cover cell" style="background-image: url({img $item[thumb]})"></div>
                 <div class="info cell">
-                    <h3>{$item[name]}</h3>
+                    <h3>{$item[title]}</h3>
                     <p class="attrs">七夕大优惠</p>
                     <div class="right">
                         <div class="price">￥{amount:$item[price]}</div>
@@ -40,7 +40,7 @@
     <div class="order-rows">
         <div class="row">订单编号: {$order[order_no]}</div>
         <div class="row">创建时间: {date:$order[create_time]|'Y-m-d H:i:s'}</div>
-        <div class="row">付款时间: {date:$order[pay_time]|'Y-m-d H:i:s'}</div>
+        {if $order[pay_time]}<div class="row">付款时间: {date:$order[pay_time]|'Y-m-d H:i:s'}</div>{/if}
         <div class="row">交易流水: {$order[trade_no]}</div>
     </div>
 </div>

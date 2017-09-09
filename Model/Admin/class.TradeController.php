@@ -1,5 +1,8 @@
 <?php
 namespace Model\Admin;
+use Core\Download;
+use Core\ExcelXML;
+
 class TradeController extends BaseController{
     /**
      * TradeController constructor.
@@ -47,4 +50,51 @@ class TradeController extends BaseController{
 			include template('trade_list');
 		}
 	}
+
+    /**
+     *
+     */
+    public function download(){
+        $excelfile = CACHE_PATH.'trade_records.xls';
+        $offset = intval(cookie('export_offset'));
+
+        $excel = new ExcelXML();
+        if ($offset == 0){
+            file_put_contents($excelfile, $excel->getHeader());
+            file_put_contents($excelfile, $excel->getRow(array(
+                '商品名称','交易流水','收款方','付款方','付款金额','创建时间','付款方式','支付状态'
+            )), FILE_APPEND);
+        }
+
+        $pagesize = 100;
+        $condition = array();
+        $itemlist = trade_get_list($condition, $pagesize, $offset, 'trade_id DESC');
+        if ($itemlist) {
+            $rows = '';
+            foreach ($itemlist as $item){
+                $offset++;
+                $rows.= $excel->getRow(array(
+                    $item['trade_name'],$item['trade_no'],$item['payee_name'],$item['payer_name'],
+                    formatAmount($item['trade_fee']),date('Y-m-d H:i:s', $item['trade_time']),
+                    $GLOBALS['_lang']['trade_pay_types'][$item['pay_type']],
+                    ($item['trade_status'] == 'PAID' ? '已支付' : '未支付')
+                ));
+            }
+            file_put_contents($excelfile, $rows, FILE_APPEND);
+            cookie('export_offset', $offset);
+            $this->showAjaxReturn();
+        }else {
+            cookie('export_offset', null);
+            file_put_contents($excelfile, $excel->getFooter(), FILE_APPEND);
+            $this->showAjaxError(1, 'complete');
+        }
+    }
+
+    /**
+     *
+     */
+    public function get_excel(){
+        $excelfile = CACHE_PATH.'trade_records.xls';
+        Download::downExcel($excelfile, 'trade_records.xls', true);
+    }
 }

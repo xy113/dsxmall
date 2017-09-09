@@ -37,7 +37,7 @@ class IndexController extends BaseController{
     public function add(){
         $itemid = intval($_GET['itemid']);
         $quantity = intval($_GET['quantity']);
-        $item = item_get_data(array('id'=>$itemid));
+        $item = item_get_data(array('itemid'=>$itemid));
         if ($item) {
             if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
                 cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
@@ -49,7 +49,7 @@ class IndexController extends BaseController{
                     'quantity'=>$quantity,
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
-                    'name'=>$item['name'],
+                    'title'=>$item['title'],
                     'price'=>$item['price'],
                     'thumb'=>$item['thumb'],
                     'image'=>$item['image'],
