@@ -18,7 +18,7 @@ html,body{background-color: #F2F2F2;}
     position:relative; left:0; top:0; width:110px;
     height:94px; float:left; background-color:#EAEAEA;
     background-image: url("../images/common/upload_bg.png"); background-size: 60px auto;
-    background-repeat: no-repeat; background-position: center 16px;
+    background-repeat: no-repeat; background-position: center 16px; cursor: pointer;
 }
 
 .store-form-div .form-group .pic-uploader .t{
@@ -26,9 +26,9 @@ html,body{background-color: #F2F2F2;}
     width: 100%; position: absolute; bottom: 13px; z-index: 1;
 }
 .store-form-div .form-group .pic-uploader .file{position:absolute; left:0; top:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index: 100;}
-.store-form-div .form-group .pic-uploader .pic{position:absolute; left:0; top:0; width:100%; height:100%; background-size:cover; background-repeat:no-repeat; display:none;}
-.store-form-div .form-group .pic-uploader .pic .b{background-color:#333; opacity:0.4; width:100%; height:20px; position:absolute; bottom:0; display:block;}
-.store-form-div .form-group .pic-uploader .pic .t{color:#fff; height:20px; line-height:20px; position:absolute; width:100%; bottom:0; text-align:center; font-size:11px;}
+.store-form-div .form-group .pic-uploader .preview{position:absolute; left:0; top:0; width:100%; height:100%; display: block; z-index: 100; background-image: none;}
+.store-form-div .form-group .pic-uploader .preview .b{background-color:#333; opacity:0.4; width:100%; height:20px; position:absolute; bottom:0; display:block;}
+.store-form-div .form-group .pic-uploader .preview .t{color:#fff; height:20px; line-height:20px; position:absolute; width:100%; bottom:0; text-align:center; font-size:11px;}
 .store-form-div .form-group .pic-demo{width:100px; height:75px; display:block; float:right; position:relative; margin:10px 10px 0 0;}
 .store-form-div .form-group .pic-demo img{width:100%; height:100%; display:block;}
 .store-form-div .form-group .pic-demo .t{position:absolute; right:0; bottom:0; padding:2px 5px; font-size:11px; background-color:#333; color:#fff;}

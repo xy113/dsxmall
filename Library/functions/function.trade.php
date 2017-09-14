@@ -257,31 +257,34 @@ function order_get_list($condition, $count=20, $offset=0, $order=null, $field='*
  */
 function order_get_trade_status($order){
     $trade_status = 0;
-    if ($order['is_closed']) {
+    if ($order['is_closed']==1 && $order['refund_status'] == 0) {
+        //交易关闭
         return 0;
-    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 0 && $order['shipping_status'] == 0){
-        //已下单未支付
-        $trade_status = 1;
-    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 1 && $order['shipping_status'] == 0){
-        //已付款,未发货
-        $trade_status = 2;
-    }elseif ($order['order_status'] == 0 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
-        //已发货,待收货
-        $trade_status = 3;
-    }elseif ($order['order_status'] == 1 && $order['pay_status'] == 1 &&
-        $order['shipping_status'] == 1 && $order['evaluate_status'] == 0){
-        //已收货,未评价
-        $trade_status = 4;
-    }elseif ($order['order_status'] == 1 && $order['pay_status'] == 1 &&
-        $order['shipping_status'] == 1 && $order['evaluate_status'] == 1){
-        //已收货,已评价
-        $trade_status = 5;
-    }elseif ($order['order_status'] == 2 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+    }elseif ($order['refund_status'] == 1) {
         //退款中
-        $trade_status = 6;
-    }elseif ($order['order_status'] == 3 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+        return 6;
+    }elseif ($order['refund_status'] == 2) {
         //退款完成
-        $trade_status = 7;
+        return 7;
+    }else {
+        if ($order['pay_status'] == 0 && $order['shipping_status'] == 0){
+            //已下单未支付
+            $trade_status = 1;
+        }elseif ($order['pay_status'] == 1 && $order['shipping_status'] == 0){
+            //已付款,未发货
+            $trade_status = 2;
+        }elseif ($order['pay_status'] == 1 && $order['shipping_status'] == 1){
+            //已发货,待收货
+            $trade_status = 3;
+        }elseif ($order['pay_status'] == 1 && $order['shipping_status'] == 1
+            && $order['receive_status'] == 1 && $order['review_status'] == 0){
+            //已收货,未评价
+            $trade_status = 4;
+        }elseif ($order['pay_status'] == 1 && $order['shipping_status'] == 1
+            && $order['receive_status'] == 1 && $order['review_status'] == 1){
+            //已收货,已评价
+            $trade_status = 5;
+        }
     }
     return $trade_status;
 }
@@ -419,6 +422,94 @@ function order_update_shipping($condition, $data){
 function order_get_shipping($condition){
     $data = M('order_shipping')->where($condition)->getOne();
     return $data ? $data : array();
+}
+
+/**
+ * @param $data
+ * @return bool|int|mysqli_result|string
+ */
+function order_add_closed($data){
+    return M('order_closed')->insert($data, true);
+}
+
+/**
+ * @param $condition
+ * @return array|null
+ */
+function order_get_closed($condition){
+    $data = M('order_closed')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function order_delete_closed($condition){
+    return $condition ? M('order_closed')->where($condition)->delete() : false;
+}
+
+/**
+ * @return string
+ */
+function order_create_refund_no(){
+    return '4'.time().rand(100,999);
+}
+
+/**
+ * @param $data
+ * @return bool|int|mysqli_result|string
+ */
+function order_add_refund($data){
+    return M('order_refund')->insert($data, true);
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function order_delete_refund($condition){
+    return $condition ? M('order_refund')->where($condition)->delete() : false;
+}
+
+/**
+ * @param $condition
+ * @param $data
+ * @return bool|int
+ */
+function order_update_refund($condition, $data){
+    return M('order_refund')->where($condition)->update($data);
+}
+
+/**
+ * @param $condition
+ * @return array|null
+ */
+function order_get_refund($condition){
+    $data = M('order_refund')->where($condition)->getOne();
+    return $data ? $data : array();
+}
+
+/**
+ * @param $condition
+ * @return mixed
+ */
+function order_get_refund_count($condition){
+    return M('order_refund')->where($condition)->count();
+}
+
+/**
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @param null $order
+ * @return array
+ */
+function order_get_refund_list($condition, $count=20, $offset=0, $order=null){
+    $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
+    !$order && $order = 'refund_id DESC';
+    $itemlist = M('order_refund')->where($condition)->order($order)->limit($limit)->select();
+    return $itemlist ? $itemlist : array();
 }
 
 /**

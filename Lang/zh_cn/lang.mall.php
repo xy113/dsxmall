@@ -10,6 +10,7 @@ return array(
     'shop_create_succeed'=>'店铺创建成功,请等待管理员审核',
     'shop_is_pending'=>'店铺正在等待审核中...',
     'shop_manage'=>'店铺管理',
+    'auth_info_submit_success'=>'认证资料提交成功，请等待管理员审核',
 
     /*商品部分*/
     'item_manage'=>'商品管理',
@@ -73,15 +74,22 @@ return array(
 
     'shop_auth_success'=>'店铺认证成功',
     'order_trade_status'=>array(
+        '0'=>'交易关闭',
         '1'=>'等待买家付款',
         '2'=>'等待卖家发货',
         '3'=>'货物运输中',
         '4'=>'买家已收货',
         '5'=>'买家已评价',
         '6'=>'退款中',
-        '7'=>'退款完成',
-        '0'=>'交易已关闭'
+        '7'=>'退款完成'
     ),
+    'order_can_not_close'=>'当前订单状态不能关闭订单',
     'sign_error'=>'签名错误',
-    'invalid_token'=>'无效的TOKEN值'
+    'invalid_token'=>'无效的TOKEN值',
+    'apply_refund'=>'申请退款',
+    'accept_refund'=>'处理退款',
+    'refund_apply_commited'=>'退款申请已提交，请等待卖家处理',
+    'refund_accept_success'=>'退款处理成功',
+    'order_can_not_refund'=>'此订单不允许退款',
+    'refund'=>'退款'
 );

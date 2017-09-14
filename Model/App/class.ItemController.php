@@ -46,7 +46,7 @@ class ItemController extends BaseController
 
             //掌柜热卖
             $hot_sale_list = item_get_list(array('shop_id'=>$item_data['shop_id'] ,'on_sale'=>1), 10, 0 ,'sold DESC');
-            $_G['title'] = $item_data['name'];
+            $_G['title'] = $item_data['title'];
             include template('item');
         }
     }

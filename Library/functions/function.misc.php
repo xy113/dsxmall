@@ -472,8 +472,8 @@ function collection_get_list($condition, $count=20, $offset=0, $order=null, $fie
  * @return array|bool|int|mysqli_result|null|string
  */
 function address_add_data($data, $return=0){
-	$id = M('address')->insert($data, true);
-    return $return ? address_get_data(array('id' => $id)) : $id;
+	$address_id = M('address')->insert($data, true);
+    return $return ? address_get_data(array('address_id' => $address_id)) : $address_id;
 }
 
 /**
@@ -520,7 +520,7 @@ function address_get_count($condition){
  * @return array
  */
 function address_get_list($condition){
-	$addresslist = M('address')->where($condition)->order('id ASC')->select();
+	$addresslist = M('address')->where($condition)->order('address_id ASC')->select();
     return $addresslist ? $addresslist : array();
 }
 

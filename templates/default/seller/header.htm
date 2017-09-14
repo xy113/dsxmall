@@ -13,9 +13,14 @@
 </head>
 <body>
 {template top_common}
-<div class="membercp-header">
+<div class="seller-header">
     <div class="area header">
         <strong class="logo"><img src="/static/images/common/maijia_logo.png"></strong>
+        <div class="right-menu">
+            <a href="{U:('m=seller&a=index')}">首页</a>
+            <a href="{U:('c=shop&a=index')}">基本设置</a>
+            <a href="{U:('c=shop&a=auth')}" target="_blank">店铺认证</a>
+        </div>
     </div>
 </div>
 <div class="area" style="margin-top: 20px;">
@@ -55,4 +60,3 @@
 </div>
 <div class="mainframe">
     <div class="main-content">
-        <div class="scrollView">

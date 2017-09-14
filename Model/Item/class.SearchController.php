@@ -50,7 +50,7 @@ class SearchController extends BaseController{
         }elseif ($orderby == 'sale-desc'){
             $orderby = 'i.sold DESC';
         }
-        $sql = "SELECT i.*,s.shop_name,s.owner_username AS seller_username,s.city,s.county FROM ".$db->table('item')." i LEFT JOIN ".$db->table('shop').
+        $sql = "SELECT i.*,s.shop_name,s.username AS seller_username,s.city,s.county FROM ".$db->table('item')." i LEFT JOIN ".$db->table('shop').
             " s ON s.shop_id=i.shop_id WHERE $condition ORDER  BY $orderby LIMIT $offset,$pagesize";
         $query = $db->query($sql);
         $itemlist = array();

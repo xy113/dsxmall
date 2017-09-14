@@ -80,12 +80,11 @@ class ItemController extends BaseController{
 
         if ($this->checkFormSubmit()){
             $catid = intval($_GET['catid']);
-            $shop = shop_get_data(array('owner_uid'=>$this->uid));
-            $sn = item_create_sn();
             $itemid = item_add_data(array(
                 'uid'=>$this->uid,
                 'catid'=>$catid,
-                'sn'=>$sn,
+                'shop_id'=>$this->shop_id,
+                'item_sn'=>item_create_sn(),
                 'on_sale'=>0,
                 'create_time'=>time()
             ));
@@ -232,9 +231,9 @@ class ItemController extends BaseController{
     }
 
     private function update(){
-        $itemlist = item_get_list(0,0);
+        $itemlist = item_get_list(array('item_sn'=>''),0);
         foreach ($itemlist as $item){
-            item_update_image(array('itemid'=>$item['itemid']), array('uid'=>$item['uid']));
+            item_update_data(array('itemid'=>$item['itemid']), array('item_sn'=>item_create_sn()));
         }
     }
 }

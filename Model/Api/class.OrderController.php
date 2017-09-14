@@ -34,11 +34,11 @@ class OrderController extends BaseController
         //卖家信息
         $seller   = member_get_data(array('uid'=>$item['uid']), 'uid,username');
         //收货地址
-        $address  = address_get_data(array('id'=>intval($_GET['address_id'])));
+        $address  = address_get_data(array('address_id'=>intval($_GET['address_id'])));
         //订单金额
         $order_fee = floatval($item['price']) * $quantity;
         //运费
-        $shipping_fee = 0;
+        $shipping_fee = $item['shipping_fee'];
         //总金额
         $total_fee = $order_fee + $shipping_fee;
         //创建订单
@@ -57,10 +57,10 @@ class OrderController extends BaseController
             'create_time'=>time(),
             'pay_type'=>$pay_type,
             'shipping_type'=>$shipping_type,
-            'order_status'=>0,
             'pay_status'=>0,
-            'evaluate_status'=>0,
             'shipping_status'=>0,
+            'receive_status'=>0,
+            'review_status'=>0,
             'consignee'=>$address['consignee'],
             'phone'=>$address['phone'],
             'address'=>$address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'],
@@ -75,11 +75,12 @@ class OrderController extends BaseController
             'order_id'=>$order_id,
             'itemid'=>$item['itemid'],
             'title'=>$item['title'],
-            'market_price'=>$item['market_price'],
             'price'=>$item['price'],
             'quantity'=>$quantity,
             'thumb'=>$item['thumb'],
-            'image'=>$item['image']
+            'image'=>$item['image'],
+            'shipping_fee'=>$shipping_fee,
+            'total_fee'=>$total_fee
         ));
         //创建订单操作记录
         order_add_action(array(
@@ -203,7 +204,7 @@ class OrderController extends BaseController
                 //更新订单状态
                 order_update_data(array('order_id'=>$order_id),
                     array(
-                        'order_status'=>1,
+                        'receive_status'=>1,
                         'deal_time'=>time()
                     ));
                 //打款给卖家

@@ -56,7 +56,7 @@ class ShopController extends BaseController
         if ($shop_id) {
             $shop = shop_get_data(array('shop_id'=>$shop_id));
         }elseif ($_GET['uid']) {
-            $shop = shop_get_data(array('owner_uid'=>intval($_GET['uid'])));
+            $shop = shop_get_data(array('uid'=>intval($_GET['uid'])));
             $shop_id = $shop['shop_id'];
         }
 

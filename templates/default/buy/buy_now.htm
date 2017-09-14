@@ -99,8 +99,8 @@
 <div style="height: 80px; clear: both; display: block;"></div>
 <script type="text/template" id="addressItemTPL">
     <li>
-        <a class="edit-address" data-id="{address[id]}">修改本地址</a>
-        <input type="radio" class="radio" name="address_id" value="{address[id]}"{address[checked]}>
+        <a class="edit-address" data-id="{address[address_id]}">修改本地址</a>
+        <input type="radio" class="radio" name="address_id" value="{address[address_id]}"{address[checked]}>
         <span>{address[province]} {address[city]} {address[county]} {address[street]}  ({address[consignee]} 收) {address[phone]}</span>
     </li>
 </script>
@@ -129,10 +129,10 @@
                     });
                     $("#address-list").html(li);
                     $(".edit-address").off('click').on('click', function (e) {
-                        var id = $(this).attr('data-id');
+                        var address_id = $(this).attr('data-id');
                         dlg = DSXUI.dialog({
                             title:'添加收货地址',
-                            iframe:"{U:('m=member&c=address&a=frame')}&id="+id,
+                            iframe:"{U:('m=member&c=address&a=frame')}&address_id="+address_id,
                             width:'700px',
                             height:'320px',
                             hideBottom:true

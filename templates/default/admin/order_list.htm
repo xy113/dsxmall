@@ -33,7 +33,7 @@
             <tbody>
             {loop $order_list $order_id $order}
             <tr>
-                <td class="center"><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$order_id}"></td>
+                <td class="center"><input type="checkbox" class="checkbox checkmark" name="orders[]" value="{$order_id}"></td>
                 <td><img src="{img $order[thumb]}" width="50" height="50"></td>
                 <td>
                     <h3 class="title"><a href="{U:('m=item&c=item&itemid='.$order[itemid])}" target="_blank">{$order[title]}</a></h3>

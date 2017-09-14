@@ -246,4 +246,18 @@ class WxPayRefund extends WxPayData
     {
         return array_key_exists('op_user_id', $this->values);
     }
+
+    /**
+     * @param $value
+     */
+    public function setRefund_desc($value){
+        $this->values['refund_desc'] = $value;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefund_desc(){
+        return $this->values['refund_desc'];
+    }
 }

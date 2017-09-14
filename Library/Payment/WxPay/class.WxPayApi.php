@@ -213,8 +213,6 @@ class WxPayApi{
         }else if(!$inputObj->getRefund_fee()){
             throw new \Exception("退款申请接口中，缺少必填参数refund_fee！");
 
-        }else if(!$inputObj->getOp_user_id()){
-            throw new \Exception("退款申请接口中，缺少必填参数op_user_id！");
         }
         $inputObj->setAppid();//公众账号ID
         $inputObj->setMch_id();//商户号

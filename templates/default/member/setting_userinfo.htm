@@ -27,8 +27,8 @@
     	<tr>
         	<td width="64">性别</td>
             <td>
-            	{loop $lang[sex_items] $k $v}
-            	<input type="radio" value="$k" name="userinfo[usersex]"{if $k==$userinfo[usersex]} checked="checked"{/if}{if $userinfo[locked]} disabled="disabled"{/if}> $v
+            	{loop $_lang[sex_items] $k $v}
+            	<input type="radio" value="{$k}" name="userinfo[usersex]"{if $k==$userinfo[usersex]} checked="checked"{/if}{if $userinfo[locked]} disabled="disabled"{/if}> {$v}
             	{/loop}
             </td>
             <td width="40">生日</td>
@@ -38,7 +38,7 @@
         	<td>星座</td>
             <td>
             	<select class="input-select" name="userinfo[star]">
-                  {loop $lang[star_items] $k $v}
+                  {loop $_lang[star_items] $k $v}
                 <option value="{$k}"{if $k==$userinfo[star]} selected="selected"{/if}>{$v}</option>
                 {/loop}
             	</select>
@@ -46,7 +46,7 @@
             <td>血型</td>
             <td>
             	<select class="input-select" name="userinfo[blood]">
-                {loop $lang[blood_items] $k $v}
+                {loop $_lang[blood_items] $k $v}
                 <option value="{$k}"{if $k==$userinfo[blood]} selected="selected"{/if}>{$v}</option>
                 {/loop}
             	</select>
@@ -84,10 +84,10 @@
     </form>
 </div>
 <script type="text/javascript">
-DSXUtil.bindDistrict("#province", 0, '{$userinfo[province]}', '', function(province){
-	DSXUtil.bindDistrict("#city", province, '{$userinfo[city]}', '', function(city){
-		DSXUtil.bindDistrict("#county", city, '{$userinfo[county]}', '');
-	});
+var dist = new DistrictSelector({
+    province:'{$userinfo[province]}',
+    city:'{$userinfo[city]}',
+    county:'{$userinfo[county]}'
 });
 $("#update-info-button").click(function(e) {
     $("#userinfoForm").ajaxSubmit({

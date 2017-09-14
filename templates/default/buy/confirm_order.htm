@@ -31,17 +31,16 @@
             <input type="hidden" name="shipping_type" value="1" id="J_shipping_type">
             <input type="hidden" name="pay_type" value="1" id="J_pay_type">
             <input type="hidden" name="_token_" value="{cookie _token_}">
-            {loop $cart_item_list $shop_id $cart}
+            {loop $order_item_list $shop_id $order}
             <div class="order-item" data-shop-id="{$shop_id}" style="margin-bottom: 20px;">
                 <table cellpadding="0" cellspacing="0" width="100%" class="order-item-table">
                     <thead>
                         <tr>
-                            <th colspan="4">店铺: {$cart[shop_name]}</th>
+                            <th colspan="4">店铺: {$order[shop_name]}</th>
                         </tr>
                     </thead>
-                    {eval $simple_fee=0}
-                    {loop $cart[items] $itemid $item}
-                    {eval $simple_fee+= $item[total_fee]}
+                    {eval $simple_fee=$order[order_fee]+$order[shipping_fee]}
+                    {loop $order[items] $itemid $item}
                     <tbody>
                         <tr>
                             <td>
@@ -56,14 +55,17 @@
                             </td>
                             <td width="125" class="cell-price">{amount:$item[price]}</td>
                             <td width="125" class="cell-num">{$item[quantity]}</td>
-                            <td width="125" class="cell-simple-price" id="simple-price">{amount:$item[total_fee]}</td>
+                            <td width="125" class="cell-simple-price" id="simple-price">{amount:$item[order_fee]}</td>
                         </tr>
                     </tbody>
                     {/loop}
                 </table>
                 <div class="order-ext-wrap">
                     <div class="order-ext">
-                        <div class="shop-total">店铺合计: <span class="total-fee">{amount:$simple_fee}</span></div>
+                        <div class="shop-total">
+                            <p>运费: <span class="total-fee">{amount:$order[shipping_fee]}</p>
+                            <p>店铺合计: <span class="total-fee">{amount:$simple_fee}</span></p>
+                        </div>
                         <div class="ext-name">给掌柜留言:</div>
                         <div class="ext-info"><textarea name="remark_list[{$shop_id}]" class="textarea remark" placeholder="选填:对本次交易的说明"></textarea></div>
                     </div>
@@ -98,8 +100,8 @@
 <div style="height: 80px; clear: both; display: block;"></div>
 <script type="text/template" id="addressItemTPL">
     <li>
-        <a class="edit-address" data-id="{address[id]}">修改本地址</a>
-        <input type="radio" class="radio" name="address_id" value="{address[id]}"{address[checked]}>
+        <a class="edit-address" data-id="{address[address_id]}">修改本地址</a>
+        <input type="radio" class="radio" name="address_id" value="{address[address_id]}"{address[checked]}>
         <span>{address[province]} {address[city]} {address[county]} {address[street]}  ({address[consignee]} 收) {address[phone]}</span>
     </li>
 </script>
@@ -128,10 +130,10 @@
                     });
                     $("#address-list").html(li);
                     $(".edit-address").off('click').on('click', function (e) {
-                        var id = $(this).attr('data-id');
+                        var address_id = $(this).attr('data-id');
                         dlg = DSXUI.dialog({
                             title:'添加收货地址',
-                            iframe:"{U:('m=member&c=address&a=frame')}&id="+id,
+                            iframe:"{U:('m=member&c=address&a=frame')}&address_id="+address_id,
                             width:'700px',
                             height:'320px',
                             hideBottom:true

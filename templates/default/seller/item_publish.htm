@@ -11,7 +11,6 @@
         <form method="post" id="publishForm" autocomplete="off">
             <input type="hidden" name="formsubmit" value="yes">
             <input type="hidden" name="formhash" value="{FORMHASH}">
-            <input type="hidden" name="item[on_sale]" value="1" id="J_onSale">
             <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
                 <tbody>
                 <tr>
@@ -27,10 +26,6 @@
                 <tr>
                     <td class="cell-name">一口价</td>
                     <td><input type="text" name="item[price]" id="price" class="input-text w300" value="{$item[price]}"></td>
-                </tr>
-                <tr>
-                    <td class="cell-name">市场价</td>
-                    <td><input type="text" name="item[market_price]" id="market_price" class="input-text w300" value="{$item[market_price]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">库存数量</td>
@@ -86,16 +81,22 @@
                     <td class="cell-name">宝贝详情</td>
                     <td>{template editor}</td>
                 </tr>
+                    <tr>
+                        <td class="cell-name">运费</td>
+                        <td><input type="text" name="item[shipping_fee]" id="shipping_fee" class="input-text w300" value="{$item[shipping_fee]}"></td>
+                    </tr>
+                    <tr>
+                        <td class="cell-name">上架时间</td>
+                        <td>
+                            <label><input type="radio" class="radio" name="item[on_sale]" value="1"{if $item[on_sale]==1} checked{/if}> <span>立即上架</span></label>
+                            <label><input type="radio" class="radio" name="item[on_sale]" value="0"{if $item[on_sale]==0} checked{/if}> <span>存入仓库</span></label>
+                        </td>
+                    </tr>
                 </tbody>
-            </table>
-            <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
                 <tfoot>
                 <tr>
                     <td width="80"></td>
-                    <td>
-                        <button type="button" class="button btn-100" id="button-submit">立即发布</button>
-                        <button type="button" class="button btn-100" id="button-save">存入仓库</button>
-                    </td>
+                    <td><button type="submit" class="button btn-100">立即发布</button></td>
                 </tr>
                 </tfoot>
             </table>
@@ -122,6 +123,7 @@
             });
         });
         $("#publishForm").on('submit', function () {
+            window.onbeforeunload = null;
             var title = $.trim($("#title").val());
             if (!title) {
                 DSXUI.error('请填写宝贝名称');
@@ -137,16 +139,6 @@
                 DSXUI.error('请填写产品库存');
                 return false;
             }
-        });
-        $("#button-submit").on('click', function () {
-            $("#J_onSale").val(1);
-            window.onbeforeunload = null;
-            $("#publishForm").submit();
-        });
-        $("#button-save").on('click', function () {
-            $("#J_onSale").val(0);
-            window.onbeforeunload = null;
-            $("#publishForm").submit();
         });
     });
 </script>

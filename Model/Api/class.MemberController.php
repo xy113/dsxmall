@@ -157,7 +157,12 @@ class MemberController extends BaseController
     public function edit_info(){
         $userinfo = $_GET['userinfo'];
         if ($userinfo && is_array($userinfo)){
-            member_update_info(array('uid'=>$this->uid), $userinfo);
+            $userinfo['modified'] = time();
+            $res = member_update_info(array('uid'=>$this->uid), $userinfo);
+            if (!$res) {
+                $userinfo['uid'] = $this->uid;
+                member_add_info($userinfo);
+            }
         }
         $this->showAjaxReturn();
     }

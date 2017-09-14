@@ -680,7 +680,7 @@ function stripHtml($str){
 
 /**
  * 打印数组
- * @param array $array
+ * @param mixed $array
  */
 function print_array($array){
     echo '<pre>';

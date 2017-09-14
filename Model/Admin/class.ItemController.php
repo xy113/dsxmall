@@ -31,31 +31,31 @@ class ItemController extends BaseController{
 
         if ($this->checkFormSubmit()) {
             if ($this->checkFormSubmit()) {
-                $ids = $_GET['ids'];
-                if ($ids && is_array($ids)) {
+                $items = $_GET['items'];
+                if ($items && is_array($items)) {
                     //批量删除商品
                     if ($_GET['option'] == 'delete') {
-                        foreach ($ids as $itemid){
+                        foreach ($items as $itemid){
                             $this->delItemData($itemid);
                         }
                         $this->showSuccess('delete_succeed');
                     }
                     //批量上架商品
                     if ($_GET['option'] == 'on_sale'){
-                        $ids = implodeids($ids);
-                        item_update_data(array('id'=>array('IN', $ids)), array('on_sale'=>1));
+                        $itemids = implodeids($items);
+                        item_update_data(array('itemid'=>array('IN', $itemids)), array('on_sale'=>1));
                         $this->showSuccess('update_succeed');
                     }
 
                     //批量下架商品
                     if ($_GET['option'] == 'off_sale'){
-                        $ids = implodeids($ids);
-                        item_update_data(array('id'=>array('IN', $ids)), array('on_sale'=>0));
+                        $itemids = implodeids($items);
+                        item_update_data(array('itemid'=>array('IN', $itemids)), array('on_sale'=>0));
                         $this->showSuccess('update_succeed');
                     }
 
                 }else {
-                    $this->showAjaxError('no_select');
+                    $this->showError('no_select');
                 }
             }else {
                 $this->showError('undefined_action');
@@ -64,7 +64,7 @@ class ItemController extends BaseController{
             $pagesize = 10;
             $condition = array();
             $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-            if ($q) $condition['name'] = array('LIKE', $q);
+            if ($q) $condition['title'] = array('LIKE', $q);
 
             $totalnum = item_get_count($condition);
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
@@ -76,7 +76,7 @@ class ItemController extends BaseController{
             if ($itemlist) {
                 $datalist = $shop_ids = array();
                 foreach ($itemlist as $item){
-                    $datalist[$item['id']] = $item;
+                    $datalist[$item['itemid']] = $item;
                     $shop_ids[] = $item['shop_id'];
                 }
                 $itemlist = $datalist;
@@ -104,7 +104,7 @@ class ItemController extends BaseController{
      * @param $itemid
      */
     private function delItemData($itemid){
-        item_delete_data(array('id'=>$itemid));
+        item_delete_data(array('itemid'=>$itemid));
         item_delete_desc(array('itemid'=>$itemid));
         item_delete_image(array('itemid'=>$itemid));
     }

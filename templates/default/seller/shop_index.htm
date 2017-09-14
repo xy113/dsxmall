@@ -6,10 +6,15 @@
     <span>></span>
     <a>基本设置</a>
 </div>
+{if $shop_data[shop_status]=='CLOSE'}
+<div class="notice-nav">
+    你的店铺由于资料不全，已被管理员关闭，请完善店铺资料和认证资料，向管理员申请重新开启。
+</div>
+{/if}
 <div class="content-div">
     <div class="tab-console">
         <span class="item cur">基本信息</span>
-        <span class="item">店铺认证</span>
+        <span class="item"><a href="{U:('c=shop&a=auth')}" target="_blank">店铺认证</a></span>
     </div>
     <div class="form-div">
         <form method="post" id="shopForm" autocomplete="off">
@@ -19,17 +24,17 @@
                 <tbody>
                 <tr>
                     <td class="cell-name" width="80">店铺名称</td>
-                    <td><input type="text" name="shop[shop_name]" id="shop_name" class="input-text w300" value="{$shop[shop_name]}"></td>
+                    <td><input type="text" name="shop_data[shop_name]" id="shop_name" class="input-text w300" value="{$shop_data[shop_name]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">联系电话</td>
-                    <td><input type="text" name="shop[phone]" id="phone" class="input-text w300" value="{$shop[phone]}"></td>
+                    <td><input type="text" name="shop_data[phone]" id="phone" class="input-text w300" value="{$shop_data[phone]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">店铺标志</td>
                     <td>
-                        <input type="hidden" name="shop[shop_logo]" value="{$shop[shop_logo]}" id="shop_logo">
-                        <img src="{img $shop[shop_logo]}" width="100" height="100" id="shop_logo_img">
+                        <input type="hidden" name="shop_data[shop_logo]" value="{$shop_data[shop_logo]}" id="shop_logo">
+                        <img src="{img $shop_data[shop_logo]}" width="100" height="100" id="shop_logo_img">
                         <p>
                             <span class="button button-cancel" style="border-radius: 5px;" id="upload-btn">上传图标</span>
                             <span>文件格式GIF、JPG、JPEG、PNG文件大小100K以内，建议尺寸150PX*150PX</span>
@@ -39,32 +44,32 @@
                 <tr>
                     <td class="cell-name">店铺简介</td>
                     <td>
-                        <textarea class="textarea" name="shop[intro]" style="width: 300px; height: 80px;" placeholder="【掌柜签名】/【店铺动态】/【主营宝贝】">{$shop[intro]}</textarea>
+                        <textarea class="textarea" name="shop_data[intro]" style="width: 300px; height: 80px;" placeholder="【掌柜签名】/【店铺动态】/【主营宝贝】">{$shop_data[intro]}</textarea>
                     </td>
                 </tr>
                 <tr>
                     <td class="cell-name">经营地址</td>
                     <td>
-                        <select class="select" name="shop[province]" id="province" style="width: auto;">
+                        <select class="select" name="shop_data[province]" id="province" style="width: auto;">
                             <option value="">请选择</option>
                         </select>
-                        <select class="select" name="shop[city]" id="city" style="width: auto;">
+                        <select class="select" name="shop_data[city]" id="city" style="width: auto;">
                             <option value="">请选择</option>
                         </select>
-                        <select class="select" name="shop[county]" id="county" style="width: auto;">
+                        <select class="select" name="shop_data[county]" id="county" style="width: auto;">
                             <option value="">请选择</option>
                         </select>
-                        <input type="text" name="shop[street]" id="street" class="input-text w300" value="{$shop[street]}" placeholder="街道地址">
+                        <input type="text" name="shop_data[street]" id="street" class="input-text w300" value="{$shop_data[street]}" placeholder="街道地址">
                     </td>
                 </tr>
                 <tr>
                     <td class="cell-name">主要货源</td>
                     <td>
-                        <label><input type="radio" class="radio" name="shop[main_source]" value="1"{if $shop[main_source]=="1"||!$shop[main_source]} checked{/if}> 自己生产</label>
-                        <label><input type="radio" class="radio" name="shop[main_source]" value="2"{if $shop[main_source]=="2"} checked{/if}> 代工生产</label>
-                        <label><input type="radio" class="radio" name="shop[main_source]" value="3"{if $shop[main_source]=="3"} checked{/if}> 线下批发</label>
-                        <label><input type="radio" class="radio" name="shop[main_source]" value="4"{if $shop[main_source]=="4"} checked{/if}> 分销代销</label>
-                        <label><input type="radio" class="radio" name="shop[main_source]" value="5"{if $shop[main_source]=="5"} checked{/if}> 自由渠道</label>
+                        <label><input type="radio" class="radio" name="shop_data[main_source]" value="1"{if $shop_data[main_source]=="1"||!$shop_data[main_source]} checked{/if}> 自己生产</label>
+                        <label><input type="radio" class="radio" name="shop_data[main_source]" value="2"{if $shop_data[main_source]=="2"} checked{/if}> 代工生产</label>
+                        <label><input type="radio" class="radio" name="shop_data[main_source]" value="3"{if $shop_data[main_source]=="3"} checked{/if}> 线下批发</label>
+                        <label><input type="radio" class="radio" name="shop_data[main_source]" value="4"{if $shop_data[main_source]=="4"} checked{/if}> 分销代销</label>
+                        <label><input type="radio" class="radio" name="shop_data[main_source]" value="5"{if $shop_data[main_source]=="5"} checked{/if}> 自由渠道</label>
                     </td>
                 </tr>
                 <tr>
@@ -88,9 +93,9 @@
 <script type="text/javascript">
     $(function () {
         var district = new DistrictSelector({
-            province:'{$shop[province]}',
-            city:'{$shop[city]}',
-            county:'{$shop[county]}'
+            province:'{$shop_data[province]}',
+            city:'{$shop_data[city]}',
+            county:'{$shop_data[county]}'
         });
         $("#upload-btn").on('click', function () {
             DSXUI.showImagePickerView({

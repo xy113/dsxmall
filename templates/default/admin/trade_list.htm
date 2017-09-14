@@ -30,7 +30,8 @@
       </tr>
      </thead>
      <tbody>
-      {loop $itemlist $trade_id $item}
+      {loop $itemlist $item}
+      {eval $trade_id=$item[trade_id]}
       <tr>
         <td class="center"><input type="checkbox" class="checkbox checkmark" name="trade_id[]" value="{$trade_id}"></td>
         <td><img src="{echo avatar($item[payer_uid])}" width="30" height="30"></td>

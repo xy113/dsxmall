@@ -33,8 +33,8 @@ class ItemController extends BaseController{
             }
 
             $shop = shop_get_data(array('shop_id'=>$item_data['shop_id']));
-            $shop['short_shop_name']  = cutstr($shop['shop_name'], 24);
-            $shop['short_owner_username'] = cutstr($shop['owner_username'], 16);
+            $shop['short_name']  = cutstr($shop['shop_name'], 24);
+            $shop['short_username'] = cutstr($shop['username'], 16);
 
             //掌柜热卖
             $hot_sale_list = item_get_list(array('shop_id'=>$item_data['shop_id'] ,'on_sale'=>1), 5, 0 ,'sold DESC');

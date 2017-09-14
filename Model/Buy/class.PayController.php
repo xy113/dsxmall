@@ -85,7 +85,7 @@ class PayController extends BaseController{
 //        }
 
         if (wallet_cost($this->uid, $order['total_fee'])){
-            order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
+            order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
             trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'trade_type'=>'balance'));
             $this->showAjaxReturn();
         }else {
@@ -145,7 +145,7 @@ class PayController extends BaseController{
             $orderQuery->setOut_trade_no($trade['out_trade_no']);
             $res = WxPayApi::orderQuery($orderQuery);
             if ($res['trade_state'] == 'SUCCESS'){
-                order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
+                order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
                 trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'pay_type'=>'wxpay'));
             }
         }
@@ -213,7 +213,7 @@ class PayController extends BaseController{
         if ($order['pay_status'] == 0){
             if ($this->alipayCheckOrder($out_trade_no)){
                 //支付成功
-                order_update_data(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_type'=>2, 'pay_time'=>time()));
+                order_update_data(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
                 trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
             }
         }

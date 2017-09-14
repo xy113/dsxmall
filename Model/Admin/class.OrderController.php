@@ -23,10 +23,10 @@ class OrderController extends BaseController{
     public function itemlist(){
 		global $_G,$_lang;
 		if ($this->checkFormSubmit()){
-			$ids = $_GET['ids'];
-			if ($ids && is_array($ids)){
+            $orders = $_GET['orders'];
+			if ($orders && is_array($orders)){
 			    if ($_GET['option'] == 'delete'){
-			        foreach ($ids as $order_id){
+			        foreach ($orders as $order_id){
                         $order = order_get_data(array('order_id'=>$order_id));
                         order_delete_data(array('order_id'=>$order_id));
                         order_delete_item(array('order_id'=>$order_id));
@@ -72,7 +72,6 @@ class OrderController extends BaseController{
                     unset($order_ids, $itemlist, $item);
                 }
 			}
-			
 			include template('order_list');
 		}
 	}
@@ -114,7 +113,7 @@ class OrderController extends BaseController{
                 if ($itemlist) {
                     foreach ($itemlist as $item){
                         $order_list[$item['order_id']]['itemid'] = $item['itemid'];
-                        $order_list[$item['order_id']]['itemname'] = $item['name'];
+                        $order_list[$item['order_id']]['title'] = $item['title'];
                         $order_list[$item['order_id']]['thumb'] = $item['thumb'];
                     }
                 }
@@ -125,7 +124,7 @@ class OrderController extends BaseController{
             foreach ($order_list as $order){
                 $offset++;
                 $rows.= $excel->getRow(array(
-                    $order['itemname'],$order['order_no'],$order['seller_name'],$order['buyer_name'],
+                    $order['title'],$order['order_no'],$order['seller_name'],$order['buyer_name'],
                     formatAmount($order['total_fee']),date('Y-m-d H:i:s', $order['create_time']),
                     ($order['pay_type']==1 ? '在线支付' : '货到付款'), ($order['pay_status'] ? '已支付' : '未支付'),
                     ($order['shipping_status'] ? '已发货' : '未发货')

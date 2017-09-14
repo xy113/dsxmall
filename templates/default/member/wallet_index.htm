@@ -69,7 +69,7 @@
             <td class="time"><span>{date:$item[trade_time]|'Y年m月d日'}</span></td>
             <td class="name">
                 <h3>{$item[trade_name]}</h3>
-                <p>{$item[trade_no]} | {$userlist[$item[payee_uid]][username]}</p>
+                <p>{$item[trade_no]} | {$item[payee_name]}</p>
             </td>
             <td class="amount"><span>{$item[trade_fee]}</span></td>
             <td class="status">{$item[trade_status_name]}</td>

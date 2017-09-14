@@ -214,6 +214,35 @@
     3.24 获取服务器端版本号:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=app&a=get_version&appid=应用APPID
     用于提醒用户升级APP
 
+    3.25 添加收货地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=add
+    参数1：consignee=收货人姓名
+    参数2：phone=联系电话
+    参数3：province=省份
+    参数4：city=城市
+    参数5：county=县
+    参数6：street=街道地址
+
+    3.26 更新收货地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=update&address_id=地址ID
+    参数1：consignee=收货人姓名
+    参数2：phone=联系电话
+    参数3：province=省份
+    参数4：city=城市
+    参数5：county=县
+    参数6：street=街道地址
+
+    3.27 删除收货地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=delete&address_id=地址ID
+
+    3.28 获取收货地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=get&address_id=地址ID
+    地址ID为可选参数，不填写则获取默认地址
+
+    3.29 批量获取收货地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=batchget
+
+    3.30 设置默认地址:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=address&a=setdefault&address_id=地址ID
+
+    3.31 支付宝获取签名:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=alipay&a=get_trade_content&order_id=订单ID
+    3.32 支付宝查询支付结果:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=alipay&a=query&order_id=订单ID
+    3.33 支付完成显示结果页面:http://cg.liaidi.com/?m=app&c=pay&a=order_query&order_id=订单ID
+
     四、JSBridge部分
     （1）客户端注册的方法
     4.1.1 打开商品详情页：viewItem，传入参数data为商品ID

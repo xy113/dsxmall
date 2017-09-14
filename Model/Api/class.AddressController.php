@@ -25,7 +25,7 @@ class AddressController extends BaseController{
         $county = trim($_GET['county']);
         $street = htmlspecialchars($_GET['street']);
         if ($cosignee && $phone) {
-            address_add_data(array(
+            $address = address_add_data(array(
                 'uid'=>$this->uid,
                 'consignee'=>$cosignee,
                 'phone'=>$phone,
@@ -44,7 +44,8 @@ class AddressController extends BaseController{
      * 更新收货地址
      */
     public function update(){
-        $id = intval($_GET['id']);
+        $address_id = intval($_GET['address_id']);
+        if (!$address_id) $address_id = intval($_GET['id']);
         $cosignee = htmlspecialchars($_GET['consignee']);
         $phone = trim($_GET['phone']);
         $province = trim($_GET['province']);
@@ -52,7 +53,7 @@ class AddressController extends BaseController{
         $county = trim($_GET['county']);
         $street = htmlspecialchars($_GET['street']);
         if ($cosignee && $phone) {
-            address_update_data(array('id'=>$id, 'uid'=>$this->uid), array(
+            address_update_data(array('address_id'=>$address_id, 'uid'=>$this->uid), array(
                 'consignee'=>$cosignee,
                 'phone'=>$phone,
                 'province'=>$province,
@@ -67,8 +68,9 @@ class AddressController extends BaseController{
     }
 
     public function delete(){
-        $id = intval($_GET['id']);
-        address_delete_data(array('id'=>$id, 'uid'=>$this->uid));
+        $address_id = intval($_GET['address_id']);
+        if (!$address_id) $address_id = intval($_GET['id']);
+        address_delete_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
         $this->showAjaxReturn();
     }
 
@@ -76,9 +78,10 @@ class AddressController extends BaseController{
      * 设为默认地址
      */
     public function setdefault(){
-        $id = intval($_GET['id']);
+        $address_id = intval($_GET['address_id']);
+        if (!$address_id) $address_id = intval($_GET['id']);
         address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
-        address_update_data(array('uid'=>$this->uid, 'id'=>$id), array('isdefault'=>1));
+        address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), array('isdefault'=>1));
         $this->showAjaxReturn();
     }
 
@@ -88,11 +91,12 @@ class AddressController extends BaseController{
     public function get(){
         $address_id = intval($_GET['address_id']);
         if ($address_id) {
-            $address = address_get_data(array('id'=>$address_id, 'uid'=>$this->uid));
+            $address = address_get_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
         }else {
             $address = address_get_data(array('isdefault'=>1, 'uid'=>$this->uid));
         }
         if ($address) {
+            $address['id'] = $address['address_id'];//兼容老版本
             $address['address'] = $address['province'].$address['city'].$address['county'].$address['street'];
         }else {
             $address = array();
@@ -107,6 +111,7 @@ class AddressController extends BaseController{
         $address_list = address_get_list(array('uid'=>$this->uid));
         $datalist = array();
         foreach ($address_list as $address){
+            $address['id'] = $address['address_id'];//兼容老版本
             $address['address'] = $address['province'].$address['city'].$address['county'].$address['street'];
             $datalist[] = $address;
         }

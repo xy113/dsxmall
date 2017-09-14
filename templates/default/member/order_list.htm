@@ -73,7 +73,16 @@
                     <td class="col3">{$item[quantity]}</td>
                     <td class="col4">
                         {if $index==1}
-                        <p><a>申请售后</a></p>
+                        {if $order[pay_status] && !$order[is_closed]}
+                            {if $order[receive_status]}
+                            <p><a>申请售后</a></p>
+                            {else}
+                                {if $order[refund_status]==0}
+                                    <p><a href="{U:('m=refund&c=apply&order_id='.$order_id)}" target="_blank">退款/退货</a></p>
+                                {/if}
+                            {/if}
+                        {/if}
+
                         <p><a>投诉卖家</a></p>
                         {/if}
                     </td>
@@ -98,7 +107,6 @@
                                 <p>{$order[trade_status_tips]}</p>
                                 {/if}
                             {/if}
-
                         <p><a href="{U:('c=order&a=detail&order_id='.$order_id)}" target="_blank">订单详情</a></p>
                         {if $order[shipping_status]}
                         <p>查看物流</p>
@@ -110,6 +118,7 @@
                             {if $order[pay_type]==1}
                                 {if $order[trade_status]==1}
                                 <a href="{U:('m=buy&c=pay&order_id='.$order_id)}" target="_blank" class="button btn">立即支付</a>
+                                <p style="margin: 3px 0;"><a rel="closeOrder" data-id="{$order_id}">取消订单</a></p>
                                 {elseif $order[trade_status]==2}
                                 <a>提醒卖家发货</a>
                                 {elseif $order[trade_status]==3}
@@ -154,6 +163,22 @@
                         }, 500);
                     }
                 });
+            });
+        });
+
+        $("[rel=closeOrder]").on('click', function () {
+            var order_id = $(this).attr('data-id');
+            DSXUI.dialog({
+                title:'关闭订单',
+                iframe:"{U:('m=member&c=order&a=frame_close&order_id=')}"+order_id,
+                hideBottom:true,
+                height:'200px',
+                afterShow:function (dlg) {
+                    window.afterCloseOrder = function () {
+                        dlg.close();
+                        DSXUtil.reFresh();
+                    }
+                }
             });
         });
     })

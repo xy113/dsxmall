@@ -57,22 +57,22 @@ class MemberController extends BaseController{
 			$pagesize = 20;
 			$condition = array();
 
-			$field   = isset($_GET['field']) ? trim($_GET['field']) : '';
-			$keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
-			if ($field && $keyword){
+			$field = isset($_GET['field']) ? trim($_GET['field']) : '';
+			$q = isset($_GET['q']) ? trim($_GET['q']) : '';
+			if ($field && $q){
 				switch ($field) {
-					case 'uid': $condition['uid'] = $keyword;
+					case 'uid': $condition['uid'] = $q;
 					break;
 
-					case 'username': $condition['username'] = array('LIKE', $keyword);
+					case 'username': $condition['username'] = array('LIKE', $q);
 					break;
 
-					case 'mobile' : $condition['mobile'] = array('LIKE', $keyword);
+					case 'mobile' : $condition['mobile'] = array('LIKE', $q);
 					break;
 
-					case 'email' : $condition['email'] = array('LIKE', $keyword);
+					case 'email' : $condition['email'] = array('LIKE', $q);
 					break;
-					 default: $condition['username'] = array('LIKE', $keyword);
+					 default: $condition['username'] = array('LIKE', $q);
 				}
 			}
 
@@ -93,7 +93,7 @@ class MemberController extends BaseController{
 				}
 			}
 			unset($memberstatuslist, $status);
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "field=$field&keyword=$keyword", 1);
+			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "field=$field&q=$q", 1);
 
             $_G['title'] = 'memberlist';
 			include template('member_list');

@@ -719,4 +719,6 @@ var DSXUI = {
     }).mouseleave(function () {
         $("#J-qrcode-preview").remove();
     });
+
+    $("#nav-cart").load('/index.php?m=cart&c=index&a=get_count');
 });

@@ -13,8 +13,11 @@ class ShopController extends BaseController{
         G('menu', 'shop');
     }
 
+    /**
+     *
+     */
     public function index(){
-
+        $this->itemlist();
     }
 
     /**
@@ -52,7 +55,7 @@ class ShopController extends BaseController{
             $pagesize = 20;
             $condition = array('auth_status'=>'SUCCESS');
             $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-            if ($q) $condition['shop_name'] = array('LIKE', $q);
+            if ($q) $condition[] = "`shop_name` LIKE '%$q%' OR `phone`='$q'";
 
             $totalnum = shop_get_count($condition);
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
@@ -72,7 +75,7 @@ class ShopController extends BaseController{
      */
     private function delShop($shop_id){
         shop_delete_data(array('shop_id'=>$shop_id));
-        shop_delete_info(array('shop_id'=>$shop_id));
+        shop_delete_auth(array('shop_id'=>$shop_id));
         $itemlist = item_get_list(array('shop_id'=>$shop_id), 0);
         foreach ($itemlist as $item){
             item_delete_data(array('id'=>$item['id']));
@@ -105,7 +108,7 @@ class ShopController extends BaseController{
                                 'auth_status'=>'SUCCESS',
                                 'shop_status'=>'OPEN'
                             ));
-                        shop_update_owner(array('owner_uid'=>$shop['owner_uid']), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
+                        shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
                     }
                     $this->showSuccess('update_succeed');
                 }
@@ -118,7 +121,7 @@ class ShopController extends BaseController{
                                 'auth_status'=>'FAIL',
                                 'shop_status'=>'CLOSE'
                             ));
-                        shop_update_owner(array('owner_uid'=>$shop['owner_uid']), array('auth_status'=>'FAIL', 'auth_time'=>time()));
+                        shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'FAIL', 'auth_time'=>time()));
                     }
                     $this->showSuccess('update_succeed');
                 }
@@ -152,8 +155,7 @@ class ShopController extends BaseController{
 
         $shop_id = intval($_GET['shop_id']);
         $shop = shop_get_data(array('shop_id'=>$shop_id));
-        $owner = shop_get_owner(array('owner_uid'=>$shop['owner_uid']));
-        $shop_info = shop_get_info(array('shop_id'=>$shop_id));
+        $auth = shop_get_auth(array('shop_id'=>$shop_id));
 
         $_G['title'] = $shop['shop_name'];
         include template('shop_detail');
@@ -171,14 +173,14 @@ class ShopController extends BaseController{
                     'auth_status'=>'SUCCESS',
                     'shop_status'=>'OPEN'
                 ));
-            shop_update_owner(array('owner_uid'=>$shop['owner_uid']), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
+            shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
         }else {
             shop_update_data(array('shop_id'=>$shop_id),
                 array(
                     'auth_status'=>'FAIL',
                     'shop_status'=>'CLOSE'
                 ));
-            shop_update_owner(array('owner_uid'=>$shop['owner_uid']), array('auth_status'=>'FAIL', 'auth_time'=>time()));
+            shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'FAIL', 'auth_time'=>time()));
         }
         $this->showSuccess('shop_auth_success');
     }

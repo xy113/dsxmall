@@ -10,7 +10,8 @@ use Core\Controller;
 
 class BaseController extends Controller{
     protected $shop_id = 0;
-    protected $shop = array();
+    protected $shop_name = '';
+    protected $shop_data = array();
     /**
      * BaseController constructor.
      */
@@ -20,19 +21,11 @@ class BaseController extends Controller{
         if (!$this->isLogin()){
             member_show_login();
         }else {
-            $shop = shop_get_data(array('owner_uid'=>$this->uid));
+            $shop = shop_get_data(array('uid'=>$this->uid));
             if ($shop) {
-                $this->shop = $shop;
                 $this->shop_id = $shop['shop_id'];
-
-                if ($this->shop['auth_status'] == 'PENDING'){
-                    $this->showSuccess('shop_is_pending', null, array(
-                        array('text'=>'go_back', 'url'=>U('m=openshop&c=index')),
-                        array('text'=>'go_home', 'url'=>U('/'))
-                    ));
-                }
-            }else {
-                $this->redirect(U('m=openshop&c=index'));
+                $this->shop_name = $shop['shop_name'];
+                $this->shop_data = $shop;
             }
         }
     }

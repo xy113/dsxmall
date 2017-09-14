@@ -103,4 +103,59 @@ class OrderController extends BaseController
         }
         $this->showSuccess('order_send_success');
     }
+
+    /**
+     * 修改订单价格
+     */
+    public function edit_price(){
+        global $_G,$_lang;
+
+        $order_id = intval($_GET['order_id']);
+        $order = order_get_data(array('seller_uid'=>$this->uid, 'order_id'=>$order_id));
+        if ($this->checkFormSubmit()){
+            $itemlist = $_GET['itemlist'];
+            if ($itemlist) {
+                $order_total_fee = $order_shipping_fee = $order_order_fee = 0;
+                foreach ($itemlist as $itemid=>$item){
+                    $item['promotion_price'] = floatval($item['promotion_price']);
+                    $item['quantity'] = intval($item['quantity']);
+                    $item['shipping_fee'] = floatval($item['shipping_fee']);
+                    if ($item['promotion_price'] != $item['price']){
+                        $item['discount'] = $item['promotion_price']/$item['price'];
+                        $item['promotion_fee'] = $item['price'] - $item['promotion_price'];
+                        $item['total_fee'] = $item['promotion_price']*$item['quantity']+$item['shipping_fee'];
+                        $order_order_fee+= $item['promotion_price']*$item['quantity'];
+                    }else {
+                        $item['promotion_price'] = 0;
+                        $item['total_fee'] = $item['price']*$item['quantity']+$item['shipping_fee'];
+                        $order_order_fee+= $item['price']*$item['quantity'];
+                    }
+                    order_update_item(array('itemid'=>$itemid, 'order_id'=>$order_id), $item);
+                    $order_total_fee+= $item['total_fee'];
+                    $order_shipping_fee+= $item['shipping_fee'];
+                }
+                order_update_data(array('seller_uid'=>$this->uid, 'order_id'=>$order_id),array(
+                    'order_fee'=>$order_order_fee,
+                    'shipping_fee'=>$order_shipping_fee,
+                    'total_fee'=>$order_total_fee
+                ));
+                trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_fee'=>$order_total_fee));
+                $this->showAjaxReturn();
+            }
+        }else {
+            $itemlist = array();
+            if ($order) {
+                $itemlist = order_get_item_list(array('order_id'=>$order_id));
+                if ($itemlist) {
+                    $datalist = array();
+                    foreach ($itemlist as $item){
+                        if(!$item['promotion_price']) $item['promotion_price'] = $item['price'];
+                        $datalist[$item['itemid']] = $item;
+                    }
+                    $itemlist = $datalist;
+                }
+                include template('frame_edit_price');
+            }
+        }
+    }
 }

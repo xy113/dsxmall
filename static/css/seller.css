@@ -2,28 +2,27 @@
 @import "common.css";
 .area{width: 1180px; display: block; margin: 0 auto;}
 .top{height: 35px; display: block; background-color: #F2F2F2; line-height: 35px; font-size: 12px; color: #666;}
-.membercp-header{background-color:#0088E8; color:#fff; height:60px; display:block; padding: 0 20px; margin: 0;}
-.membercp-header .header{height: 60px;}
-.membercp-header .logo{float:left; padding-top: 10px;}
-.membercp-header .logo img{height: 40px; width: auto; display: block; border: 0;}
-.membercp-header .right-menu{font-size:12px; overflow:hidden; margin-left: 180px; padding: 20px 0 0;}
-.membercp-header .right-menu a{
+.seller-header{background-color:#0088E8; color:#fff; height:60px; display:block; padding: 0 20px; margin: 0;}
+.seller-header .header{height: 60px;}
+.seller-header .logo{float:left; padding-top: 10px;}
+.seller-header .logo img{height: 40px; width: auto; display: block; border: 0;}
+.seller-header .right-menu{font-size:12px; overflow:hidden; margin-left: 180px; padding: 20px 0 0;}
+.seller-header .right-menu a{
     display:inline-block; padding:0 20px; float:left;
     font-size:14px; color:#fff;  line-height:20px;
 }
-.sidebar{width:160px; background:#fff; float: left; padding: 0; border: 1px #DDD solid;}
+.sidebar{width:160px; background:#fff; float: left; padding: 0; border: 1px #DDD solid; box-shadow: 0 1px 3px #CCC;}
 .sidebar .sidebar-content{display:block; padding:0; height: 100%; position: relative; overflow: hidden;}
-.sidebar .scroll{display: block; position: absolute; left: 0; top: 0; right: -20px; bottom: 0; overflow: auto;}
-.sidebar .menus{display: block; padding: 10px 0 20px 0;}
-.sidebar dl{display:block;}
+.sidebar .menus{display: block; padding: 0 0 10px;}
+.sidebar dl{display:block; border-top: 1px #DDD solid; margin-top: -1px;}
 .sidebar dl dd{font-size:12px; font-weight:500;}
-.sidebar dl dd a{display:block; padding:8px 22px; font-size:12px;}
+.sidebar dl dd a{display:block; padding:8px 22px; font-size:13px; font-weight: bold;}
 .sidebar dl dd a:hover{color:#000;}
 .sidebar dl dd .iconfont{display: inline-block; vertical-align: -1px; font-size: 16px; margin-right: 3px;}
 .sidebar dl dt{}
 .sidebar dl ul{}
 .sidebar dl li{display:block;}
-.sidebar dl li a{display:block; padding:7px 20px 7px 41px; font-size:12px;}
+.sidebar dl li a{display:block; padding:8px 22px; font-size:12px;}
 .sidebar dl li a:hover{background:#e2e2e2; color:#000;}
 .sidebar dl li a.cur {background-color: #0097d0; color: #fff;}
 .mainframe{margin-left: 175px;}
@@ -31,11 +30,36 @@
 .mainframe .main-content:before{clear: none; content: none;}
 .mainframe .main-content:after{clear: both; content: ""; display: block;}
 .mainframe .content-div{display:block; margin:10px 0;}
+.mainframe .row{clear: both; overflow: hidden;}
+
+.mainframe .blank{height: 15px; clear: both;}
+.mainframe .seller-module{background-color: #fff; border-bottom: 1px #DDD solid; overflow: hidden;}
+.mainframe .seller-module .title{height: 45px; line-height: 45px; padding-left: 16px; font-size: 14px; border-bottom: 1px #e0e0e0 solid;}
+.mainframe .seller-module .content{display: block; margin: 15px;}
+.mainframe .live-data{width: 600px; height: 240px; float: left; margin-right: 15px;}
+.mainframe .bidu{}
+.mainframe .bidu .articles{height: 165px; overflow: hidden;}
+.mainframe .bidu .articles li{font-size: 12px; clear: both; margin-top: 6px;}
+.mainframe .order-notice{float: left; margin-right: 15px; width: 495px;}
+
+.mainframe .seller-module .todo-list{display: block;}
+.mainframe .seller-module .todo-list li{
+    height: 30px; line-height: 30px; width: 50%; float: left;
+    font-size: 12px; color: #666;
+}
+.mainframe .seller-module .wallet-wrap{display: block; height: 120px;}
+.mainframe .seller-module .wallet-row{height: 60px; line-height: 60px; padding: 0 15px; border-bottom: 1px #e0e0e0 solid;}
+.mainframe .seller-module .wallet-row h2{font-size: 14px; color: #333; float: left; font-weight: 400;}
+.mainframe .seller-module .wallet-row .sub-links{font-size: 12px; float: right;}
+.mainframe .seller-module .wallet-row .sub-links a{color: #008ae5; margin-left: 10px;}
+
 .table-border-wrap{border: 1px #DDD solid;}
 
 /**==导航==**/
 .navigation{padding: 10px; border: 1px #DDD solid; font-size: 12px; color: #666; display: block; margin-bottom: 15px; background-color: #fafafa;}
 .navigation span{margin: 0 5px; color: #999;}
+.notice-nav{padding: 10px; border: 1px #DDD solid; font-size: 12px; color: #666; display: block; margin-bottom: 15px; background-color: #FFFEC3;}
+.notice-nav a{color: #008ae5; margin-left: 10px;}
 
 .content-div{display:block; margin:0; padding: 0; border: 1px #DDD solid; background-color: #fff;}
 .console-title{display:block; padding:2px 0 10px; border-bottom:1px #CCC solid; margin-bottom:20px;}
@@ -57,6 +81,7 @@
 .tab-console .cur{padding: 10px 25px 11px; margin-bottom: -1px; border: 1px #d7d7d7 solid; border-bottom: none; background-color: #fff;}
 .form-div{display: block; padding: 20px;}
 .list-div{display: block; clear: both; background-color: #fff;}
+
 
 /*===分页===*/
 .pagination{display:block; padding:0; text-align:right; font-size:12px;}
@@ -100,15 +125,6 @@
 .button-cancel,a.button-cancel{background-color: #f5f5f5; color: #333; border: 1px #CCCCCC solid;}
 .button-cancel:hover,a.button-cancel:hover{background-color: #f0f0f0; color: #000;}
 .input-text:hover,textarea:hover,select:hover{border-color:#64A402;}
-
-.toolbar{display:block; padding:2px 0 10px; border-bottom:1px #CCC solid; margin-bottom:20px;}
-.toolbar .tab{display:inline-block;}
-.toolbar .tab li{float:left; margin-right:10px; font-size:12px; border-radius:2px;}
-.toolbar .tab li a{display:block; padding:3px 10px;}
-.toolbar .tab li.on{background:#0098CE; color:#fff;}
-.toolbar .tab li.on a,.toolbar .tab li.on a:hover{color:#fff;}
-.toolbar .button{height:28px; line-height:26px;}
-.toolbar .input-text{font-size:12px;}
 
 /*==表单==*/
 .formtable{}
@@ -239,4 +255,7 @@
     height: 26px; line-height: 26px; border-radius: 3px;
 }
 .order-item-table tbody td p{display: block; padding-bottom: 3px;}
+.order-item-table a.link{color: #008fbf;}
+.order-item-table a.link:hover{text-decoration: underline;}
 .h3-title{font-size: 14px; padding: 15px 0; display: block;}
+

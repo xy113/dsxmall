@@ -85,5 +85,17 @@ class IndexController extends BaseController{
         cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), array('quantity'=>$quantity));
         $this->showAjaxReturn();
     }
+
+    /**
+     *
+     */
+    public function get_count(){
+        $item_count = cart_get_count(array('uid'=>$this->uid));
+        echo '<a href="'.U('m=cart&c=index').'">
+            <span class="ico"></span>
+            <span>购物车'.$item_count.'件</span>
+            <strong>去结算>></strong>
+            </a>';
+    }
 }
 

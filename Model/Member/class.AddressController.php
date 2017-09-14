@@ -19,16 +19,17 @@ class AddressController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
+        $address_id = intval($_GET['address_id']);
         if ($this->checkFormSubmit()){
-            $id = intval($_GET['id']);
+
             $address = $_GET['address'];
             if ($address['consignee'] && $address['phone'] && $address['street']){
                 $address['isdefault'] = intval($address['isdefault']);
                 if ($address['isdefault']) {
                     address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
                 }
-                if ($id) {
-                    address_update_data(array('uid'=>$this->uid, 'id'=>$id), $address);
+                if ($address_id) {
+                    address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), $address);
                 }else {
                     $address['uid'] = $this->uid;
                     address_add_data($address);
@@ -38,9 +39,8 @@ class AddressController extends BaseController{
                 $this->showError('undefined_action');
             }
         }else {
-            $id = intval($_GET['id']);
-            if ($id) $address = address_get_data(array('id'=>$id, 'uid'=>$this->uid));
 
+            if ($address_id) $address = address_get_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
             $itemlist = address_get_list(array('uid'=>$this->uid));
 
             $_G['title'] = $_lang['address_manage'];
@@ -52,9 +52,9 @@ class AddressController extends BaseController{
      * 设置默认地址
      */
     public function set_default(){
-        $id = intval($_GET['id']);
+        $address_id = intval($_GET['address_id']);
         address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
-        address_update_data(array('uid'=>$this->uid, 'id'=>$id), array('isdefault'=>1));
+        address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), array('isdefault'=>1));
         $this->showAjaxReturn();
     }
 
@@ -62,34 +62,34 @@ class AddressController extends BaseController{
      * 删除地址
      */
     public function delete(){
-        $id = intval($_GET['id']);
-        address_delete_data(array('uid'=>$this->uid, 'id'=>$id));
+        $address_id = intval($_GET['address_id']);
+        address_delete_data(array('uid'=>$this->uid, 'address_id'=>$address_id));
         $this->redirect(U('c=address&a=index'));
     }
 
     public function frame(){
         global $_G,$_lang;
 
-        $id = intval($_GET['id']);
-        if ($id) $address = address_get_data(array('id'=>$id, 'uid'=>$this->uid));
+        $address_id = intval($_GET['address_id']);
+        if ($address_id) $address = address_get_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
         include template('address_frame');
     }
 
     public function save(){
-        $id = intval($_GET['id']);
         $address = $_GET['address'];
+        $address_id = intval($_GET['address_id']);
         if ($address['consignee'] && $address['phone'] && $address['street']){
             $address['isdefault'] = intval($address['isdefault']);
             if ($address['isdefault']) {
                 address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
             }
-            if ($id) {
-                address_update_data(array('uid'=>$this->uid, 'id'=>$id), $address);
+            if ($address_id) {
+                address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), $address);
             }else {
                 $address['uid'] = $this->uid;
-                $id = address_add_data($address);
+                $address_id = address_add_data($address);
             }
-            $this->showAjaxReturn(address_get_data(array('id'=>$id)));
+            $this->showAjaxReturn(address_get_data(array('address_id'=>$address_id)));
         }else {
             $this->showAjaxError(1, L('undefined_action'));
         }

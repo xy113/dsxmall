@@ -39,12 +39,14 @@ class SoldController extends BaseController{
         }elseif ($tab == 'waitConfirm'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
-            $condition['order_status'] = 0;
+            $condition['receive_status'] = 0;
         }elseif ($tab == 'waitRate'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
-            $condition['order_status'] = 1;
-            $condition['evaluate_status'] = 0;
+            $condition['receive_status'] = 1;
+            $condition['review_status'] = 0;
+        }elseif ($tab == 'refunding'){
+            $condition['refund_status'] = 1;
         }
 
         $pagesize = 10;

@@ -76,14 +76,14 @@
             <td>{$item[province]} {$item[city]} {$item[county]} {$item[street]}</td>
             <td>{$item[postcode]}</td>
             <td>
-                <a href="{U:('c=address&a=index&id='.$item[id])}">修改</a>
-                <a href="javascript:;" rel="delete" data-id="{$item[id]}">删除</a>
+                <a href="{U:('c=address&a=index&address_id='.$item[address_id])}">修改</a>
+                <a href="javascript:;" rel="delete" data-id="{$item[address_id]}">删除</a>
             </td>
             <td>
                 {if $item[isdefault]}
                 <span class="button button-cancel">默认地址</span>
                 {else}
-                <span class="button addrBtn" style="display: none;" data-id="{$item[id]}">默认地址</span>
+                <span class="button addrBtn" style="display: none;" data-id="{$item[address_id]}">默认地址</span>
                 {/if}
             </td>
         </tr>
@@ -104,10 +104,10 @@
             $(this).find('.addrBtn').hide();
         });
         $(".addrBtn").on('click', function () {
-            var id = $(this).attr('data-id');
+            var address_id = $(this).attr('data-id');
             $.ajax({
                 url:"{U:('c=address&a=set_default')}",
-                data:{id:id},
+                data:{address_id:address_id},
                 dataType:'json',
                 success:function (response) {
                     if (response.errcode == 0){
@@ -117,12 +117,12 @@
             });
         });
         $("a[rel=delete]").on('click', function () {
-            var id = $(this).attr('data-id');
+            var address_id = $(this).attr('data-id');
             DSXUI.confirmDialog({
                 title:'删除确认',
                 text:'确定要删除此地址吗?',
                 onConfirm:function (dlg) {
-                    window.location.href = "{U:('c=address&a=delete')}&id="+id;
+                    window.location.href = "{U:('c=address&a=delete')}&address_id="+address_id;
                 }
             });
         });

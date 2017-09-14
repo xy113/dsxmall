@@ -30,12 +30,12 @@ class OrderController extends BaseController{
         }elseif ($tab == 'waitConfirm'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
-            $condition['order_status'] = 0;
+            $condition['receive_status'] = 0;
         }elseif ($tab == 'waitRate'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
-            $condition['order_status'] = 1;
-            $condition['evaluate_status'] = 0;
+            $condition['receive_status'] = 1;
+            $condition['review_status'] = 0;
         }
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['order_no'] = $q;
@@ -151,6 +151,36 @@ class OrderController extends BaseController{
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError('FAIL', 'order_not_exists');
+        }
+    }
+
+    public function frame_close(){
+        global $_G,$_lang;
+
+        $order_id = intval($_GET['order_id']);
+        $order = order_get_data(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id));
+        if ($this->checkFormSubmit()){
+            if ($order['pay_type'] == 1){
+                if (order_get_trade_status($order) != 1){
+                    $this->showAjaxError(1, 'order_can_not_close');
+                }
+            }else {
+                if ($order['shipping_status']){
+                    $this->showAjaxError(1, 'order_can_not_close');
+                }
+            }
+            $close_reason = $_GET['otherReason'] ? htmlspecialchars($_GET['otherReason']) : htmlspecialchars($_GET['closeReason']);
+            order_update_data(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id), array('is_closed'=>1));
+            order_add_closed(array(
+                'uid'=>$this->uid,
+                'order_id'=>$order_id,
+                'close_reason'=>$close_reason,
+                'close_time'=>time()
+            ));
+            $this->showAjaxReturn();
+        }else {
+
+            include template('frame_close_order');
         }
     }
 }

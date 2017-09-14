@@ -28,12 +28,12 @@
             </tr>
             </thead>
             <tbody>
-            {loop $itemlist $id $item}
+            {loop $itemlist $itemid $item}
             <tr id="row_{$id}">
-                <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$id}"></td>
+                <td><input type="checkbox" class="checkbox checkmark" name="items[]" value="{$itemid}"></td>
                 <td><a href="{U:('m=item&c=item&id='.$id)}" target="_blank"><div class="bg-cover" style="background-image: url({img $item[thumb]}); width: 80px; height: 80px;"></div></a></td>
                 <td>
-                    <h3 class="title"><a href="{U:('m=item&c=item&id='.$id)}" target="_blank">{$item[name]}</a></h3>
+                    <h3 class="title"><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank">{$item[title]}</a></h3>
                     <p class="subtitle"><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$shop_list[$item[shop_id]][shop_name]}</a></p>
                 </td>
                 <td>
