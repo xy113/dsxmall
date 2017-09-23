@@ -1,8 +1,6 @@
 <?php
 namespace Model\Home;
 
-use Alisms\AlismsApi;
-
 class IndexController extends BaseController{
     /**
      *
@@ -25,7 +23,7 @@ class IndexController extends BaseController{
         $item_list['new'] = item_get_list(array('on_sale'=>1, 'catid'=>47), 6, 0);
         $item_list['hot'] = item_get_list(array('on_sale'=>1), 5, 0, 'sold DESC');
         //企业店铺
-        $shop_list = shop_get_list(array('shop_status'=>'OPEN'), 10);
+        $shop_list = shop_get_list(array('closed'=>'0'), 10);
         $_G['nav'] = 'home';
 		include template('index');
 	}
@@ -34,6 +32,7 @@ class IndexController extends BaseController{
         echo md5_16(random(10));
         echo '<br>';
         echo md5(random(10));
+        print_array($_SERVER);
     }
 
     public function update(){
@@ -62,5 +61,17 @@ class IndexController extends BaseController{
             }
         }
         echo '111111';*/
+    }
+
+    /**
+     *
+     */
+    public function angular(){
+        include template('angular');
+    }
+
+    public function get_items(){
+        $itemlist = item_get_list(0,10);
+        $this->showAjaxReturn($itemlist);
     }
 }

@@ -17,12 +17,13 @@ class Cache{
 		if(!is_object($instance)) $instance = new Cache();
 		return $instance;
 	}
-	
-	/**
-	 * 写入缓存
-	 * @param string $name
-	 * @param string $value
-	 */
+
+    /**
+     * 写入缓存
+     * @param string $name
+     * @param string $value
+     * @return bool
+     */
     public function set($name, $value='') {
         if(!is_dir(CACHE_PATH)) {
             @mkdir(CACHE_PATH,0777,true);
@@ -40,10 +41,11 @@ class Cache{
             die('Can not write to cache files, please check directory ./data/cache/ .');
         }
     }
-    
+
     /**
      * 获取缓存
      * @param string $name
+     * @return bool|mixed
      */
     public function get($name){
         $cachefile = CACHE_PATH.$name.'.php';
@@ -65,10 +67,11 @@ class Cache{
             return false;
         }
     }
-    
+
     /**
      * 删除缓存
      * @param string $name
+     * @return bool
      */
     public function rm($name){
         return @unlink(CACHE_PATH.$name.'.php');

@@ -36,17 +36,122 @@ class SoldController extends BaseController{
         }elseif ($tab == 'waitSend'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 0;
-        }elseif ($tab == 'waitConfirm'){
-            $condition['pay_status'] = 1;
+        }elseif ($tab == 'send'){
+            //$condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
             $condition['receive_status'] = 0;
-        }elseif ($tab == 'waitRate'){
+        }elseif ($tab == 'received') {
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
             $condition['receive_status'] = 1;
-            $condition['review_status'] = 0;
+        }elseif ($tab == 'reviewed'){
+            $condition['pay_status'] = 1;
+            $condition['shipping_status'] = 1;
+            $condition['receive_status'] = 1;
+            $condition['review_status'] = 1;
         }elseif ($tab == 'refunding'){
+            $condition['is_closed'] = 0;
             $condition['refund_status'] = 1;
+        }elseif ($tab == 'closed'){
+            $condition['is_closed'] = 1;
+        }
+
+        $queryParams = array();
+        $itemid = htmlspecialchars($_GET['itemid']);
+        if ($itemid) {
+            $condition['itemid'] = intval($itemid);
+            $queryParams['itemid'] = $itemid;
+        }
+
+        $order_no = htmlspecialchars($_GET['order_no']);
+        if ($order_no) {
+            $condition['order_no'] = $order_no;
+            $queryParams['order_no'] = $order_no;
+        }
+
+        $buyer_name = htmlspecialchars($_GET['buyer_name']);
+        if ($buyer_name) {
+            $condition['buyer_name'] = array('LIKE', $buyer_name);
+            $queryParams['buyer_name'] = $buyer_name;
+        }
+
+        $order_status = intval($_GET['order_status']);
+        if ($order_status) {
+            switch ($order_status){
+                case 1:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 0;
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 2:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 3:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 1;
+                    break;
+                case 4:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 1;
+                    $condition['receive_status'] = 1;
+                    break;
+                case 6:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['refund_status'] = 1;
+                    break;
+                case 7:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['receive_status'] = 2;
+                    break;
+                default:;
+            }
+            $queryParams['order_status'] = $order_status;
+        }
+
+        $pay_type = intval($_GET['pay_type']);
+        if ($pay_type) {
+            $condition['pay_type'] = $pay_type;
+            $queryParams['pay_type'] = $pay_type;
+        }
+
+        $wuliu_status = intval($_GET['wuliu_status']);
+        if ($wuliu_status) {
+            switch ($wuliu_status){
+                case 1:
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 2:
+                    $condition['shipping_status'] = 1;
+                    break;
+                case 3:
+                    $condition['shipping_status'] = 1;
+                    $condition['receive_status'] = 1;
+                    break;
+                default:;
+            }
+        }
+
+        $title = htmlspecialchars($_GET['title']);
+        if ($title) {
+            $condition['title'] = array('LIKE', $title);
+            $queryParams['title'] = $title;
+        }
+
+        $time_begin = htmlspecialchars($_GET['time_begin']);
+        $time_end = htmlspecialchars($_GET['time_end']);
+        if ($time_begin && !$time_end){
+            $condition['create_time'] = array('>', strtotime($time_begin));
+            $queryParams['time_begin'] = $time_begin;
+        }elseif ($time_begin && $time_end){
+            $condition[] = "`create_time`>".strtotime($time_begin)." AND `create_time`<".strtotime($time_end);
+            $queryParams['time_begin'] = $time_begin;
+            $queryParams['time_end'] = $time_end;
         }
 
         $pagesize = 10;
@@ -54,7 +159,8 @@ class SoldController extends BaseController{
         $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
         $_G['page'] = min(array($_G['page'], $pagecount));
         $order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", 1);
+        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
+        unset($queryParams, $condition);
 
         if ($order_list) {
             $datalist = $order_ids = array();
@@ -98,26 +204,104 @@ class SoldController extends BaseController{
             )), FILE_APPEND);
         }
 
-        $tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
         $condition = array('seller_uid'=>$this->uid);
-        if ($tab == 'waitPay'){
-            $condition['pay_status'] = 0;
-        }elseif ($tab == 'waitSend'){
-            $condition['pay_status'] = 1;
-            $condition['shipping_status'] = 0;
-        }elseif ($tab == 'waitConfirm'){
-            $condition['pay_status'] = 1;
-            $condition['shipping_status'] = 1;
-            $condition['order_status'] = 0;
-        }elseif ($tab == 'waitRate'){
-            $condition['pay_status'] = 1;
-            $condition['shipping_status'] = 1;
-            $condition['order_status'] = 1;
-            $condition['evaluate_status'] = 0;
+        $itemid = htmlspecialchars($_GET['itemid']);
+        if ($itemid) {
+            $condition['itemid'] = intval($itemid);
+            //$queryParams['itemid'] = $itemid;
         }
 
-        $pagesize = 100;
-        $order_list = order_get_list($condition, $pagesize, $offset, 'order_id DESC');
+        $order_no = htmlspecialchars($_GET['order_no']);
+        if ($order_no) {
+            $condition['order_no'] = $order_no;
+            //$queryParams['order_no'] = $order_no;
+        }
+
+        $buyer_name = htmlspecialchars($_GET['buyer_name']);
+        if ($buyer_name) {
+            $condition['buyer_name'] = array('LIKE', $buyer_name);
+            //$queryParams['buyer_name'] = $buyer_name;
+        }
+
+        $order_status = intval($_GET['order_status']);
+        if ($order_status) {
+            switch ($order_status){
+                case 1:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 0;
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 2:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 3:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 1;
+                    break;
+                case 4:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['shipping_status'] = 1;
+                    $condition['receive_status'] = 1;
+                    break;
+                case 6:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['refund_status'] = 1;
+                    break;
+                case 7:
+                    $condition['pay_type'] = 1;
+                    $condition['pay_status'] = 1;
+                    $condition['receive_status'] = 2;
+                    break;
+                default:;
+            }
+            //$queryParams['order_status'] = $order_status;
+        }
+
+        $pay_type = intval($_GET['pay_type']);
+        if ($pay_type) {
+            $condition['pay_type'] = $pay_type;
+            //$queryParams['pay_type'] = $pay_type;
+        }
+
+        $wuliu_status = intval($_GET['wuliu_status']);
+        if ($wuliu_status) {
+            switch ($wuliu_status){
+                case 1:
+                    $condition['shipping_status'] = 0;
+                    break;
+                case 2:
+                    $condition['shipping_status'] = 1;
+                    break;
+                case 3:
+                    $condition['shipping_status'] = 1;
+                    $condition['receive_status'] = 1;
+                    break;
+                default:;
+            }
+        }
+
+        $title = htmlspecialchars($_GET['title']);
+        if ($title) {
+            $condition['title'] = array('LIKE', $title);
+            //$queryParams['title'] = $title;
+        }
+
+        $time_begin = htmlspecialchars($_GET['time_begin']);
+        $time_end = htmlspecialchars($_GET['time_end']);
+        if ($time_begin && !$time_end){
+            $condition['create_time'] = array('>', strtotime($time_begin));
+            //$queryParams['time_begin'] = $time_begin;
+        }elseif ($time_begin && $time_end){
+            $condition[] = "`create_time`>".strtotime($time_begin)." AND `create_time`<".strtotime($time_end);
+            $queryParams['time_begin'] = $time_begin;
+            //$queryParams['time_end'] = $time_end;
+        }
+        $order_list = order_get_list($condition, 100, $offset, 'order_id DESC');
 
         if ($order_list) {
             $uids = $order_ids = $datalist = array();

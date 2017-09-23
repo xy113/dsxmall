@@ -64,7 +64,7 @@ class AddressController extends BaseController{
     public function delete(){
         $address_id = intval($_GET['address_id']);
         address_delete_data(array('uid'=>$this->uid, 'address_id'=>$address_id));
-        $this->redirect(U('c=address&a=index'));
+        $this->showAjaxReturn();
     }
 
     public function frame(){

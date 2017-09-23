@@ -13,19 +13,26 @@ class IndexController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
-        $cart_list = cart_get_list(array('uid'=>$this->uid), 0);
-        $totalnum = count($cart_list);
-        if ($cart_list) {
-            $datalist = array();
-            foreach ($cart_list as $cart){
-                $cart['total_fee'] = floatval($cart['price']) * intval($cart['quantity']);
-                $datalist[$cart['shop_id']]['shop_id'] = $cart['shop_id'];
-                $datalist[$cart['shop_id']]['shop_name'] = $cart['shop_name'];
-                $datalist[$cart['shop_id']]['items'][$cart['itemid']] = $cart;
+        $fields = 'c.itemid,c.shop_id,c.shop_name,c.sku_id,c.sku_name, c.price AS cart_price,c.quantity,i.price,i.thumb,i.title';
+        $cart_item_list = M('cart c')->field($fields)->join('item i', 'i.itemid=c.itemid')
+            ->where('c.uid='.$this->uid)->order('id', 'DESC')->select();
+        $total_count = count($cart_item_list);
+        cookie('cart_total_count', $total_count);
+
+        $shop_item_list = array();
+        if ($cart_item_list) {
+            foreach ($cart_item_list as $item){
+                if ($item['title']) {
+                    $item['total_fee'] = $item['price'] * $item['quantity'];
+                    $shop_item_list[$item['shop_id']]['shop_name'] = $item['shop_name'];
+                    $shop_item_list[$item['shop_id']]['items'][$item['itemid']] = $item;
+                }else {
+                    cart_delete_data(array('uid'=>$this->uid, 'itemid'=>$item['itemid']));
+                }
             }
-            $cart_list = $datalist;
-            unset($datalist, $cart);
         }
+        unset($cart_item_list, $item);
+        //print_array($shop_item_list);exit();
 
         $_G['title'] = $_lang['cart'];
         include template('index');
@@ -56,7 +63,7 @@ class IndexController extends BaseController{
                     'create_time'=>time()
                 ));
             }
-
+            cookie('cart_total_count', cart_get_count(array('uid'=>$this->uid)));
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError('FAIL', 'item_not_exists');
@@ -67,10 +74,11 @@ class IndexController extends BaseController{
      * AJAX删除宝贝
      */
     public function delete(){
-        $itemid = $_GET['itemid'];
-        $id_list = explode(',', $itemid);
-        foreach ($id_list as $id) {
-            cart_delete_data(array('uid'=>$this->uid, 'itemid'=>intval($id)));
+        $items = $_GET['items'];
+        if ($items) {
+            foreach (explode(',', $items) as $itemid){
+                cart_delete_data(array('uid'=>$this->uid, 'itemid'=>intval($itemid)));
+            }
         }
         $this->showAjaxReturn();
     }
@@ -86,16 +94,25 @@ class IndexController extends BaseController{
         $this->showAjaxReturn();
     }
 
-    /**
-     *
-     */
-    public function get_count(){
-        $item_count = cart_get_count(array('uid'=>$this->uid));
-        echo '<a href="'.U('m=cart&c=index').'">
-            <span class="ico"></span>
-            <span>购物车'.$item_count.'件</span>
-            <strong>去结算>></strong>
-            </a>';
+    public function move_to_favor(){
+        $items = $_GET['items'];
+        if ($items) {
+            $itemlist = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $items)));
+            foreach ($itemlist as $item){
+                if (!collection_get_count(array('uid'=>$this->uid, 'dataid'=>$item['itemid'], 'datatype'=>'item'))){
+                    collection_add_data(array(
+                        'uid'=>$this->uid,
+                        'dataid'=>$item['itemid'],
+                        'datatype'=>'item',
+                        'title'=>$item['title'],
+                        'image'=>$item['thumb'],
+                        'create_time'=>time()
+                    ));
+                }
+                cart_delete_data(array('uid'=>$this->uid, 'itemid'=>$item['itemid']));
+            }
+        }
+        $this->showAjaxReturn();
     }
 }
 

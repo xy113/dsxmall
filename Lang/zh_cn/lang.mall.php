@@ -91,5 +91,9 @@ return array(
     'refund_apply_commited'=>'退款申请已提交，请等待卖家处理',
     'refund_accept_success'=>'退款处理成功',
     'order_can_not_refund'=>'此订单不允许退款',
-    'refund'=>'退款'
+    'refund'=>'退款',
+    'shop_status'=>array(
+        'OPEN'=>'营业中',
+        'CLOSE'=>'已关闭'
+    )
 );

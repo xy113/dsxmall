@@ -14,8 +14,8 @@
     font-size: 14px; font-weight: 400; color: #333; padding: 0 10px;
 }
 .header .global-search-box .btn{
-    background-color: #f40; color: #fff; position: absolute; border: none; width: 60px; cursor: pointer;
-    top: 0; right: 0; bottom: 0; font-size: 16px; font-weight: bold; text-align: center; -webkit-appearance: none;
+    background-color: #f40; color: #fff; position: absolute; border: none; width: 60px; cursor: pointer; border-radius: 0;
+    top: 0; right: 0; bottom: 0; font-size: 16px; font-weight: bold; text-align: center; -webkit-appearance: none; line-height: 18px;
 }
 .header .global-search-box .hot{display: block; padding-top: 10px; font-size: 12px; line-height: 1.0; color: #666;}
 .header .phone{height: 60px; overflow: hidden; padding-top: 12px;}
@@ -220,7 +220,7 @@
 .iteminfo-wrap .buy-num-wrap{height: 26px; border: 1px #DDD solid;}
 .iteminfo-wrap .buy-num-wrap .btn{
     float: left; width: 24px; text-align: center; cursor: pointer;
-    line-height: 24px; font-size: 16px; background-color: #f0f0f0;
+    line-height: 24px; font-size: 16px; background-color: #f0f0f0; padding: 0;
 }
 .iteminfo-wrap .buy-num-wrap .buy-num{
     height: 24px; text-align: center; background-color: #fff;
@@ -247,15 +247,15 @@
 .shopinfo-wrap .shop-header img{width: 100%; height: auto; display: block; border: 0;}
 .shopinfo-wrap .shopinfo{display: block; padding: 20px 15px;}
 .shopinfo-wrap .shopinfo h3{font-size: 12px; height: 20px; display: block; margin-bottom: 5px;}
-.shopinfo-wrap .shopinfo .row{height: 20px; display: block; margin-bottom: 5px;}
+.shopinfo-wrap .shopinfo .row{height: 20px; display: block; margin: 0 0 5px 0;}
 .shopinfo-wrap .shopinfo .row dl{font-size: 12px;}
 .shopinfo-wrap .shopinfo .row dl dt{width: 40px; float: left; color: #666;}
 .shopinfo-wrap .shopinfo .separate{height: 1px; clear: both; border-bottom: 1px #DDD dotted;}
 .shopinfo-wrap .shopinfo .btn{
-    height: 28px; width: 77px; background-color: #fafafa;
+    height: 28px; width: 75px; background-color: #fafafa;
     display: inline-block; font-size: 12px;
     border: 1px #e5e5e5 solid; border-radius: 3px;
-    line-height: 26px; text-align: center;
+    line-height: 26px; text-align: center; padding: 0;
 }
 .shopinfo-wrap .shopinfo .btn:hover{border-color: #ddd; background-color: #f5f5f5;}
 

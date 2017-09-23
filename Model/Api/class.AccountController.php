@@ -89,7 +89,8 @@ class AccountController extends BaseController
                 $this->showAjaxError($res['errcode'], $res['errmsg']);
             }
         }else {
-            $this->showAjaxError('1001', 'sign_error');
+            $_GET['sign2'] = $check_sign;
+            $this->showAjaxError('1001', 'sign_error', $_GET);
         }
     }
 }

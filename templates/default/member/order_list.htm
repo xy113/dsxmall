@@ -143,7 +143,7 @@
     $(document).ready(function () {
         $("a[rel=delete]").on('click', function () {
             var order_id = $(this).attr('data-id');
-            DSXUI.showConfirm('确认要删除此订单吗?', function () {
+            DSXUI.showConfirm('删除订单','确认要删除此订单吗?', function () {
                 var spinner = null;
                 $.ajax({
                     url:"{U:('c=order&a=delete')}",
@@ -171,8 +171,9 @@
             DSXUI.dialog({
                 title:'关闭订单',
                 iframe:"{U:('m=member&c=order&a=frame_close&order_id=')}"+order_id,
-                hideBottom:true,
-                height:'200px',
+                hideFooter:true,
+                height:'260px',
+                width:'550px',
                 afterShow:function (dlg) {
                     window.afterCloseOrder = function () {
                         dlg.close();

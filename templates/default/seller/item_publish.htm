@@ -114,12 +114,10 @@
     $(function () {
         $("#item-image-list li").on('click', function () {
             var self = $(this);
-            DSXUI.showImagePickerView({
-                onPicked:function (data) {
-                    self.find('.preview').css({'background-image':'url('+data.imageurl+')'});
-                    self.find('.thumb').val(data.thumb);
-                    self.find('.image').val(data.image);
-                }
+            DSXUI.showImagePicker(function (data) {
+                self.find('.preview').css({'background-image':'url('+data.imageurl+')'});
+                self.find('.thumb').val(data.thumb);
+                self.find('.image').val(data.image);
             });
         });
         $("#publishForm").on('submit', function () {

@@ -1,0 +1,106 @@
+{template header}
+<div class="navigation">
+    <a>后台管理</a>
+    <span>></span>
+    <a>商品管理</a>
+    <span>></span>
+    <a>首页推荐</a>
+</div>
+
+<div class="content-div">
+    <form method="post" id="listForm" autocomplete="off">
+        <input type="hidden" name="formsubmit" value="yes">
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <input type="hidden" name="eventType" value="" id="J_eventType">
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable">
+            <thead>
+            <tr>
+                <th width="20"><input type="checkbox" class="checkbox checkall"></th>
+                <th width="80">图片</th>
+                <th>宝贝名称</th>
+                <th>价格</th>
+                <th>销量</th>
+                <th width="80">状态</th>
+                <th width="140">创建时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $itemlist $item}
+            {eval $itemid=$item[itemid]}
+            <tr id="row_{$id}">
+                <td><input type="checkbox" class="checkbox checkmark" name="items[]" value="{$itemid}"></td>
+                <td><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank"><div class="bg-cover" style="background-image: url({img $item[thumb]}); width: 80px; height: 80px;"></div></a></td>
+                <td><h3 class="title"><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank">{$item[title]}</a></h3></td>
+                <td><p><strong style="color: #f40;">{$item[price]}</strong></p></td>
+                <td>{$item[sold]}</td>
+                <td>
+                    {if $item[on_sale]}
+                    出售中
+                    {else}
+                    已下架
+                    {/if}
+                </td>
+                <td>{date:$item[create_time]|'Y-m-d H:i:s'}</td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="20">
+                    <div class="pagination float-right">{$pages}</div>
+                    <label><input type="checkbox" class="checkbox checkall"> 全选</label>
+                    <label><button type="button" class="btn" id="deleteButton">删除</button></label>
+                    <label><button type="button" class="btn" id="addButton">添加宝贝</button></label>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $("#deleteButton").on('click', function () {
+            if ($(".checkmark:checked").length === 0){
+                DSXUI.error('请选择商品');
+                return false;
+            }
+            DSXUI.showConfirm('删除商品','确认要删除所选商品吗?', function () {
+                $("#listForm").submit();
+            });
+        });
+        $("#addButton").on('click', function () {
+            var html = '<div style="text-align: center; margin-top: 30px;">' +
+                '<span>商品ID:</span>' +
+                '<input type="text" class="input-text" id="J_itemId"> ' +
+                '<button type="button" class="button" id="J_AddButton">确定</button>' +
+                '</div>';
+            DSXUI.dialog({
+                title:'添加推荐商品',
+                html:html,
+                hideFooter:true,
+                afterShow:function (dlg) {
+                    $("#J_AddButton").on('click', function () {
+                        var itemid = $("#J_itemId").val();
+                        if (!itemid) {
+                            DSXUI.error('请填写商品ID');
+                            return false;
+                        }
+                        $.ajax({
+                            type:'POST',
+                            data:{itemid:itemid},
+                            url:"{U:('c=item&a=add_recommend')}",
+                            dataType:'json',
+                            success:function (response) {
+                                dlg.close();
+                                if (response.errcode == 0){
+                                    DSXUI.success('宝贝添加成功');
+                                }
+                            }
+                        });
+                    });
+                }
+            });
+        });
+    });
+</script>
+{template footer}

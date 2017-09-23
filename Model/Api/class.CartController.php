@@ -118,12 +118,16 @@ class CartController extends BaseController
         $itemids = $itemids ? implodeids($itemids) : 0;
 
         $cart_item_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0);
-        foreach ($cart_item_list as $item){
-            $order_item_list[$item['itemid']]['quantity']  = $item['quantity'];
-            $order_item_list[$item['itemid']]['shop_id']   = $item['shop_id'];
-            $order_item_list[$item['itemid']]['shop_name'] = $item['shop_name'];
+        if ($cart_item_list) {
+            foreach ($cart_item_list as $item){
+                $order_item_list[$item['itemid']]['quantity']  = $item['quantity'];
+                $order_item_list[$item['itemid']]['shop_id']   = $item['shop_id'];
+                $order_item_list[$item['itemid']]['shop_name'] = $item['shop_name'];
+            }
+            unset($cart_item_list, $item, $items);
+        }else {
+            $this->showAjaxError(1, '没有选择结算商品');
         }
-        unset($cart_item_list, $item, $items);
 
         $fields = 'itemid,uid,shop_id,price,shipping_fee,title,image,thumb';
         $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, $fields);

@@ -67,6 +67,7 @@
                     <dt>
                         <ul>
                             <li><a rel="item" data-action="{U:('c=item&a=itemlist')}">商品列表</a></li>
+                            <li><a rel="item" data-action="{U:('c=item&a=recommend_list')}">首页推荐</a></li>
                             <li><a rel="item" data-action="{U:('c=itemcat&a=index')}">商品分类</a></li>
                         </ul>
                     </dt>
@@ -77,6 +78,15 @@
                         <ul>
                             <li><a rel="item" data-action="{U:('c=shop&a=itemlist')}">店铺列表</a></li>
                             <li><a rel="item" data-action="{U:('c=shop&a=pending')}">等待审核</a></li>
+                        </ul>
+                    </dt>
+                </dl>
+                <dl>
+                    <dd><a><i class="iconfont icon-rechargefill"></i>交易管理</a></dd>
+                    <dt>
+                        <ul>
+                            <li><a rel="item" data-action="{echo U('c=order&a=itemlist')}">订单记录</a></li>
+                            <li><a rel="item" data-action="{echo U('c=trade&a=itemlist')}">交易记录</a></li>
                         </ul>
                     </dt>
                 </dl>
@@ -99,16 +109,6 @@
                             <li><a rel="item" data-action="{echo U('c=wxmenu')}">菜单设置</a></li>
                             <li><a rel="item" data-action="{echo U('c=wxmaterial')}">素材管理</a></li>
                             <li><a rel="item" data-action="{echo U('c=wxnews')}">图文消息</a></li>
-                        </ul>
-                    </dt>
-                </dl>
-
-                <dl>
-                    <dd><a><i class="iconfont icon-rechargefill"></i>交易管理</a></dd>
-                    <dt>
-                        <ul>
-                            <li><a rel="item" data-action="{echo U('c=order&a=itemlist')}">订单记录</a></li>
-                            <li><a rel="item" data-action="{echo U('c=trade&a=itemlist')}">交易记录</a></li>
                         </ul>
                     </dt>
                 </dl>

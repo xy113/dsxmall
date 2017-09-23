@@ -35,7 +35,7 @@
                         <div class="ico-box"><i class="iconfont icon-attention_light"></i></div>
                         <div class="input-box">
                             <input type="text" name="captchacode" class="text" id="captchacode" placeholder="验证码" maxlength="4">
-                            <img src="/index.php?m=common&c=captcha" onclick="this.src='/index.php?m=common&c=captcha&'+Math.random()" title="看不清，换一张" class="captcha">
+                            <img src="/index.php?m=plugin&c=captcha" onclick="this.src='/index.php?m=plugin&c=captcha&'+Math.random()" title="看不清，换一张" class="captcha">
                         </div>
                     </div>
                     <div class="sign-button-div"><button type="submit" id="btnlogin" class="sign-button">登录</button></div>
@@ -130,7 +130,7 @@
                             DSXUtil.reFresh();
                         }
                     }else {
-                        $(".captcha").attr('src','/index.php?m=common&c=captcha&'+Math.random());
+                        $(".captcha").attr('src','/index.php?m=plugin&c=captcha&'+Math.random());
                         $("#err-tips").text(json.errmsg).show();
                     }
                 }

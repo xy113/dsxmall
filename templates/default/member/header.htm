@@ -21,7 +21,7 @@
             <a href="{U:('c=setting')}">账户中心</a>
             <a href="{U:('c=wallet')}">财务中心</a>
             <a href="{U:('m=seller&c=index')}" target="_blank">我是卖家</a>
-            <a href="{U:('m=admin&c=index')}">后台管理</a>
+            {if $_G[member][admincp]}<a href="{U:('m=admin&c=index')}">后台管理</a>{/if}
         </div>
     </div>
 </div>

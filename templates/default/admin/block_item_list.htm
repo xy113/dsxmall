@@ -50,18 +50,16 @@
         $("img[rel=pickimg]").on('click', function () {
             var self = this;
             var id = $(this).attr('data-id');
-            DSXUI.showImagePickerView({
-                onPicked:function (data) {
-                    $(self).attr('src', data.imageurl);
-                    $.ajax({
-                        url:"{U:('c=block&a=set_item_image')}",
-                        data:{id:id,image:data.image, block_id:'{$block_id}'},
-                        dataType:'json',
-                        success:function (response) {
-                            
-                        }
-                    });
-                }
+            DSXUI.showImagePicker(function (data) {
+                $(self).attr('src', data.imageurl);
+                $.ajax({
+                    url:"{U:('c=block&a=set_item_image')}",
+                    data:{id:id,image:data.image, block_id:'{$block_id}'},
+                    dataType:'json',
+                    success:function (response) {
+
+                    }
+                });
             });
         });
     });

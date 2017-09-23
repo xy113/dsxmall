@@ -49,7 +49,7 @@ abstract class Controller{
     /**
      * 验证图形验证码
      * @param string $code
-     * @param bool $inajax
+     * @param bool|int $inajax
      * @return bool
      */
 	protected function checkCaptchacode($code, $inajax=0){
@@ -96,12 +96,12 @@ abstract class Controller{
 			}
 		}
 	}
-	
-	/**
-	 * 判断是否已登录
-	 * @param number $showlogin
-	 * @return boolean
-	 */
+
+    /**
+     * 判断是否已登录
+     * @param int|number $showlogin
+     * @return bool
+     */
 	protected function isLogin($showlogin = 0){
 		return $this->checkLogin($showlogin);
 	}
@@ -228,7 +228,7 @@ abstract class Controller{
      */
 	protected function showPages($curr_page, $page_count, $total_count, $extra='', $show_total=FALSE){
 		global $_G,$_lang;
-		$multipage = '';
+        $multipage = $show_total ? '<span>总计'.$total_count.'条</span>' : '';
 		$extra = $extra ? '&'.$extra : '';
 		$url = getSiteURL().'/?m='.$_G['m'].'&c='.$_G['c'].'&a='.$_G['a'].$extra;
 		if($page_count>1){
@@ -255,8 +255,7 @@ abstract class Controller{
 					}
 				}
 			}
-			
-			$multipage = $show_total ? '<span>总计'.$total_count.'条</span>' : '';
+
 			if ($curr_page == 1){
 				$multipage.= '';
 			}else {
@@ -284,13 +283,14 @@ abstract class Controller{
 		}
 		return   $multipage ;
 	}
-	
-	/**
-	 * google风格分页
-	 * @param int $page 当前页
-	 * @param int $total 总页数
-	 * @param string $extra 附加参数
-	 */
+
+    /**
+     * google风格分页
+     * @param int $page 当前页
+     * @param int $total 总页数
+     * @param string $extra 附加参数
+     * @return string
+     */
 	protected function googlePage($page,$total,$extra=''){
 		$extra = !empty($extra) ? $extra.'&' : '';
 		$scr = '/?m='.$_G['m'].'&c='.$_G['c'].'&a='.$_G['a'].$extra;
@@ -315,20 +315,37 @@ abstract class Controller{
 		$pagenavi.="<a href=\"{$scr}&page=$total\">尾页</a>";
 		return $pagenavi ;
 	}
-	
-	public function __set($name, $value) {
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function __set($name, $value) {
 		$this->$name = $value;
 	}
-	
-	public function __get($name) {
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name) {
 		return $this->$name;
 	}
-	public function __call($name,$args){
+
+    /**
+     * @param $name
+     * @param $args
+     * @throws \Exception
+     */
+    public function __call($name, $args){
 		//die('Class "'.get_class($this).'" does not have a method named "'.$name.'".');
 		throw new  \Exception('Class "'.get_class($this).'" does not have a method named "'.$name.'".');
 	}
-	
-	function __destruct(){
+
+    /**
+     *
+     */
+    function __destruct(){
 		$content = ob_get_contents();
 		ob_end_clean();
 		if (setting('rewrite') && !defined('IN_ADMIN')) $content = rewrite($content);

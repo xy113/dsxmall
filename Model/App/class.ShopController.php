@@ -26,7 +26,7 @@ class ShopController extends BaseController
     public function batchget(){
         $offset = (G('page') - 1) * 20;
         $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
-        $condition = array('shop_status'=>'OPEN', 'auth_status'=>'SUCCESS');
+        $condition = array('closed'=>'0');
         $shop_list = shop_get_list($condition, 20, $offset, null, $fields);
         $datalist = array();
         foreach ($shop_list as $shop){

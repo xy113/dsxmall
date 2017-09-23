@@ -103,8 +103,8 @@ $(function () {
                         </div>
                         <div class="name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></div>
                         <div class="price">
-                            <strong class="shop-price">￥:{amount:$item[price]}</strong>
-                            <span class="market-price"><s>市场价:{amount:$item[market_price]}</s></span>
+                            <strong class="shop-price">￥:{$item[price]}</strong>
+                            <span class="market-price"><s>￥:{$item[market_price]}</s></span>
                         </div>
                         <div class="buynow">
                             <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" class="btn">立即购买</a>
@@ -122,8 +122,8 @@ $(function () {
                         </div>
                         <div class="name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></div>
                         <div class="price">
-                            <strong class="shop-price">￥:{amount:$item[price]}</strong>
-                            <span class="market-price"><s>市场价:{amount:$item[market_price]}</s></span>
+                            <strong class="shop-price">￥:{$item[price]}</strong>
+                            <span class="market-price"><s>￥:{$item[market_price]}</s></span>
                         </div>
                         <div class="buynow">
                             <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" class="btn">立即购买</a>
@@ -141,8 +141,8 @@ $(function () {
                         </div>
                         <div class="name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></div>
                         <div class="price">
-                            <strong class="shop-price">￥:{amount:$item[price]}</strong>
-                            <span class="market-price"><s>市场价:{amount:$item[market_price]}</s></span>
+                            <strong class="shop-price">￥:{$item[price]}</strong>
+                            <span class="market-price"><s>￥:{$item[market_price]}</s></span>
                         </div>
                         <div class="buynow">
                             <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" class="btn">立即购买</a>
@@ -160,8 +160,8 @@ $(function () {
                         </div>
                         <div class="name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></div>
                         <div class="price">
-                            <strong class="shop-price">￥:{amount:$item[price]}</strong>
-                            <span class="market-price"><s>市场价:{amount:$item[market_price]}</s></span>
+                            <strong class="shop-price">￥:{$item[price]}</strong>
+                            <span class="market-price"><s>￥:{$item[market_price]}</s></span>
                         </div>
                         <div class="buynow">
                             <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" class="btn">立即购买</a>
@@ -179,8 +179,8 @@ $(function () {
                         </div>
                         <div class="name"><a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank">{$item[title]}</a></div>
                         <div class="price">
-                            <strong class="shop-price">￥:{amount:$item[price]}</strong>
-                            <span class="market-price"><s>市场价:{amount:$item[market_price]}</s></span>
+                            <strong class="shop-price">￥:{$item[price]}</strong>
+                            <span class="market-price"><s>￥:{$item[market_price]}</s></span>
                         </div>
                         <div class="buynow">
                             <a href="{U:('m=item&c=item&itemid='.$item[itemid])}" target="_blank" class="btn">立即购买</a>
@@ -267,4 +267,10 @@ $(function () {
         </div>
     </div>
 </div>
+<script src="/static/js/DSXDialog.js"></script>
+<script type="text/javascript">
+   $(".hot-sale").on('click', function () {
+       var dlg = new DSXDialog2();
+   })
+</script>
 {template footer_common} 

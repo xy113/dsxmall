@@ -1,4 +1,7 @@
 <?php
+/**
+ *
+ */
 namespace Core;
 class Model{
 	protected $db;
@@ -31,15 +34,13 @@ class Model{
 		$name = $name ? $name : MODEL_NAME;
 		$this->t($name);
 	}
-	
-	/**
-	 * 连贯操作
-	 * @param string $tableName
-	 */
+
+    /**
+     * 连贯操作
+     * @param string $tableName
+     * @return $this
+     */
 	private function t($tableName){
-		foreach ($this->option as $key=>$value){
-			$this->option[$key] = '';
-		}
 		foreach ($this->option as $key=>$value){
 			$this->option[$key] = '';
 		}
@@ -56,10 +57,14 @@ class Model{
 		}else {
 			$this->tablename = $this->db->table($tableName);
 		}
-		//return $this;
+		return $this;
 	}
-	
-	public function field($args = '*'){
+
+    /**
+     * @param string $args
+     * @return $this
+     */
+    public function field($args = '*'){
 		if (is_array($args)){
 			$this->option['field'] = implode($args, ',');
 		}else {
@@ -68,8 +73,13 @@ class Model{
 		!$this->option['field'] && $this->option['feild'] = '*';
 		return $this;
 	}
-	
-	public function where($args,$glue = 'AND'){
+
+    /**
+     * @param $args
+     * @param string $glue
+     * @return $this
+     */
+    public function where($args, $glue = 'AND'){
 		$wherestr = '';
 		$glue = strtoupper($glue);
 		$glue = in_array($glue, array('AND','OR','XOR')) ? ' '.$glue.' ' : ' AND ';
@@ -109,9 +119,13 @@ class Model{
 		$this->option['where'] = $wherestr ? "WHERE ".$wherestr : "";
 		return $this;
 	}
-	
-	public function order($field,$sort = 'ASC'){
-		$sql = '';
+
+    /**
+     * @param $field
+     * @param string $sort
+     * @return $this
+     */
+    public function order($field, $sort = 'ASC'){
 		if (func_num_args() == 1){
 			if (is_string($field)){
 				$this->option['order'] = $field;
@@ -134,7 +148,7 @@ class Model{
 			}else {
 				$this->option['order'] = '';
 			}
-				
+
 		}else {
 			$sort = strtoupper($sort);
 			$sort = in_array($sort, array('ASC','DESC')) ? $sort : 'ASC';
@@ -143,8 +157,13 @@ class Model{
 		$this->option['order'] = $this->option['order'] ? "ORDER BY ".$this->option['order'] : "";
 		return $this;
 	}
-	
-	public function limit($start,$num=0){
+
+    /**
+     * @param $start
+     * @param int $num
+     * @return $this
+     */
+    public function limit($start, $num=0){
 		if (func_num_args() == 1){
 			if (is_string($start)){
 				$this->option['limit'] = $start;
@@ -164,11 +183,17 @@ class Model{
 				$this->option['limit'] = $start;
 			}
 		}
-	
+
 		$this->option['limit'] = $this->option['limit'] ? "LIMIT ".$this->option['limit'] : '';
 		return $this;
 	}
-	public function page($page,$rows=10){
+
+    /**
+     * @param $page
+     * @param int $rows
+     * @return $this
+     */
+    public function page($page, $rows=10){
 		$page = intval($page);
 		$rows = intval($rows);
 		$page = max(array($page,1));
@@ -177,11 +202,21 @@ class Model{
 		$this->limit($start,$rows);
 		return $this;
 	}
-	public function group($field){
+
+    /**
+     * @param $field
+     * @return $this
+     */
+    public function group($field){
 		$this->option['group'] = $field ? 'GROUP BY '.$field : '';
 		return $this;
 	}
-	public function having($having){
+
+    /**
+     * @param $having
+     * @return $this
+     */
+    public function having($having){
 		$this->option['having'] = $having ? "HAVING ".$having : "";
 		return $this;
 	}
@@ -193,7 +228,7 @@ class Model{
      * @param string $on
      * @return $this
      */
-	public function join($table,$type='LEFT', $on=''){
+	public function join($table, $on='', $type='LEFT'){
 		$joinstr = '';
 		if (func_num_args() == 1){
 			$jointype = 'LEFT JOIN';
@@ -202,7 +237,7 @@ class Model{
 			$type = in_array($type, array('LEFT','RIGHT','INNER')) ? $type :'';
 			$jointype = $type ? $type.' JOIN' : 'JOIN';
 		}
-	
+
 		if (is_array($table)){
 			foreach ($table as $key=>$value){
 				if (!is_numeric($key)) {
@@ -212,27 +247,40 @@ class Model{
 		}else {
 			$joinstr.= ' '.$jointype.' '.$this->db->table($table);
 		}
-	
+
 		$joinstr.= $on ? ' ON '.$on : '';
 		$this->option['join'].= $joinstr;
 		return $this;
 	}
-	
-	public function union($table,$all=FALSE){
+
+    /**
+     * @param $table
+     * @param bool $all
+     * @return $this
+     */
+    public function union($table, $all=FALSE){
 		$separate = $all ? 'UNION ALL ' : 'UNION ';
 		$this->option['union'].= $separate."SELECT ".$this->option['field']." FROM ".$this->db->table($table);
 		return $this;
 	}
-	
-	public function getSQL(){
+
+    /**
+     * 返回DDL语句
+     * @return string
+     */
+    public function getSQL(){
 		return $this->sql;
 	}
-	
-	private function setSQL($type='select'){
+
+    /**
+     * 设置DDL语句
+     * @param string $type
+     */
+    private function setSQL($type='select'){
 		if (!is_string($type)) {
 			$type = 'select';
 		}
-	
+
 		if ($type == 'select') {
 			$this->option['field'] = $this->option['field'] ? $this->option['field'] : '*';
 			$SQL = "SELECT ".$this->option['field']." FROM ".$this->tablename;
@@ -248,8 +296,12 @@ class Model{
 			$this->sql = $type;
 		}
 	}
-	
-	public function select() {
+
+    /**
+     * 返回结果列表
+     * @return array
+     */
+    public function select() {
         $result = array();
 		$this->setSQL('select');
 		$query = $this->db->query($this->sql);
@@ -260,6 +312,7 @@ class Model{
 	}
 
     /**
+     * 返回一条记录
      * @return array|null
      */
     public function getOne(){
@@ -269,8 +322,13 @@ class Model{
 		$result = $this->db->fetch_array($query, MYSQL_ASSOC);
 		return $result;
 	}
-	
-	public function find($limit=0,$num=0){
+
+    /**
+     * @param int $limit
+     * @param int $num
+     * @return array
+     */
+    public function find($limit=0, $num=0){
 		$limit = intval($limit);
 		$num   = intval($num);
 		if (func_num_args() == 1) {
@@ -289,23 +347,45 @@ class Model{
 		$this->option['limit'] = $limitstr ? 'LIMIT '.$limitstr : '';
 		return $this->select();
 	}
-	
-	public function count($field=''){
+
+    /**
+     * 返回记录数
+     * @param string $field
+     * @return mixed
+     */
+    public function count($field=''){
 		!$field && $field = '*';
 		$this->option['field'] = "COUNT($field) AS num";
 		$row = $this->getOne();
 		return $row["num"];
 	}
-	
-	public function data($data = null){
+
+    /**
+     * @param null $data
+     */
+    public function data($data = null){
 		$this->data = $data;
 	}
-	
-	public function add($data=null,$return_insert_id=false,$replace=false){
+
+    /**
+     * 插入一条记录
+     * @param null $data
+     * @param bool $return_insert_id
+     * @param bool $replace
+     * @return bool|int|\mysqli_result|string
+     */
+    public function add($data=null, $return_insert_id=false, $replace=false){
 		return $this->insert($data, $return_insert_id, $replace);
 	}
-	
-	public function insert($data=null,$return_insert_id=false,$replace=false){
+
+    /**
+     * 插入一条记录
+     * @param null $data
+     * @param bool $return_insert_id
+     * @param bool $replace
+     * @return bool|int|\mysqli_result|string
+     */
+    public function insert($data=null, $return_insert_id=false, $replace=false){
 		$this->data = $data ? $data : $this->data;
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
@@ -316,8 +396,15 @@ class Model{
 			return false;
 		}
 	}
-	
-	public function insertAll($array,$return_insert_id=false,$replace=false){
+
+    /**
+     * 插入一组记录
+     * @param $array
+     * @param bool $return_insert_id
+     * @param bool $replace
+     * @return array|bool
+     */
+    public function insertAll($array, $return_insert_id=false, $replace=false){
 		if(!empty($array) && is_array($array)){
 			$ids = array();
 			foreach ($array as $data){
@@ -328,17 +415,35 @@ class Model{
 			return false;
 		}
 	}
-	
-	public function delete(){
+
+    /**
+     * 删除记录
+     * @return bool|int
+     */
+    public function delete(){
 		$res = $this->db->query("DELETE FROM ".$this->tablename." ".$this->option['where']);
 		return $res ? $this->db->affected_rows() : false;
 	}
-	
-	public function save($data, $unbuffered = false, $low_priority = false){
+
+    /**
+     * 更新记录
+     * @param $data
+     * @param bool $unbuffered
+     * @param bool $low_priority
+     * @return bool|int
+     */
+    public function save($data, $unbuffered = false, $low_priority = false){
 		return $this->update($data, $unbuffered, $low_priority);
 	}
-	
-	public function update($data=null, $unbuffered = false, $low_priority = false) {
+
+    /**
+     * 更新记录
+     * @param null $data
+     * @param bool $unbuffered
+     * @param bool $low_priority
+     * @return bool|int
+     */
+    public function update($data=null, $unbuffered = false, $low_priority = false) {
 		$this->data = $data ? $data : $this->data;
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
@@ -349,24 +454,43 @@ class Model{
 			return false;
 		}
 	}
-	
-	public function updateAll($array, $unbuffered = false, $low_priority = false){
+
+    /**
+     * @param $array
+     * @param bool $unbuffered
+     * @param bool $low_priority
+     * @return bool|int
+     */
+    public function updateAll($array, $unbuffered = false, $low_priority = false){
 		$affect_rows = 0;
 		foreach ($array as $data){
 			$affect_rows+= $this->update($data,$unbuffered,$low_priority);
 		}
 		return $affect_rows;
 	}
-	
-	public function __set($name, $value) {
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function __set($name, $value) {
 		$this->$name = $value;
 	}
-	
-	public function __get($name) {
+
+    /**
+     * @param $name
+     * @return mixed
+     */
+    public function __get($name) {
 		return $this->$name;
 	}
-	
-	public function __call($name,$args){
+
+    /**
+     * @param $name
+     * @param $args
+     * @throws \Exception
+     */
+    public function __call($name, $args){
 		throw new  \Exception('Class "'.get_class($this).'" does not have a method named "'.$name.'".');
 	}
 }

@@ -124,7 +124,7 @@ class CollectionController extends BaseController
             }else {
                 //商品收藏
                 if ($datatype == 'item'){
-                    $item = item_get_data(array('itemid'=>$dataid), 'name, thumb');
+                    $item = item_get_data(array('itemid'=>$dataid), 'title, thumb');
                     collection_add_data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,

@@ -102,6 +102,7 @@ class PostController extends BaseController{
 			$article['price']   = 0;
 			$article['pubtime'] = @date('Y-m-d H:i:s');
 
+            $editorname = "content";
             $_GET['menu'] = 'add_article';
 			include template('post_form');
 		}
@@ -232,6 +233,9 @@ class PostController extends BaseController{
 				$videodata = post_get_media_data(array('aid'=>$id));
 			}
 			$categoryoptions = post_get_category_options(0, $article['catid'],1);
+
+            $editorname = "content";
+            $editorcontent = $content;
 
             $_G['menu'] = 'add_article';
 			include template('post_form');

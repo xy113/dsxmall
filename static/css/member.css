@@ -56,21 +56,13 @@
 .formtable .a-bind-link{color:#008FBF;}
 .formtable .a-bind-link:hover{text-decoration:underline;}
 
-.button{box-sizing:border-box; padding:0 15px; display:inline-block; font-size:12px; border-radius:1px; cursor:pointer; vertical-align:middle;}
-.button,a.button{background-color:#0098CE; color:#fff; border:0;}
-.button:hover{background-color:#008FBF; color:#fff;}
-.input-text:hover,textarea:hover,select:hover{border-color:#64A402;}
-.button-cancel,a.button-cancel{background-color: #f5f5f5; color: #333; border: 1px #CCCCCC solid;}
-.button-cancel:hover,a.button-cancel:hover{background-color: #f0f0f0; color: #000;}
-
-
 .console-title{display:block; padding:2px 0 10px; border-bottom:1px #CCC solid; margin-bottom:20px;}
 .console-title .tab{display:inline-block; float: left; padding: 5px 0 0 0;}
 .console-title .tab li{float:left; margin-right:10px; font-size:12px; border-radius:2px;}
 .console-title .tab li a{display:block; padding:3px 10px;}
 .console-title .tab li.on{background:#0098CE; color:#fff;}
 .console-title .tab li.on a,.toolbar .tab li.on a:hover{color:#fff;}
-.console-title .button{height:28px; line-height:26px;}
+.console-title .button{height:28px; line-height:26px; padding: 0 12px; font-size: 12px;}
 .console-title .input-text{font-size:12px;}
 .console-title:after{clear: both; display: block; content: "";}
 .console-title h2{
@@ -163,6 +155,6 @@
     border-left: #e5e5e5 solid 1px; vertical-align: top; width: 100px; text-align: center;
 }
 .order-item-table tbody .col7 .btn{
-    height: 26px; line-height: 26px; border-radius: 3px;
+    height: 26px; line-height: 24px; border-radius: 3px; padding: 0 10px; font-size: 12px;
 }
 .order-item-table tbody td p{display: block; padding-bottom: 3px;}

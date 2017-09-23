@@ -16,8 +16,9 @@ class IndexController extends BaseController{
      */
     public function batchget(){
         $offset = (G('page') - 1) * 20;
-        $fields = 'itemid, title, thumb, price, market_price, sold';
-        $itemlist = item_get_list(array('on_sale'=>1, 'catid<>74'), 20, $offset, 'itemid DESC', $fields);
+        $fields = 'i.itemid, i.title, i.thumb, i.price, i.sold';
+        $itemlist = M('item_recommend r')->field($fields)->join('item i', 'i.itemid=r.itemid')
+            ->where('on_sale=1')->limit($offset, 20)->order('r.id DESC')->select();
         $datalist = array();
         foreach ($itemlist as $item){
             $item['thumb'] = image($item['thumb']);

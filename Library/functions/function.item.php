@@ -250,3 +250,40 @@ function item_get_cat_list($usecache=1){
 function item_update_cat_cache(){
     return cache('itemcat', item_get_cat_list(0));
 }
+
+/**
+ * @param $itemid
+ * @return bool|int|mysqli_result|string
+ */
+function item_add_recommend($itemid){
+    return M('item_recommend')->insert(array('itemid'=>$itemid), false, true);
+}
+
+/**
+ * @param $condition
+ * @return bool|int
+ */
+function item_detete_recommend($condition){
+    return $condition ? M('item_recommend')->where($condition)->delete() : false;
+}
+
+/**
+ * @return mixed
+ */
+function item_get_recommend_count(){
+    return M('item_recommend')->count();
+}
+
+/**
+ * @param $condition
+ * @param int $count
+ * @param int $offset
+ * @param null $order
+ * @return array
+ */
+function item_get_recommend_list($condition, $count=20, $offset=0, $order=null){
+    $limit = $count ? "$offset, $count" : ($offset ? $offset : '');
+    !$order && $order = 'id DESC';
+    $itemlist = M('item_recommend')->where($condition)->order($order)->limit($limit)->select();
+    return $itemlist;
+}

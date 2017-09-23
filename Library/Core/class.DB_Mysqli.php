@@ -59,7 +59,7 @@ class DB_Mysqli{
 	public function connect() {
 		$this->linkID = mysqli_connect('p:'.$this->config['host'], $this->config['db_user'], $this->config['db_pwd'], $this->config['db_name'], $this->config['port']);
 		//$this->linkID = new \mysqli($this->config['host'].':'.$this->config['port'], $this->config['user'], $this->config['pwd'], $this->config['db_name']);
-		if (mysqli_connect_errno($this->linkID)){
+		if (mysqli_connect_errno()){
 			$this->halt("Connect to MySQL(".$this->config['db_name'].") failed");
 		}
 		@mysqli_query($this->linkID, "SET character_set_connection=".$this->config['charset'].", character_set_results=".$this->config['charset'].", character_set_client=binary");
@@ -89,22 +89,24 @@ class DB_Mysqli{
 	 * 获取mysql版本
 	 */
 	public function version(){
-		return @mysqli_get_client_info($this->linkID);
+		return @mysqli_get_client_info();
 	}
-	
-	/**
-	 * 获取先前表名称
-	 * @param string $tableName
-	 */
+
+    /**
+     * 获取先前表名称
+     * @param string $tableName
+     * @return string
+     */
 	public function table($tableName){
 		return $this->tablepre.$tableName;
 	}
-	
-	/**
-	 * 执行查询操作
-	 * @param string $SQL
-	 * @param integer $mode
-	 */
+
+    /**
+     * 执行查询操作
+     * @param string $SQL
+     * @param integer $mode
+     * @return bool|\mysqli_result
+     */
 	public function query($SQL, $mode = 0){
 		if ($mode == 1){
 			$query = mysqli_query($this->linkID, $SQL, MYSQLI_USE_RESULT);
@@ -125,20 +127,22 @@ class DB_Mysqli{
 	public function insert_id() {
 		return mysqli_insert_id($this->linkID);
 	}
-	
-	/**
-	 * 返回查询结果数组
-	 * @param mixed $query
-	 * @param integer $resulttype
-	 */
+
+    /**
+     * 返回查询结果数组
+     * @param mixed $query
+     * @param integer $resulttype
+     * @return array|null
+     */
 	public function fetch_array($query, $resulttype=MYSQLI_ASSOC) {
 		return mysqli_fetch_array($query, $resulttype);
 	}
-	
-	/**
-	 * 返回行
-	 * @param mixed $query
-	 */
+
+    /**
+     * 返回行
+     * @param mixed $query
+     * @return array|null
+     */
 	public function fetch_row($query){
 		return mysqli_fetch_row($query);
 	}
@@ -149,11 +153,12 @@ class DB_Mysqli{
 	public function affected_rows() {
 		return mysqli_affected_rows($this->linkID);
 	}
-	
-	/**
-	 * 返回结果数目
-	 * @param mixed $query
-	 */
+
+    /**
+     * 返回结果数目
+     * @param mixed $query
+     * @return int
+     */
 	public function num_rows($query) {
 		return mysqli_num_rows($query);
 	}
@@ -165,21 +170,21 @@ class DB_Mysqli{
 	public function free_result($query) {
 		return mysqli_free_result($query);
 	}
-	
-	/**
-	 * 返回结果集中的下一个字段
-	 * @param object $query
-	 * @param integer $field_offset
-	 * @return string
-	 */
-	public function fetch_field($query, $field_offset = null){
-		return mysqli_fetch_field($query, $field_offset);
+
+    /**
+     * 返回结果集中的下一个字段
+     * @param \mysqli_result|object $query
+     * @return string
+     */
+	public function fetch_field(\mysqli_result $query){
+		return mysqli_fetch_field($query);
 	}
-	
-	/**
-	 * 显示数据库中的数据表
-	 * @param string $db_name
-	 */
+
+    /**
+     * 显示数据库中的数据表
+     * @param string $db_name
+     * @return array
+     */
 	public function show_tables($db_name=''){
 		$tables = array();
 		$db_name = $db_name ? $db_name : $this->config['db_name'];
@@ -189,11 +194,12 @@ class DB_Mysqli{
 		}
 		return $tables;
 	}
-	
-	/**
-	 * 显示数据库状态
-	 * @param string $db_name
-	 */
+
+    /**
+     * 显示数据库状态
+     * @param string $db_name
+     * @return array
+     */
 	public function show_table_status($db_name=''){
 		$status = array();
 		$db_name = $db_name ? $db_name : $this->config['db_name'];
@@ -203,21 +209,23 @@ class DB_Mysqli{
 		}
 		return $status;
 	}
-	
-	/**
-	 * 显示表DDL
-	 * @param string $table
-	 */
+
+    /**
+     * 显示表DDL
+     * @param string $table
+     * @return mixed
+     */
 	public function show_create_table($table){
 		$query = $this->query("SHOW CREATE TABLE ".$this->table($table));
 		$row = $this->fetch_row($query);
 		return $row[1];
 	}
-	
-	/**
-	 * 显示表字段
-	 * @param string $table
-	 */
+
+    /**
+     * 显示表字段
+     * @param string $table
+     * @return array
+     */
 	public function  show_table_fields($table){
 		$fields = array();
 		$query = $this->query("SHOW FIELDS FROM ".$this->table($table));
@@ -231,14 +239,14 @@ class DB_Mysqli{
 	 * 返回错误信息
 	 */
 	public function error(){
-		return $this->linkID ? mysqli_error($this->linkID) : mysqli_error();
+		return $this->linkID ? mysqli_error($this->linkID) : mysqli_error($this->linkID);
 	}
 	
 	/**
 	 * 返回错误代码
 	 */
 	public function errno(){
-		return $this->linkID ? mysqli_errno($this->linkID) : mysqli_errno();
+		return $this->linkID ? mysqli_errno($this->linkID) : mysqli_errno($this->linkID);
 	}
 	
 	/**
@@ -253,12 +261,13 @@ class DB_Mysqli{
         echo "MySQL Server Error:$sqlerror($sqlerrno)";
 		exit;
 	}
-	
-	/**
-	 * 格式化SQL
-	 * @param array $array
-	 * @param string $glue
-	 */
+
+    /**
+     * 格式化SQL
+     * @param array $array
+     * @param string $glue
+     * @return array|string
+     */
 	public function implode_field_value($array, $glue = ',') {
 		if (is_array($array)){
 			$sql = $comma = '';

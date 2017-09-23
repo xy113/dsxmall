@@ -70,7 +70,7 @@
         </thead>
         <tbody>
         {loop $itemlist $item}
-        <tr id="item-{$item[id]}" class="addrRow">
+        <tr id="item-{$item[address_id]}" class="addrRow">
             <th height="50">{$item[consignee]}</th>
             <td>{$item[phone]}</td>
             <td>{$item[province]} {$item[city]} {$item[county]} {$item[street]}</td>
@@ -117,13 +117,25 @@
             });
         });
         $("a[rel=delete]").on('click', function () {
+            var spinner = null;
             var address_id = $(this).attr('data-id');
-            DSXUI.confirmDialog({
-                title:'删除确认',
-                text:'确定要删除此地址吗?',
-                onConfirm:function (dlg) {
-                    window.location.href = "{U:('c=address&a=delete')}&address_id="+address_id;
-                }
+            DSXUI.showConfirm('删除地址', '确认要删除此收货地址吗?', function () {
+                $.ajax({
+                    url:"{U:('c=address&a=delete')}",
+                    data:{address_id:address_id},
+                    dataType:'json',
+                    beforeSend:function () {
+                        spinner = DSXUI.showSpinner();
+                    },
+                    success:function (response) {
+                        setTimeout(function () {
+                            spinner.close();
+                            if (response.errcode == 0){
+                                $("#item-"+address_id).remove();
+                            }
+                        }, 500);
+                    }
+                });
             });
         });
         $("#addrFrom").on('submit', function () {

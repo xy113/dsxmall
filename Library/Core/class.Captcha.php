@@ -6,17 +6,14 @@
  */
 namespace Core;
 class Captcha{
-	function __construct(){
-		$this->createCode();
-	}
-	
-	function createCode($len=4){
+
+    function createCode($len=4){
 		$width  = 100;
 		$height = 50;
 		$size   = 22;//字体大小
-		$font   = ROOT_PATH.'static/font/arial.ttf'; //字体	
+		$font   = ROOT_PATH.'static/captcha/font/arial.ttf'; //字体
 		$img   = imagecreatetruecolor($width,$height); //创建画布
-		$bgimg = imagecreatefromjpeg(ROOT_PATH.'static/images/captcha/'.rand(1, 5).'.jpg'); //生成背景图片
+		$bgimg = imagecreatefromjpeg(ROOT_PATH.'static/captcha/bg/'.rand(1, 5).'.jpg'); //生成背景图片
 		$bg_x  = rand(0,100); //随机招贴画布起始X轴坐标
 		$bg_y  = rand(0,50); //随机招贴画布起始Y轴坐标
 		imagecopy($img,$bgimg,0,0,$bg_x,$bg_y,$bg_x+$width,$bg_y+$height); //把背景图片$bging粘贴的画布上

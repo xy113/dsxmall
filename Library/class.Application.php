@@ -75,7 +75,7 @@ class Application{
 		unset($langlist, $langfile, $name);
 		
 		//加载function文件
-		$functionlist = array('material', 'member', 'misc', 'shop', 'item', 'trade', 'post', 'weixin');
+		$functionlist = array('material', 'member', 'misc', 'shop', 'item', 'trade', 'post', 'weixin','notice');
 		if (is_array(C('AUTO_LOAD_FUNCTIONS'))){
 			$functionlist = array_merge($functionlist, C('AUTO_LOAD_FUNCTIONS'));
 		}
@@ -155,11 +155,11 @@ class Application{
 		$app = new $class();
 		$app->$action();
 	}
-	
-	/**
-	 * 设置时区
-	 * @param number $timeoffset
-	 */
+
+    /**
+     * 设置时区
+     * @param int|number $timeoffset
+     */
 	public function timezone_set($timeoffset = 0) {
 		if(function_exists('date_default_timezone_set')) {
 			@date_default_timezone_set('Etc/GMT'.($timeoffset > 0 ? '-' : '+').(abs($timeoffset)));

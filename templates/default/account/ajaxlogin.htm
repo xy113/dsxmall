@@ -14,7 +14,6 @@
 </head>
 <body>
 <div id="ajaxlogin">
-    <h2>登录粗耕农品集市</h2>
     <form method="post" id="loginForm" autocomplete="off" action="{U:('m=account&c=login&a=chklogin')}">
         <input type="hidden" name="formhash" value="{FORMHASH}">
         <div class="input-box">
@@ -28,7 +27,7 @@
         <div class="input-box">
             <i class="iconfont icon-attention_light"></i>
             <input type="text" class="text" name="captchacode" placeholder="验证码" maxlength="4" style="width: 160px;" id="captcha">
-            <img src="/index.php?m=common&c=captcha" onclick="this.src='/index.php?m=common&c=captcha&'+Math.random()" title="看不清，换一张" class="captcha">
+            <img src="/index.php?m=plugin&c=captcha" onclick="this.src='/index.php?m=plugin&c=captcha&'+Math.random()" title="看不清，换一张" class="captcha">
         </div>
         <input type="submit" class="login-button" value="登录">
         <div class="line">

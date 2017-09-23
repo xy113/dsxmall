@@ -1,48 +1,6 @@
 <script type="text/javascript">
     $(function () {
-        $("#side-menu dl").each(function () {
-            var _this = this;
-            $(this).find('dd').on('click', function (e) {
-                $(_this).find('dt').toggle();
-            });
-            if ($(this).find('.cur').length > 0){
-                $(_this).find('dt').show();
-            }
-        });
-        $("img[rel=setimage]").setImage(function(o,data){
-            var url = $(o).attr('data-action');
-            url = typeof(url) !== 'undefined' ? url : '{U:("c=$_G[c]&a=setimage")}';
-            var requestData = $(o).attr("data-json");
-            requestData = typeof(requestData) !== 'undefined' ? eval('('+requestData+')') : {};
-            if(typeof requestData !== 'object') requestData = {};
-            requestData.image = data.image;
-            $.ajax({
-                url:url,
-                data:requestData,
-                dataType:"json",
-                success: function(json){
-                    if(json.errcode == 0) $(o).attr('src', data.imageurl);
-                }
-            });
-        });
-        $("img[rel=pickimage]").pickImage({multi:false,
-            onPicked:function(o,data){
-                var url = $(o).attr('data-action');
-                url = typeof(url) !== 'undefined' ? url : '{echo U("c=$_G[c]&a=setimage")}';
-                var requestData = $(o).attr("data-json");
-                requestData = typeof(requestData) !== 'undefined' ? eval('('+requestData+')') : {};
-                if(typeof requestData !== 'object') requestData = {};
-                requestData.image = data.image;
-                $.ajax({
-                    url:url,
-                    data:requestData,
-                    dataType:"json",
-                    success: function(json){
-                        if(json.errcode == 0) o.src = data.imageurl;
-                    }
-                });
-            }
-        });
+
     });
 </script>
 <div class="footer" id="footer">

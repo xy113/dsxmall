@@ -85,6 +85,7 @@ function C($name=null, $value=''){
 /**
  * 初始化模型
  * @param string $name
+ * @return \Core\Model
  */
 function M($name){
 	if (is_array($name)){
@@ -334,127 +335,6 @@ function distance($distance){
 }
 
 /**
- * 从远程服务器下载数据
- * @param string $url
- * @param int|number $ssl
- * @param int|number $timeout
- * @return mixed
- */
-function httpGet($url, $ssl=0, $timeout=500){
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $ssl);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $ssl);
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
-	$res = curl_exec($curl);
-	curl_close($curl);
-	return $res;
-}
-
-/**
- * POST提交数据到远程服务器
- * @param string $url
- * @param string $data
- * @param number $ssl
- * @param number $timeout
- * @return mixed
- */
-function httpPost($url, $data='', $ssl=0, $timeout=500){
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_POST, true);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $ssl);
-	curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $ssl);
-	$res = curl_exec($curl);
-	curl_close($curl);
-	return $res;
-}
-
-
-/**
- * 高德地理位置编码
- * @param $address
- * @param string $city
- * @return array
- */
-function amap_geocode($address, $city='', $sig=''){
-	$location = array();
-	$url = "http://restapi.amap.com/v3/geocode/geo?key=".setting('amap_key')."&s=rsv3&address=".$address."&city=".$city."&sig=$sig";
-	$json  = httpGet($url);
-	$data  = json_decode($json,true);
-    if ($data['status'] == 1){
-        $info = $data['geocodes'][0];
-        $coordinate = explode($info['location']);
-        $info['longitude'] = floatval($coordinate[0]);
-        $info['latitude']  = floatval($coordinate[1]);
-        return $info;
-    } else {
-	    return array(
-	        'longitude'=>0,
-            'latitude'=>0
-        );
-    }
-}
-
-/**
- * 高德逆地理位置编码
- * @param $lng
- * @param $lat
- * @return array
- */
-function amap_regeocode($lng, $lat){
-    $lng = floatval($lng);
-    $lat = floatval($lat);
-    $point = $lng.','.$lat;
-    $url = 'http://restapi.amap.com/v3/geocode/regeo?key='.setting('amap_key').'&extensions=base&location='.$point;
-    $json = httpGet($url);
-    $data = json_decode($json,true);
-    $location = array();
-    if ($data['status'] == 1){
-        $location = $data['regeocode']['addressComponent'];
-        $location['longitude'] = $lng;
-        $location['latitude'] = $lat;
-        $location['formatted_address'] = $data['regeocode']['formatted_address'];
-        return $location;
-    }else {
-        return array();
-    }
-}
-
-
-/**
- * 根据IP地址定位地理位置
- * @param string $ip
- * @return array
- */
-function amap_location_by_ip($ip=null){
-	if (is_null($ip)) $ip = getIp();
-    $url = 'http://restapi.amap.com/v3/ip?key='.setting('amap_key').'&ip='.$ip;
-    $json = httpGet($url);
-    $data = json_decode($json,true);
-    if ($data['status'] == 1){
-        $position = explode(';', $data['rectangle']);
-        $coords[0] = explode(',', $position[0]);
-        $coords[1] = explode(',', $position[1]);
-        $location = array(
-            'ip'=>$ip,
-            'province'=>$data['province'],
-            'city'=>$data['city'],
-            'longitude'=>($coords[0][0] + $coords[1][0])/2,
-            'latitude'=>($coords[0][1] + $coords[1][1])/2
-        );
-        return $location;
-    }else {
-        return array();
-    }
-}
-
-/**
  * @desc 计算两点之间的距离
  * @param float $lat 纬度值
  * @param float $lng 经度值
@@ -475,6 +355,15 @@ function getDistance($lng1,$lat1,$lng2,$lat2){
 	$stepOne = pow(sin($calcLatitude / 2), 2) + cos($lat1) * cos($lat2) * pow(sin($calcLongitude / 2), 2);  $stepTwo = 2 * asin(min(1, sqrt($stepOne)));
 	$calculatedDistance = $earthRadius * $stepTwo;
 	return round($calculatedDistance);
+}
+
+/**
+ * 16位MD5散列值
+ * @param $str
+ * @return string
+ */
+function md5_16($str){
+    return substr(md5($str), 0, 16);
 }
 
 /**
@@ -783,7 +672,7 @@ function formatAmount($amount, $decimals=2){
 /**
  * 替换字符串
  * @param string $string
- * @param string $replacer
+ * @param mixed $replacer
  * @return mixed
  */
 function stringParser($string,$replacer){
@@ -800,16 +689,16 @@ function curPageURL() {
     if (!empty($_SERVER['HTTPS'])) {$pageURL .= "s";}
     $pageURL .= "://";
     if ($_SERVER["SERVER_PORT"] != "80") {
-        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        $pageURL .= $_SERVER["HTTP_HOST"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
     } else {
-        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+        $pageURL .= $_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
     }
     return $pageURL;
 }
 
 /**
  * 获取用户真实IP
- * @return Ambigous <string, unknown>
+ * @return string
  */
 function getIp() {
     return $_SERVER['REMOTE_ADDR'];
@@ -821,9 +710,9 @@ function getIp() {
  * @return array
  */
 function getIpInfo($ip){
-    $json = httpGet('service/getIpInfo.php?ip='.$ip);
+    $json = \Core\Http::curlGet('http://ip.taobao.com/service/getIpInfo.php?ip='.$ip);
     $info = json_decode($json);
-    if ($info['code'] == 1){
+    if ($info['code'] == 0){
         return $info['data'];
     }else {
         return array();
@@ -832,8 +721,8 @@ function getIpInfo($ip){
 
 /**
  * SQL反注入
- * @param unknown $sql
- * @return bool|unknown
+ * @param string $sql
+ * @return bool
  */
 function injCheck($sql) {
     $check = preg_match('/select|insert|update|delete|\'|\/\*|\*|\.\.\/|\.\/|union|into|load_file|outfile/', $sql);
@@ -973,13 +862,4 @@ function guid() {
 	substr($charid,16, 4).
 	substr($charid,20,12);
 	return $uuid;
-}
-
-/**
- * 16位MD5散列值
- * @param $str
- * @return string
- */
-function md5_16($str){
-    return substr(md5($str), 0, 16);
 }

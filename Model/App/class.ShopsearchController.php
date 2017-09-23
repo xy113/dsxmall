@@ -31,7 +31,7 @@ class ShopsearchController extends BaseController
     public function batchget(){
         $offset = (G('page') - 1) * 20;
         $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
-        $condition = array('shop_status'=>'OPEN', 'auth_status'=>'SUCCESS');
+        $condition = array('closed'=>'0');
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['shop_name'] = array('LIKE' , trim($q));
 

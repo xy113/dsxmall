@@ -1,7 +1,7 @@
 {template header}
 <div class="area cart">
     <div class="cart-filter-bar">
-        <span>总计{$totalnum}件商品</span>
+        <span>总计{$total_count}件商品</span>
         <strong>全部商品</strong>
     </div>
     <div class="cart-main">
@@ -25,20 +25,23 @@
                     </tbody>
                 </table>
             </div>
-            {if $cart_list}
-            {loop $cart_list $shop_id $cart}
+            {if $shop_item_list}
+            {loop $shop_item_list $shop_id $shop}
             <div class="cart-item">
-                <h3>店铺: <a href="{U:('m=shop&c=viewshop&shop_id='.$cart[shop_id])}" target="_blank">{$cart[shop_name]}</a></h3>
+                <h3>
+                    <input type="checkbox" class="checkbox checkmark groupCheckbox" data-target=".group_{$shop_id}">
+                    <span class="iconfont icon-shopfill"></span><a href="{U:('m=shop&c=viewshop&shop_id='.$shop_id)}" target="_blank">{$shop[shop_name]}</a>
+                </h3>
                 <div class="order-content">
                     <table cellpadding="0" cellspacing="0" width="100%">
                         {eval $index=0}
-                        {loop $cart[items] $itemid $item}
+                        {loop $shop[items] $itemid $item}
                         {eval $index++}
                         <tbody id="item-{$itemid}">
                             <tr{if $index==1} class="first"{/if}>
                                 <td class="item-info">
                                     <input type="hidden" id="J_price_{$itemid}" value="{$item[price]}">
-                                    <div class="chk"><input type="checkbox" class="checkbox checkmark J_CheckBoxItem" name="items[]" value="{$itemid}"></div>
+                                    <div class="chk"><input type="checkbox" class="checkbox checkmark J_CheckBoxItem group_{$shop_id}" name="items[]" value="{$itemid}"></div>
                                     <div class="g-pic bg-cover lazyload" data-original="{img $item[thumb]}">
                                         <a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank"></a>
                                     </div>
@@ -47,7 +50,10 @@
                                     </div>
                                 </td>
                                 <td width="100"></td>
-                                <td width="100"><strong>￥{amount:$item[price]}</strong></td>
+                                <td width="100">
+                                    <p style="color: #999; margin-bottom: 3px;"><s>{$item[cart_price]}</s></p>
+                                    <strong>￥{$item[price]}</strong>
+                                </td>
                                 <td width="120">
                                     <div class="quantity-inner">
                                     <span class="btn opLeft" data-id="{$itemid}">-
@@ -79,7 +85,7 @@
             </div>
             <div class="operations">
                 <a id="multi-delete">删除</a>
-                <a>移入收藏夹</a>
+                <a id="move-to-favor">移入收藏夹</a>
             </div>
             <div class="right">
                 <div class="item-sum">已选中<strong id="total_count">0</strong>件商品</div>
@@ -116,10 +122,10 @@
         var spinner = null;
         $("a[rel=delete]").on('click', function (e) {
             var itemid = $(this).attr('data-id');
-            DSXUI.showConfirm('确认要删除该宝贝吗？', function () {
+            DSXUI.showConfirm('移除购物车','确认要从购物车中移除此宝贝吗？', function () {
                 $.ajax({
                     url:"{U:('m=cart&c=index&a=delete')}",
-                    data:{itemid:itemid},
+                    data:{items:itemid},
                     dataType:'json',
                     beforeSend:function () {
                         spinner = DSXUI.showSpinner();
@@ -128,7 +134,7 @@
                         setTimeout(function () {
                             spinner.close();
                             if (response.errcode == 0){
-                                $("#item-"+goods_id).remove();
+                                $("#item-"+itemid).remove();
                                 settlement();
                             }else {
                                 DSXUI.error(response.errmsg);
@@ -145,10 +151,38 @@
                 $(".J_CheckBoxItem:checked").each(function () {
                     ids.push($(this).val());
                 });
-                DSXUI.showConfirm('确认要删除所选宝贝吗', function () {
+                DSXUI.showConfirm('移除购物车','确认要从购物车中移除此宝贝吗？', function () {
                     $.ajax({
                         url:"{U:('m=cart&c=index&a=delete')}",
-                        data:{itemid:ids.join(',')},
+                        data:{items:ids.join(',')},
+                        dataType:'json',
+                        beforeSend:function () {
+                            spinner = DSXUI.showSpinner();
+                        },
+                        success:function (response) {
+                            setTimeout(function () {
+                                spinner.close();
+                                if (response.errcode == 0){
+                                    DSXUtil.reFresh();
+                                }else {
+                                    DSXUI.error(response.errmsg);
+                                }
+                            }, 300);
+                        }
+                    });
+                });
+            }
+        });
+        $("#move-to-favor").on('click', function () {
+            if ($(".J_CheckBoxItem:checked").length > 0){
+                var ids = [];
+                $(".J_CheckBoxItem:checked").each(function () {
+                    ids.push($(this).val());
+                });
+                DSXUI.showConfirm('移除购物车','确认要将所选宝贝移入收藏夹吗?', function () {
+                    $.ajax({
+                        url:"{U:('m=cart&c=index&a=move_to_favor')}",
+                        data:{items:ids.join(',')},
                         dataType:'json',
                         beforeSend:function () {
                             spinner = DSXUI.showSpinner();
@@ -221,7 +255,11 @@
                 }
             });
         });
-
+        $(".groupCheckbox").on('click', function () {
+            var target = $(this).attr('data-target');
+            $(target).prop('checked', $(this).is(":checked"));
+            settlement();
+        });
         $(".checkall, .J_CheckBoxItem").on('click', settlement);
     });
 </script>

@@ -24,7 +24,7 @@ class ApnsController extends BaseController
         $new_device_token = preg_replace('/\<(.*?)\>/is', '\\1', trim($_GET['new_device_token']));
         $new_device_token = preg_replace('/\s/', '', $new_device_token);
 
-        if ($new_device_token == '(null)'){
+        if (!$new_device_token || $new_device_token == '(null)'){
             $this->showAjaxReturn();
         }
 

@@ -1,20 +1,66 @@
 {template header}
-<div class="console-title">
-    <div class="float-right">
-        <form name="search" action="/?">
-            <input type="hidden" name="m" value="{$_G[m]}">
-            <input type="hidden" name="c" value="{$_G[c]}">
-            <input type="hidden" name="a" value="{$_G[a]}">
-            <input type="text" class="input-text" name="q" value="{$q}" placeholder="商品名称">
-            <input type="submit" class="button" value="{$_lang[search]}">
-        </form>
-    </div>
-    <h2>商品管理->商品列表</h2>
+<div class="navigation">
+    <a>后台管理</a>
+    <span>></span>
+    <a>商品管理</a>
+    <span>></span>
+    <a>商品列表</a>
 </div>
+<div class="search-container">
+    <form method="get" id="searchFrom">
+        <input type="hidden" name="m" value="{$_G[m]}">
+        <input type="hidden" name="c" value="{$_G[c]}">
+        <input type="hidden" name="a" value="{$_G[a]}" id="J_a">
+        <div class="row">
+            <div class="cell">
+                <label>店铺名称:</label>
+                <div class="field"><input type="text" class="input-text" name="shop_name" value="{$shop_name}"></div>
+            </div>
+            <div class="cell">
+                <label>卖家账号:</label>
+                <div class="field"><input type="text" class="input-text" name="seller_name" value="{$seller_name}"></div>
+            </div>
+            <div class="cell">
+                <label>销售状态:</label>
+                <div class="field">
+                    <select class="select" name="sale_status">
+                        <option value="0">全部</option>
+                        <option value="on_sale"{if $sale_status=='on_sale'} selected{/if}>出售中</option>
+                        <option value="off_sale"{if $sale_status=='off_sale'} selected{/if}>已下架</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <label>产品名称:</label>
+                <div class="field"><input type="text" class="input-text" name="title" value="{$title}"></div>
+            </div>
+            <div class="cell" style="width: auto;">
+                <label>价格区间:</label>
+                <div class="field">
+                    <input type="text" class="input-text" name="min_price" value="{$min_price}"> -
+                    <input type="text" class="input-text" name="max_price" value="{$max_price}">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <label></label>
+                <div class="field">
+                    <button type="submit" class="button">搜索</button>
+                    <button type="reset" class="button button-cancel">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="content-div">
     <form method="post" id="listForm" autocomplete="off">
         <input type="hidden" name="formsubmit" value="yes">
         <input type="hidden" name="formhash" value="{FORMHASH}">
+        <input type="hidden" name="eventType" value="" id="J_eventType">
         <table cellpadding="0" cellspacing="0" border="0" width="100%" class="listtable">
             <thead>
             <tr>
@@ -28,18 +74,16 @@
             </tr>
             </thead>
             <tbody>
-            {loop $itemlist $itemid $item}
+            {loop $itemlist $item}
+            {eval $itemid=$item[itemid]}
             <tr id="row_{$id}">
                 <td><input type="checkbox" class="checkbox checkmark" name="items[]" value="{$itemid}"></td>
-                <td><a href="{U:('m=item&c=item&id='.$id)}" target="_blank"><div class="bg-cover" style="background-image: url({img $item[thumb]}); width: 80px; height: 80px;"></div></a></td>
+                <td><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank"><div class="bg-cover" style="background-image: url({img $item[thumb]}); width: 80px; height: 80px;"></div></a></td>
                 <td>
                     <h3 class="title"><a href="{U:('m=item&c=item&itemid='.$itemid)}" target="_blank">{$item[title]}</a></h3>
-                    <p class="subtitle"><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$shop_list[$item[shop_id]][shop_name]}</a></p>
+                    <p class="subtitle"><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$item[shop_name]}</a></p>
                 </td>
-                <td>
-                    {if $item[market_price]}<p>{amount:$item[market_price]}</p>{/if}
-                    <p><strong>{amount:$item[price]}</strong></p>
-                </td>
+                <td><p><strong style="color: #f40;">{$item[price]}</strong></p></td>
                 <td>{$item[sold]}</td>
                 <td>
                     {if $item[on_sale]}
@@ -57,15 +101,10 @@
                 <td colspan="20">
                     <div class="pagination float-right">{$pages}</div>
                     <label><input type="checkbox" class="checkbox checkall"> 全选</label>
-                    <label><input type="radio" class="radio" name="option" value="delete"> 删除</label>
-                    <label><input type="radio" class="radio" name="option" value="on_sale" checked> 上架</label>
-                    <label><input type="radio" class="radio" name="option" value="off_sale"> 下架</label>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="20">
-                    <input type="submit" class="button" toggle-status="true" value="提交" id="submit-button">
-                    <input type="button" class="button button-cancel" value="刷新" onclick="DSXUtil.reFresh()">
+                    <label><button type="button" class="btn btn-action" data-action="delete">删除</button></label>
+                    <label><button type="button" class="btn btn-action" data-action="on_sale">上架</button></label>
+                    <label><button type="button" class="btn btn-action" data-action="off_sale">下架</button></label>
+                    <label><button type="button" class="btn btn-action" data-action="recommend">首页推荐</button></label>
                 </td>
             </tr>
             </tfoot>
@@ -74,22 +113,39 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $("a[rel=delete]").on('click', function (e) {
-            var itemid = $(this).attr('data-id');
-            DSXUI.confirmDialog({
-                title:'删除商品',
-                text:'你确定要删除此商品吗?',
-                onConfirm:function (dlg) {
-                    $.ajax({
-                        url:"{U:('c=item&a=delete')}",
-                        data:{itemid:itemid},
-                        dataType:'json',
-                        success:function (response) {
-                            $("#row_"+itemid).remove();
-                        }
-                    });
-                }
-            });
+        $(".btn-action").on('click', function () {
+            if ($(".checkmark:checked").length === 0){
+                DSXUI.error('请选择商品');
+                return false;
+            }
+            var spinner = null;
+            var eventType = $(this).attr('data-action');
+            var submitForm = function () {
+                $("#listForm").ajaxSubmit({
+                    dataType:'json',
+                    beforeSend:function () {
+                        spinner = DSXUI.showSpinner();
+                    },
+                    success:function (response) {
+                        setTimeout(function () {
+                            spinner.close();
+                            if (response.errcode == 0){
+                                DSXUtil.reFresh();
+                            }else {
+                                DSXUI.error(response.errmsg);
+                            }
+                        }, 500);
+                    }
+                });
+            }
+            $("#J_eventType").val(eventType);
+            if (eventType === 'delete'){
+                DSXUI.showConfirm('删除商品','确认要删除所选商品吗?', function () {
+                     submitForm();
+                });
+            }else {
+                submitForm();
+            }
         });
     });
 </script>

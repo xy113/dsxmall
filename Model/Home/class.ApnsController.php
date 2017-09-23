@@ -16,19 +16,53 @@ use Apns\ApnsPush;
 class ApnsController extends BaseController
 {
     /**
+     * ApnsController constructor.
+     */
+    function __construct()
+    {
+        parent::__construct();
+        $appkey = trim($_GET['appkey']);
+        if ($appkey !== 'c3b15fb183388b2c2aedd9b18208346d'){
+            $this->showAjaxReturn();
+        }
+    }
+
+    /**
      *
      */
     public function index(){
-//        $notice = new ApnsOrderActivityNotification();
-//        $notice->setText('你的订单已发货');
-//        $notice->setOrder_id("139");
-//        $notice->setBadge(5);
 
-        $notice = new ApnsNotification();
-        $notice->setText("粗耕已出新版本，请及时更新");
+    }
 
-        $push = new ApnsPush(0);
-        $push->setDeviceToken('58cc6c5435a794762bd7b3ebcdfbe3f7371e435b49a63b553c438e9402bcca28');
-        $push->send($notice);
+    /**
+     *
+     */
+    public function sendNotice(){
+        set_time_limit(0);
+        ignore_user_abort(true);
+        $limit = 0;
+        $push = new ApnsPush();
+        $lock = CACHE_PATH.'apns_update.lock';
+        if (is_file($lock)){
+            $this->showAjaxReturn();
+        }else{
+            touch($lock);
+        }
+        while (true){
+            $token = M('apns_token')->order('id', 'ASC')->limit($limit,1)->getOne();
+            if ($token){
+                $notice = new ApnsNotification();
+                $notice->setBadge(1);
+                $notice->setAlert('粗耕已有新的版本，请前往App Store更新');
+
+                $push->setDeviceToken($token['device_token']);
+                $push->send($notice);
+                $limit++;
+            }else {
+                @unlink($lock);
+                $this->showAjaxReturn();
+            }
+            sleep(2);
+        }
     }
 }

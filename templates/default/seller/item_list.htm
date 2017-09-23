@@ -27,7 +27,7 @@
             <tbody>
             {loop $itemlist $item}
             <tr id="row_{$item[id]}">
-                <td><input type="checkbox" class="checkbox checkmark" name="items[]" value="{$item[itemid]}"></td>
+                <td><input type="checkbox" class="checkbox checkmark itemCheckBox" name="items[]" value="{$item[itemid]}"></td>
                 <td><a href="{U:('m=item&c=item&itemid='.$item['itemid'])}" target="_blank"><div class="bg-cover asyncload" data-original="{img $item[thumb]}" style="width: 80px; height: 80px;"></div></a></td>
                 <td>
                     <h3 style="font-size: 12px;"><a href="{U:('m=item&c=item&itemid='.$item['itemid'])}" target="_blank">{$item[title]}</a></h3>
@@ -66,9 +66,19 @@
 <script type="text/javascript">
     $(function () {
         $(".operations .btn").on('click', function () {
+            if ($(".itemCheckBox:checked").length === 0){
+                DSXUI.error('请选择宝贝');
+                return false;
+            }
             var eventType = $(this).attr('data-action');
             $("#J_eventType").val(eventType);
-            $("#listForm").submit();
+            if (eventType === 'delete'){
+                DSXUI.showConfirm('删除宝贝', '确认要删除所选宝贝吗?', function () {
+                    $("#listForm").submit();
+                });
+            }else {
+                $("#listForm").submit();
+            }
         });
     });
 </script>

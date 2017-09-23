@@ -18,13 +18,13 @@
 <div class="area shop" style="min-height: 600px;">
     <div class="shop-grid-wrap">
         <ul>
-            {loop $itemlist $item}
+            {loop $shoplist $shop}
             <li>
                 <div class="hd">
-                    <div class="logo bg-cover asyncload" data-original="{img $item[shop_logo]}">
-                        <a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank" title="{$item[shop_name]}"></a>
+                    <div class="logo bg-cover asyncload" data-original="{img $shop[shop_logo]}">
+                        <a href="{U:('m=shop&c=viewshop&shop_id='.$shop[shop_id])}" target="_blank" title="{$shop[shop_name]}"></a>
                     </div>
-                    <div class="shop-name"><a href="{U:('m=shop&c=viewshop&shop_id='.$item[shop_id])}" target="_blank">{$item[shop_name]}</a></div>
+                    <div class="shop-name"><a href="{U:('m=shop&c=viewshop&shop_id='.$shop[shop_id])}" target="_blank">{$shop[shop_name]}</a></div>
                 </div>
             </li>
             {/loop}
