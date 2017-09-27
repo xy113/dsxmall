@@ -259,7 +259,7 @@ function cookie($name='', $value='', $expire=0){
 function avatar($uid=0,$size='big',$img=0){
 	if (!$uid) return C('STATICURL').'images/common/avatar_default.png';
 	$size = in_array($size, array('small','middle')) ? $size : 'big';
-	$imgurl = getSiteURL().'/?m=common&c=avatar&uid='.$uid.'&size='.$size;
+	$imgurl = getSiteURL().'/?m=plugin&c=avatar&uid='.$uid.'&size='.$size;
     return $img ? '<img src="' . $imgurl . '" border="0"/>' : $imgurl;
 }
 
@@ -267,7 +267,7 @@ function avatar($uid=0,$size='big',$img=0){
  * 解析素材地址
  * @param string $file
  * @param string $type
- * @return string|unknown
+ * @return string
  */
 function material($file, $type='image'){
     if (preg_match("/([http|https|ftp]\:\/\/)(.*?)/is", $file)){

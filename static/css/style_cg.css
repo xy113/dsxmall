@@ -316,7 +316,7 @@
     height: 80px; width: 380px; display: inline-block; position: relative; vertical-align: top; margin-right: 20px;
 }
 .item-search-wrap .item-list li .item-info h3{font-size: 14px; line-height: 1.2; font-weight: 400; display: block; padding: 5px 0;}
-.item-search-wrap .item-list li .item-info .brief{color: #888; font-size: 12px;}
+.item-search-wrap .item-list li .item-info .brief{color: #888; font-size: 12px; height: 16px; overflow: hidden;}
 .item-search-wrap .item-list li .item-info .shop{
     position: absolute; left: 0; bottom: 0; font-size: 12px; color: #888; text-decoration: underline;
 }

@@ -112,7 +112,7 @@ class MenuController extends BaseController{
 				            		<input type="checkbox" class="checkbox checkmark" name="delete[]" value="$id">
 				            		<input type="hidden" name="itemlist[$id][fid]" class="fid" value="$item[fid]">
 				            	</td>
-				            	<td width="50"><img src="$iconurl" width="50" height="50" rel="setimage" data-json="{id:$id}"></td>
+				            	<td width="50"><img src="$iconurl" width="50" height="50" rel="menuicon" data-id="{$id}"></td>
 				            	<td width="100"><input type="text" name="itemlist[$id][name]" class="input-text w100" value="$item[name]"></td>
 				                <td><input type="text" name="itemlist[$id][url]" class="input-text w300" value="$item[url]"$disabled></td>
 				                <td width="80">

@@ -30,7 +30,7 @@ class ShopController extends BaseController{
                     $shop_data['username'] = $this->username;
                     $shop_data['create_time'] = time();
                     $shop_data['auth_status'] = 'PENDING';
-                    $shop_data['shop_status'] = 'CLOSE';
+                    $shop_data['closed'] = '1';
                     $this->shop_id = shop_add_data($shop_data);
                 }
 

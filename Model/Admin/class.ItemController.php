@@ -94,6 +94,12 @@ class ItemController extends BaseController{
                 $queryParams['max_price'] = $max_price;
             }
 
+            $itemid = htmlspecialchars($_GET['itemid']);
+            if ($itemid) {
+                $condition[] = "i.itemid='$itemid'";
+                $queryParams['itemid'] = $itemid;
+            }
+
             $pagesize = 20;
             $totalnum = M('item i')->join('shop s', 's.shop_id=i.shop_id')->where($condition)->count();
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);

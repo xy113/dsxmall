@@ -1,5 +1,5 @@
 ;(function ($) {
-    $.extend({
+    $.fn.extend({
         //层居中
         center: function (settings) {
             settings = $.extend({'fixed':true},settings);

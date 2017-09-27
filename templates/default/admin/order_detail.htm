@@ -65,6 +65,10 @@
     <table cellspacing="0" cellpadding="0" width="100%" class="detail-table">
         <tr>
             <td>
+                <label>店铺名称:</label>
+                <div class="content"><a href="{U:('m=shop&c=viewshop&shop_id='.$shop['shop_id'])}" target="_blank">{$shop[shop_name]}</a></div>
+            </td>
+            <td>
                 <label>卖家账号:</label>
                 <div class="content">{$order[seller_name]}</div>
             </td>
@@ -72,15 +76,11 @@
                 <label>联系电话:</label>
                 <div class="content">{$shop[phone]}</div>
             </td>
-            <td>
-                <label>所在地:</label>
-                <div class="content">{$shop[province]} {$shop[city]} {$shop[county]}</div>
-            </td>
         </tr>
         <tr>
             <td>
-                <label>店铺名称:</label>
-                <div class="content"><a href="{U:('m=shop&c=viewshop&shop_id='.$shop['shop_id'])}" target="_blank">{$shop[shop_name]}</a></div>
+                <label>所在地:</label>
+                <div class="content">{$shop[province]} {$shop[city]} {$shop[county]}</div>
             </td>
             <td></td>
             <td></td>

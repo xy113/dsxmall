@@ -18,25 +18,15 @@
 </script>
 <div class="pin-menus">
     <ul>
+        {loop $menu_list['items'] $menu}
         <li handler="viewMenu" menu="goods">
-            <img src="/static/images/app/menu-yyc.png">
-            <div class="t">营养餐</div>
+            <img src="{img $menu[icon]}">
+            <div class="t">{$menu[name]}</div>
         </li>
-        <li handler="viewMenu" menu="shop">
-            <img src="/static/images/app/menu-qydp.png">
-            <div class="t">企业店铺</div>
-        </li>
-        <li handler="openURL" data-url="http://cg.liaidi.com/index.php?m=shop&c=viewshop&shop_id=1773">
-            <img src="/static/images/app/menu-dxcg.png">
-            <div class="t">定向采购</div>
-        </li>
-        <li handler="viewMenu" menu="news">
-            <img src="/static/images/app/menu-cgzx.png">
-            <div class="t">粗耕资讯</div>
-        </li>
+        {/loop}
     </ul>
 </div>
-<div class="home">
+<div class="home" style="margin-top: 10px;">
     <div class="grid-4">
         <ul>
             {eval $ad_list=block_get_cache(5)}

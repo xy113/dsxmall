@@ -1,14 +1,15 @@
 <?php
 namespace Core;
 class Mail{
-	/**
-	 *
-	 * @param string $mailto
-	 * @param string $subject
-	 * @param string $message
-	 * @param string $mailfrom
-	 * @param string $charset
-	 */
+    /**
+     *
+     * @param string $mailto
+     * @param string $subject
+     * @param string $message
+     * @param string $mailfrom
+     * @param string $charset
+     * @return bool
+     */
 	function sendmail($mailto,$subject,$message,$mailfrom,$charset="UTF-8"){
 		// 当发送 HTML 电子邮件时，请始终设置 content-type
 		$headers = "From: $mailfrom\nX-Priority: 3\n";

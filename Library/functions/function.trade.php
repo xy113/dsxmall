@@ -257,6 +257,13 @@ function order_get_list($condition, $count=20, $offset=0, $order=null, $field='*
  */
 function order_get_trade_status($order){
     $trade_status = 0;
+    if ($order['pay_type'] == 2){
+        if ($order['is_commited']==1 && $order['is_accepted']==0){
+            return 8;
+        }else {
+            return 9;
+        }
+    }
     if ($order['is_closed']==1 && $order['refund_status'] == 0) {
         //交易关闭
         return 0;

@@ -30,7 +30,7 @@
         	{loop $itemlist $item}
             <tr id="favorite-item-{$item[id]}">
             	<td>
-                    <div class="thumb bg-cover lazyload" data-original="{img $item[image]}">
+                    <div class="thumb bg-cover asyncload" data-original="{img $item[image]}">
                         <a href="{U:('m=item&c=item&id='.$item['dataid'])}" target="_blank"></a>
                     </div>
                 </td>

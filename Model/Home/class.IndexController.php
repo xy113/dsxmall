@@ -1,6 +1,11 @@
 <?php
 namespace Model\Home;
 
+use Apns\ApnsNotification;
+use Apns\ApnsPush;
+use Data\Item\Builder\ItemContentBuilder;
+use Data\Item\ItemModel;
+
 class IndexController extends BaseController{
     /**
      *
@@ -28,7 +33,10 @@ class IndexController extends BaseController{
 		include template('index');
 	}
 
-	public function app(){
+    /**
+     *
+     */
+    public function app(){
         echo md5_16(random(10));
         echo '<br>';
         echo md5(random(10));
@@ -70,8 +78,34 @@ class IndexController extends BaseController{
         include template('angular');
     }
 
+    /**
+     *
+     */
     public function get_items(){
         $itemlist = item_get_list(0,10);
         $this->showAjaxReturn($itemlist);
+    }
+
+    /**
+     *
+     */
+    public function apns(){
+
+        $notice = new ApnsNotification();
+        $notice->setAlert('粗耕已有新版本了，请及时更新');
+        $notice->setBadge(1);
+
+        $push = new ApnsPush();
+        $push->setDeviceToken('7b7a5ef6cc1038c1f7cba653dbe50b2d92c473a1e4799550aa215a7d2ac76afb');
+        $push->send($notice);
+    }
+
+    public function test(){
+        $itemContent = new ItemContentBuilder();
+        print_array($itemContent->getData());
+
+        $item = new ItemModel();
+        $itemlst = $item->page(0, 10)->select();
+        print_array($itemlst);
     }
 }

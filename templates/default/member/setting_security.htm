@@ -64,9 +64,9 @@
 			  <td>验证码</td>
 			  <td>
 				  <input type="text" class="input-text" name="captchacode" maxlength="4" required="true" regular="/^[\S]{4}$/" prompt="请输入验证码" error="$lang[captchacode_incorrect]" style="width:120px;">
-				  <img src="/?m=common&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
+				  <img src="/?m=plugin&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
 			  </td>
-			  <td><a onclick="document.getElementById('J-captcha').src='/?m=common&c=captcha&t='+Math.random()">更换验证码</a></td>
+			  <td><a onclick="document.getElementById('J-captcha').src='/?m=plugin&c=captcha&t='+Math.random()">更换验证码</a></td>
 		  </tr>
 	  </tbody>
   </table>
@@ -89,9 +89,9 @@
 			  <td>验证码</td>
 			  <td>
 				  <input type="text" class="input-text" name="captchacode" maxlength="4" required="true" regular="/^[\S]{4}$/" prompt="请输入验证码" error="$lang[captchacode_incorrect]" style="width:120px;">
-				  <img src="/?m=common&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
+				  <img src="/?m=plugin&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
 			  </td>
-			  <td><a onclick="document.getElementById('J-captcha').src='/?m=common&c=captcha&t='+Math.random()">更换验证码</a></td>
+			  <td><a onclick="document.getElementById('J-captcha').src='/?m=plugin&c=captcha&t='+Math.random()">更换验证码</a></td>
 		  </tr>
 	  </tbody>
   </table>
@@ -119,9 +119,9 @@
 			  <td>验证码</td>
 			  <td>
 				  <input type="text" class="input-text" name="captchacode" style="width:120px;" required="true" regular="/^[\S]{4}$/" prompt="请输入验证码" error="$lang[captchacode_incorrect]">
-				  <img src="/?m=common&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
+				  <img src="/?m=plugin&c=captcha" id="J-captcha" style="vertical-align:middle; height:28px; width:75px;">
 			  </td>
-			  <td><a onclick="document.getElementById('J-captcha').src='/?m=common&c=captcha&t='+Math.random()">更换验证码</a></td>
+			  <td><a onclick="document.getElementById('J-captcha').src='/?m=plugin&c=captcha&t='+Math.random()">更换验证码</a></td>
 		  </tr>
 	  </tbody>
   </table>
@@ -131,10 +131,10 @@
 <script type="text/javascript">
 $("#a-bind-mobile").click(function(e) {
     DSXUI.dialog({
-		html:$("#J-bind-mobile-tpl").html(),
+		content:$("#J-bind-mobile-tpl").html(),
 		title:'绑定手机号',
 		width:'450',
-		hideBottom:false,
+		hideFooter:false,
 		onConfirm:function(dlg){
 			var form = $("#J-bind-mobile-form");
 			if(form.validate()) {
@@ -158,8 +158,8 @@ $("#a-bind-email").click(function(e) {
     DSXUI.dialog({
 		title:'绑定邮箱',
 		width:'450',
-		hideBottom:false,
-		html:$("#J-bind-email-tpl").html(),
+        hideFooter:false,
+		content:$("#J-bind-email-tpl").html(),
 		onConfirm:function(dlg){
 			var form = $("#J-bind-email-form");
 			if(form.validate()){
@@ -183,15 +183,15 @@ $("#a-modi-password").click(function(e) {
     DSXUI.dialog({
 		title:'修改密码',
 		width:'450',
-		hideBottom:false,
-		html:$("#J-modi-password-tpl").html(),
+        hideFooter:false,
+        content:$("#J-modi-password-tpl").html(),
 		onConfirm:function(dlg){
 			var form = $("#J-modi-password-form");
 			if(form.validate()){
 				form.ajaxSubmit({
 					dataType:'json',
 					success:function(json){
-						if(json.errcode == 0){
+						if(json.errcode === 0){
 							dlg.close();
 							DSXUI.success('修改成功', DSXUtil.reFresh);
 						}else {

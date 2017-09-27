@@ -41,7 +41,7 @@ class Image{
      * @var array
      */
     private $info;
-    public $errno = 0;
+    private $errCode = 0;
     
     public static function getInstance($imgname = null){
     	static $instance;
@@ -64,7 +64,7 @@ class Image{
     public function open($imgname){
         //检测图像文件
         if(!is_file($imgname)) {
-        	$this->$errno = 1;
+        	$this->errCode = 1;
         	//die('不存在的图像文件');
         }
     
@@ -74,7 +74,7 @@ class Image{
         //检测图像合法性
         if(false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))){
             //die('非法图像文件');
-            $this->$errno = 2;
+            $this->errCode = 2;
         }
     
         //设置图像信息
@@ -102,7 +102,7 @@ class Image{
     public function save($imgname, $type = null, $quality=100,$interlace = true){
         if(empty($this->img)) {
         	//die('没有可以被保存的图像资源');
-        	$this->$errno = 3;
+        	$this->errCode = 3;
         }
         
         @mkdir(dirname($imgname), 0777 ,true);
@@ -131,7 +131,7 @@ class Image{
     public function width(){
         if(empty($this->img)) {
         	//die('没有指定图像资源');
-        	$this->$errno = 4;
+        	$this->errCode = 4;
         }
         return $this->info['width'];
     }
@@ -143,7 +143,7 @@ class Image{
     public function height(){
         if(empty($this->img)){
         	//die('没有指定图像资源');
-        	$this->$errno = 4;
+        	$this->errCode = 4;
         }
         return $this->info['height'];
     }
@@ -155,7 +155,7 @@ class Image{
     public function type(){
         if(empty($this->img)){
         	die('没有指定图像资源');
-        	$this->$errno = 4;
+        	$this->errCode = 4;
         }
         return $this->info['type'];
     }
@@ -167,7 +167,7 @@ class Image{
     public function mime(){
         if(empty($this->img)) {
         	//die('没有指定图像资源');
-        	$this->$errno = 4;
+        	$this->errCode = 4;
         }
         return $this->info['mime'];
     }
@@ -179,24 +179,25 @@ class Image{
     public function size(){
         if(empty($this->img)) {
         	//die('没有指定图像资源');
-        	$this->$errno = 4;
+        	$this->errCode = 4;
         }
         return array($this->info['width'], $this->info['height']);
     }
-    
+
     /**
      * 裁剪图像
-     * @param  integer $w      裁剪区域宽度
-     * @param  integer $h      裁剪区域高度
-     * @param  integer $x      裁剪区域x坐标
-     * @param  integer $y      裁剪区域y坐标
-     * @param  integer $width  图像保存宽度
+     * @param  integer $w 裁剪区域宽度
+     * @param  integer $h 裁剪区域高度
+     * @param  integer $x 裁剪区域x坐标
+     * @param  integer $y 裁剪区域y坐标
+     * @param  integer $width 图像保存宽度
      * @param  integer $height 图像保存高度
+     * @return $this
      */
     public function crop($w, $h, $x = 0, $y = 0, $width = null, $height = null){
         if(empty($this->img)) {
         	//die('没有可以被裁剪的图像资源');
-        	$this->$errno = 5;
+        	$this->errCode = 4;
         }
     
         //设置保存尺寸
@@ -219,12 +220,13 @@ class Image{
         $this->info['height'] = $height;
         return $this;
     }
-    
+
     /**
      * 生成缩略图
-     * @param  integer $width  缩略图最大宽度
+     * @param  integer $width 缩略图最大宽度
      * @param  integer $height 缩略图最大高度
-     * @param  integer $type   缩略图裁剪类型
+     * @param  integer $type 缩略图裁剪类型
+     * @return $this|void
      */
     public function thumb($width, $height, $type = Image::IMAGE_THUMB_SCALE){
         if(empty($this->img)) die('没有可以被缩略的图像资源');
@@ -323,19 +325,20 @@ class Image{
     
             default:
                 //die('不支持的缩略图裁剪类型');
-                $this->errno = 6;
+                $this->errCode = 6;
         }
     
         /* 裁剪图像 */
         $this->crop($w, $h, $x, $y, $width, $height);
         return $this;
     }
-    
+
     /**
      * 添加水印
-     * @param  string  $source 水印图片路径
+     * @param  string $source 水印图片路径
      * @param  integer $locate 水印位置
-     * @param  integer $alpha  水印透明度
+     * @param  integer $alpha 水印透明度
+     * @return $this
      */
     public function water($source, $locate = Image::IMAGE_WATER_SOUTHEAST,$alpha=80){
         //资源检测
@@ -440,16 +443,17 @@ class Image{
         imagedestroy($water);
         return $this;
     }
-    
+
     /**
      * 图像添加文字
-     * @param  string  $text   添加的文字
-     * @param  string  $font   字体路径
-     * @param  integer $size   字号
-     * @param  string  $color  文字颜色
+     * @param  string $text 添加的文字
+     * @param  string $font 字体路径
+     * @param  integer $size 字号
+     * @param  string $color 文字颜色
      * @param  integer $locate 文字写入位置
      * @param  integer $offset 文字相对当前位置的偏移量
-     * @param  integer $angle  文字倾斜角度
+     * @param  integer $angle 文字倾斜角度
+     * @return $this
      */
     public function text($text, $font, $size, $color = '#000000',
         $locate = Image::IMAGE_WATER_SOUTHEAST, $offset = 0, $angle = 0){
@@ -557,14 +561,15 @@ class Image{
         imagettftext($this->img, $size, $angle, $x + $ox, $y + $oy, $col, $font, $text);
         return $this;
     }
-    
+
     /**
      * 添加图片滤镜效果
-     * @param number $filtertype
+     * @param int $filtertype
      * @param int $arg1
      * @param int $arg2
      * @param int $arg3
      * @param int $arg4
+     * @return $this
      */
     public function filter($filtertype=0, $arg1 = null, $arg2 = null, $arg3 = null, $arg4 = null){
     	/**
@@ -596,6 +601,13 @@ class Image{
     		default:imagefilter($this->img, $filtertype);
     	}
     	return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function errCode(){
+        return $this->errCode;
     }
     
     /**

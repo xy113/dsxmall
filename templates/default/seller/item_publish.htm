@@ -14,6 +14,13 @@
             <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
                 <tbody>
                 <tr>
+                    <td class="cell-name" width="80">类目</td>
+                    <td>
+                        <span>{$catlog[name]}</span>
+                        <span style="margin-left: 10px;"><a href="{U:('c=item&a=sell&itemid='.$itemid)}" style="color: #0B90EF;">编辑类目</a></span>
+                    </td>
+                </tr>
+                <tr>
                     <td class="cell-name" width="80">宝贝名称</td>
                     <td><input type="text" name="item[title]" id="title" class="input-text w300" value="{$item[title]}"></td>
                 </tr>

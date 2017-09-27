@@ -5,7 +5,7 @@
 namespace Core;
 class Model{
 	protected $db;
-	protected $tablename;
+	protected $table;
 	protected $sql = '';
 	protected $data = array();
 	protected $config = array();
@@ -26,38 +26,8 @@ class Model{
      * @param string $name
      */
     function __construct($name=''){
-		static $db;
-		if (!is_object($db)){
-            $db = DB_Mysqli::getInstance();
-		}
-		$this->db = $db;
-		$name = $name ? $name : MODEL_NAME;
-		$this->t($name);
-	}
-
-    /**
-     * 连贯操作
-     * @param string $tableName
-     * @return $this
-     */
-	private function t($tableName){
-		foreach ($this->option as $key=>$value){
-			$this->option[$key] = '';
-		}
-		$tbname = '';
-		if (is_array($tableName)){
-			foreach ($tableName as $k=>$v){
-				if (is_numeric($k)){
-					$tbname.= $this->db->table($v).',';
-				}else {
-					$tbname.= $this->db->table($k)." AS ".$v.',';
-				}
-			}
-			$this->tablename = trim($tbname, ',');
-		}else {
-			$this->tablename = $this->db->table($tableName);
-		}
-		return $this;
+		$this->db = DB_Mysqli::getInstance();
+		if ($name) $this->table = $this->db->table($name);
 	}
 
     /**
@@ -283,7 +253,7 @@ class Model{
 
 		if ($type == 'select') {
 			$this->option['field'] = $this->option['field'] ? $this->option['field'] : '*';
-			$SQL = "SELECT ".$this->option['field']." FROM ".$this->tablename;
+			$SQL = "SELECT ".$this->option['field']." FROM ".$this->table;
 			$SQL.= $this->option['join']   ? ' '.$this->option['join']   : '';
 			$SQL.= $this->option['union']  ? ' '.$this->option['union']  : '';
 			$SQL.= $this->option['where']  ? ' '.$this->option['where']  : '';
@@ -390,7 +360,7 @@ class Model{
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
 			$cmd = $replace ? 'REPLACE INTO' : 'INSERT INTO';
-			$return = $this->db->query("$cmd ".$this->tablename." SET $sql");
+			$return = $this->db->query("$cmd ".$this->table." SET $sql");
 			return $return_insert_id ? $this->db->insert_id() : $return;
 		}else {
 			return false;
@@ -421,7 +391,7 @@ class Model{
      * @return bool|int
      */
     public function delete(){
-		$res = $this->db->query("DELETE FROM ".$this->tablename." ".$this->option['where']);
+		$res = $this->db->query("DELETE FROM ".$this->table." ".$this->option['where']);
 		return $res ? $this->db->affected_rows() : false;
 	}
 
@@ -448,7 +418,7 @@ class Model{
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
 			$cmd = "UPDATE ".($low_priority ? 'LOW_PRIORITY' : '');
-			$res = $this->db->query("$cmd {$this->tablename} SET $sql ".$this->option['where'],$unbuffered ? 'UNBUFFERED' : '');
+			$res = $this->db->query("$cmd {$this->table} SET $sql ".$this->option['where'],$unbuffered ? 'UNBUFFERED' : '');
 			return $res ? $this->db->affected_rows() : false;
 		}else  {
 			return false;

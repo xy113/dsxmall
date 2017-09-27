@@ -588,7 +588,7 @@ function menu_get_cache($menuid = 0){
 	$menulist = cache('menus');
 	if (!$menulist) $menulist = array();
 
-    return $menuid ? $menulist[$menuid] : $menulist;
+    return $menuid && isset($menulist[$menuid]) ? $menulist[$menuid] : $menulist;
 }
 
 /**

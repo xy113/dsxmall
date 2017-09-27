@@ -78,16 +78,22 @@ class ItemController extends BaseController{
     public function sell(){
         global $_G, $_lang;
 
+        $itemid = intval($_GET['itemid']);
         if ($this->checkFormSubmit()){
             $catid = intval($_GET['catid']);
-            $itemid = item_add_data(array(
-                'uid'=>$this->uid,
-                'catid'=>$catid,
-                'shop_id'=>$this->shop_id,
-                'item_sn'=>item_create_sn(),
-                'on_sale'=>0,
-                'create_time'=>time()
-            ));
+            if ($itemid) {
+                item_update_data(array('itemid'=>$itemid), array('catid'=>$catid));
+            }else {
+                $itemid = item_add_data(array(
+                    'uid'=>$this->uid,
+                    'catid'=>$catid,
+                    'shop_id'=>$this->shop_id,
+                    'item_sn'=>item_create_sn(),
+                    'on_sale'=>0,
+                    'create_time'=>time()
+                ));
+            }
+
             $this->redirect(U('c=item&a=publish&catid='.$catid.'&itemid='.$itemid));
         }else {
             $category_list = item_get_cat_list();
@@ -167,6 +173,7 @@ class ItemController extends BaseController{
             $item = item_get_data(array('itemid'=>$itemid));
             $desc = item_get_desc(array('itemid'=>$itemid, 'uid'=>$this->uid));
             $gallery = item_get_image_list(array('itemid'=>$itemid));
+            $catlog = item_get_cat(array('catid'=>$catid));
 
             $editorname = 'content';
             $editorcontent = $desc['content'];

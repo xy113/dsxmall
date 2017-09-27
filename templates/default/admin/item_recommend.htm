@@ -69,34 +69,31 @@
             });
         });
         $("#addButton").on('click', function () {
-            var html = '<div style="text-align: center; margin-top: 30px;">' +
-                '<span>商品ID:</span>' +
+            var content = '<div style="text-align: center; padding: 20px;">' +
+                '<span>商品ID: </span>' +
                 '<input type="text" class="input-text" id="J_itemId"> ' +
-                '<button type="button" class="button" id="J_AddButton">确定</button>' +
                 '</div>';
             DSXUI.dialog({
                 title:'添加推荐商品',
-                html:html,
-                hideFooter:true,
-                afterShow:function (dlg) {
-                    $("#J_AddButton").on('click', function () {
-                        var itemid = $("#J_itemId").val();
-                        if (!itemid) {
-                            DSXUI.error('请填写商品ID');
-                            return false;
-                        }
-                        $.ajax({
-                            type:'POST',
-                            data:{itemid:itemid},
-                            url:"{U:('c=item&a=add_recommend')}",
-                            dataType:'json',
-                            success:function (response) {
-                                dlg.close();
-                                if (response.errcode == 0){
-                                    DSXUI.success('宝贝添加成功');
-                                }
+                content:content,
+                hideFooter:false,
+                onConfirm:function (dlg) {
+                    var itemid = $("#J_itemId").val();
+                    if (!itemid) {
+                        DSXUI.error('请填写商品ID');
+                        return false;
+                    }
+                    $.ajax({
+                        type:'POST',
+                        data:{itemid:itemid},
+                        url:"{U:('c=item&a=add_recommend')}",
+                        dataType:'json',
+                        success:function (response) {
+                            dlg.close();
+                            if (response.errcode == 0){
+                                DSXUI.success('宝贝添加成功');
                             }
-                        });
+                        }
                     });
                 }
             });

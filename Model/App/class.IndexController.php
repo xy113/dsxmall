@@ -7,7 +7,7 @@ class IndexController extends BaseController{
     public function index(){
 		global $_G,$_lang;
 
-
+        $menu_list = menu_get_cache(2);
 		include template('index');
 	}
 

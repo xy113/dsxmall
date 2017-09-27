@@ -87,6 +87,7 @@ class UploadImage extends Upload{
     /**
      * 自动旋转照片
      * @param $imgFile
+     * @return bool
      */
     private function removeExif($imgFile) {
         if (!function_exists('exif_read_data')) {

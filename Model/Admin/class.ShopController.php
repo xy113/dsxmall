@@ -24,10 +24,10 @@ class ShopController extends BaseController{
         global $_G,$_lang;
 
         if ($this->checkFormSubmit()){
-            $ids = $_GET['ids'];
-            if ($ids && is_array($ids)) {
+            $shops = $_GET['shops'];
+            if ($shops && is_array($shops)) {
                 if ($_GET['eventType'] == 'delete'){
-                    foreach ($ids as $shop_id) {
+                    foreach ($shops as $shop_id) {
                         $this->delShop($shop_id);
                     }
                     //$this->showSuccess('delete_succeed');
@@ -35,15 +35,14 @@ class ShopController extends BaseController{
                 }
 
                 if ($_GET['eventType'] == 'open'){
-                    $ids = implodeids($ids);
-                    shop_update_data(array('shop_id'=>array('IN', $ids)), array('shop_status'=>'OPEN'));
+                    shop_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('closed'=>'0'));
                     //$this->showSuccess('update_succeed');
                     $this->showAjaxReturn();
                 }
 
                 if ($_GET['eventType'] == 'close'){
-                    $ids = implodeids($ids);
-                    shop_update_data(array('shop_id'=>array('IN', $ids)), array('shop_status'=>'CLOSE'));
+                    shop_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('closed'=>'1'));
+                    item_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('on_sale'=>'0'));
                     //$this->showSuccess('update_succeed');
                     $this->showAjaxReturn();
                 }
@@ -58,11 +57,11 @@ class ShopController extends BaseController{
             $tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
             $queryParams['tab'] = $tab;
             if ($tab == 'open'){
-                $condition['shop_status'] = 'OPEN';
+                $condition['closed'] = '0';
             }
 
             if ($tab == 'closed'){
-                $condition['shop_status'] = 'CLOSE';
+                $condition['closed'] = '1';
             }
 
             $shop_name = htmlspecialchars($_GET['shop_name']);
@@ -85,11 +84,11 @@ class ShopController extends BaseController{
 
             $shop_status = strtoupper(htmlspecialchars($_GET['shop_status']));
             if ($shop_status == 'OPEN'){
-                $condition['shop_status'] = 'OPEN';
+                $condition['closed'] = '0';
                 $queryParams['shop_status'] = 'OPEN';
             }
             if ($shop_status == 'CLOSE'){
-                $condition['shop_status'] = 'CLOSE';
+                $condition['closed'] = '1';
                 $queryParams['shop_status'] = 'CLOSE';
             }
 
@@ -125,11 +124,12 @@ class ShopController extends BaseController{
     private function delShop($shop_id){
         shop_delete_data(array('shop_id'=>$shop_id));
         shop_delete_auth(array('shop_id'=>$shop_id));
-        $itemlist = item_get_list(array('shop_id'=>$shop_id), 0);
+        $itemlist = item_get_list(array('shop_id'=>$shop_id), 0, 0, null, 'itemid');
         foreach ($itemlist as $item){
-            item_delete_data(array('id'=>$item['id']));
-            item_delete_desc(array('itemid'=>$item['id']));
-            item_delete_image(array('itemid'=>$item['id']));
+            item_delete_data(array('itemid'=>$item['itemid']));
+            item_delete_desc(array('itemid'=>$item['itemid']));
+            item_delete_image(array('itemid'=>$item['itemid']));
+            item_detete_recommend(array('itemid'=>$item['itemid']));
         }
     }
 
@@ -155,7 +155,7 @@ class ShopController extends BaseController{
                         shop_update_data(array('shop_id'=>$shop_id),
                             array(
                                 'auth_status'=>'SUCCESS',
-                                'shop_status'=>'OPEN'
+                                'closed'=>'0'
                             ));
                         shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
                     }
@@ -168,7 +168,7 @@ class ShopController extends BaseController{
                         shop_update_data(array('shop_id'=>$shop_id),
                             array(
                                 'auth_status'=>'FAIL',
-                                'shop_status'=>'CLOSE'
+                                'closed'=>'1'
                             ));
                         shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'FAIL', 'auth_time'=>time()));
                     }

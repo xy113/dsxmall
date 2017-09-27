@@ -97,7 +97,7 @@
 .listtable tbody tr:hover td{background-color:#FeFeF0;}
 .listtable label{margin-right: 5px; height: 24px; line-height: 24px;}
 .listtable .operations{background-color: #F3F3F3; padding: 7px 0; border-bottom: 1px #DDD solid;}
-.listtable .operations .btn{height: 24px; line-height: 24px; cursor: pointer; padding: 0 10px; border: 1px #e0e0e0 solid; background-color: #f0f0f0; font-size: 12px;}
+.listtable .operations .btn{height: 24px; line-height: 24px; cursor: pointer; padding: 0 10px; border: 1px #e0e0e0 solid; background-color: #fafafa; font-size: 12px;}
 .listtable .operations .btn:hover{background-color: #e5e5e5; color: #222;}
 .listtable .align-right{text-align: right;}
 .listtable .align-center{text-align: center;}

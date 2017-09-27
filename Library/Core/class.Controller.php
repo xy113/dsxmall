@@ -5,6 +5,7 @@ abstract class Controller{
 	protected $username = '';
 	protected $member   = array();
     protected $islogin  = 0;
+    protected $inAjax = 0;
 
     /**
      * Controller constructor.
@@ -36,6 +37,17 @@ abstract class Controller{
         $_G['username'] = &$this->username;
         $_G['member']   = &$this->member;
         $_G['islogin']  = &$this->islogin;
+
+        // php 判断是否为 ajax 请求  http://www.cnblogs.com/sosoft/
+        if(isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && strtolower($_SERVER["HTTP_X_REQUESTED_WITH"])=="xmlhttprequest"){
+            // ajax 请求的处理方式
+            $this->inAjax = 1;
+        }else {
+            if ($_GET['inajax'] == 1){
+                $this->inAjax = 1;
+            }
+        }
+        $_G['inajax'] = &$this->inAjax;
 	}
 	
 	protected function t($tableName) {
@@ -173,14 +185,6 @@ abstract class Controller{
 	}
 	
 	/**
-	 * 判断是否AJAX提交
-	 */
-	protected function inAjax(){
-		$inajax = isset($_GET['inajax']) ? intval($_GET['inajax']) : 0;
-		return $inajax;
-	}
-	
-	/**
 	 * 返回Ajax数据
 	 * @param mixed $data
 	 */
@@ -291,7 +295,8 @@ abstract class Controller{
      * @param string $extra 附加参数
      * @return string
      */
-	protected function googlePage($page,$total,$extra=''){
+	protected function googlePagination($page,$total,$extra=''){
+	    global $_G;
 		$extra = !empty($extra) ? $extra.'&' : '';
 		$scr = '/?m='.$_G['m'].'&c='.$_G['c'].'&a='.$_G['a'].$extra;
 		$prevs = $page-5;

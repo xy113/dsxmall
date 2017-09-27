@@ -21,6 +21,14 @@ class Application{
      */
     function __construct(){
 		spl_autoload_register('Application::autoload', true);
+		if (defined('DEBUG') && DEBUG) {
+            ini_set('display_errors', 'on');
+            error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
+        }else {
+            ini_set('display_errors', 'off');
+            error_reporting(0);
+        }
+
 		$this->timezone_set(8);
 		if(version_compare(PHP_VERSION,'5.4.0','<')) {
 			@ini_set('magic_quotes_runtime',0);
@@ -106,9 +114,9 @@ class Application{
         if(!preg_match('/^[a-zA-Z0-9_]+$/i',$this->var['a'])){
             die('Wrong parameters, a must be a charactor form a-zA-Z0-9!');
         }
-        $this->var['BASEURL'] = curPageURL();
+
 		$this->var['page'] = isset($_GET['page']) ? max(array(intval($_GET['page']), 1)) : 1;
-		$this->var['inajax'] = isset($_GET['inajax']) ? intval($_GET['inajax']) : 0;
+        $this->var['BASEURL'] = curPageURL();
 		
 		define('FORMHASH', formhash());
 		define('TIMESTAMP', time());

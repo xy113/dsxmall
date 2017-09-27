@@ -75,7 +75,7 @@
             });
             DSXUI.dialog({
                 title:'添加板块',
-                html:html,
+                content:html,
                 onConfirm:function (dlg) {
                     var block_name = $.trim($("#J_block_name").val());
                     if(!block_name) {
@@ -107,7 +107,7 @@
                     });
                     DSXUI.dialog({
                         title:'添加板块',
-                        html:html,
+                        content:html,
                         onConfirm:function (dlg) {
                             var block_name = $.trim($("#J_block_name").val());
                             if(!block_name) {

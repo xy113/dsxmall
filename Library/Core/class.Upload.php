@@ -4,7 +4,7 @@ class Upload{
 	public $savepath = '';
     public $allowtypes = array();
     public $maxsize = 0;
-    public $errno = 0;
+    public $errCode = 0;
     private $file;
     
     public function __construct($inputname = 'filedata'){
@@ -14,7 +14,7 @@ class Upload{
     /**
      * 保存文件
      * @param string $saveName
-     * @return bool
+     * @return mixed
      */
     protected function save($saveName = ''){
     	if (!$this->savepath) $this->savepath = C('ATTACHDIR');
@@ -24,19 +24,19 @@ class Upload{
         
         $fileext = $this->getfileextension();
         if (!in_array($fileext, $this->allowtypes)){
-        	$this->errno = 1;
+        	$this->errCode = 1;
         	return false;
         }
         if ($this->file['size'] > $this->maxsize){
-        	$this->errno = 2;
+        	$this->errCode = 2;
         	return false;
         }
         if (!@is_uploaded_file($this->file['tmp_name'])){
-        	$this->errno = 3;
+        	$this->errCode = 3;
         	return false;
         }
         if (!@move_uploaded_file($this->file['tmp_name'], $filepath)){
-        	$this->errno = 4;
+        	$this->errCode = 4;
         	return false;
         }else {
         	return array(

@@ -43,7 +43,7 @@ class WxPayResults extends WxPayData
      *
      * 使用数组初始化对象
      * @param array $array
-     * @param 是否检测签名 $noCheckSign
+     * @param bool|是否检测签名 $noCheckSign
      * @return WxPayResults
      */
     public static function initFromArray($array, $noCheckSign = false)
