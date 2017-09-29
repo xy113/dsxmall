@@ -23,4 +23,16 @@ class PostItemModel extends Model
     {
         parent::__construct($name);
     }
+
+    /**
+     * @param $aid
+     */
+    public function deleteAllData($aid){
+        if ($this->where(array('aid'=>$aid))->delete()){
+            (new PostContentModel())->where(array('aid'=>$aid))->delete();
+            (new PostImageModel())->where(array('aid'=>$aid))->delete();
+            (new PostMediaModel())->where(array('aid'=>$aid))->delete();
+            (new PostLogModel())->where(array('aid'=>$aid))->delete();
+        }
+    }
 }

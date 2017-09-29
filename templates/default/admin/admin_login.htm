@@ -20,8 +20,7 @@ a:hover{color:#FF0000; text-decoration:underline;}
 </style>
 <script type="text/javascript" src="/static/js/jquery.js"></script>
 <script type="text/javascript" src="/static/js/common.js"></script>
-<script type="text/javascript" src="/static/js/jquery.form.js"></script>
-<link rel="icon" href="/static/images/common/favicon.ico" />
+<link rel="icon" href="/static/images/common/favicon.png" />
 </head>
 <body style="background:url(http://service.dsxcms.com/background.php);">
 <div class="login-wrap">
@@ -44,10 +43,10 @@ a:hover{color:#FF0000; text-decoration:underline;}
 			form.ajaxSubmit({
 				dataType:'json',
 				success:function(json){
-					if(json.errcode == 0){
-						window.location = window.location.href;
+					if(json.errcode === 0){
+						DSXUtil.reFresh();
 					}else{
-						$("#err").text('{$lang[password_incorrect]}').show();
+						$("#err").text('{$_lang[password_incorrect]}').show();
 					}
 				}
 			});
@@ -58,7 +57,7 @@ a:hover{color:#FF0000; text-decoration:underline;}
 	form.find("input").blur(function(e) {
         $("#err").empty().hide();
     }).keydown(function(e) {
-        if(e.which == 13){
+        if(e.which === 13){
 			submitLogin();
 		}
     });

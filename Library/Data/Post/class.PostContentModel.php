@@ -13,7 +13,7 @@ use Core\Model;
 
 class PostContentModel extends Model
 {
-    protected $table = 'member_content';
+    protected $table = 'post_content';
 
     /**
      * PostContentModel constructor.

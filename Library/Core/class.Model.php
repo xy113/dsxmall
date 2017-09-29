@@ -4,12 +4,11 @@
  */
 namespace Core;
 class Model{
-	protected $db;
-	protected $table;
-	protected $sql = '';
-	protected $data = array();
-	protected $config = array();
-	protected $option = array(
+	private $db;
+	private $tableName;
+    private $sql = '';
+	private $data = array();
+	private $option = array(
 			'field'=>'*',
 			'where'=>'',
 			'order'=>'',
@@ -21,13 +20,15 @@ class Model{
 			'union'=>''
 	);
 
+    protected $table;
+
     /**
      * Model constructor.
      * @param string $name
      */
     function __construct($name=''){
 		$this->db = DB_Mysqli::getInstance();
-		if ($name) $this->table = $this->db->table($name);
+		$this->tableName = $name ? $this->db->table($name) : $this->db->table($this->table);
 	}
 
     /**
@@ -253,7 +254,7 @@ class Model{
 
 		if ($type == 'select') {
 			$this->option['field'] = $this->option['field'] ? $this->option['field'] : '*';
-			$SQL = "SELECT ".$this->option['field']." FROM ".$this->table;
+			$SQL = "SELECT ".$this->option['field']." FROM ".$this->tableName;
 			$SQL.= $this->option['join']   ? ' '.$this->option['join']   : '';
 			$SQL.= $this->option['union']  ? ' '.$this->option['union']  : '';
 			$SQL.= $this->option['where']  ? ' '.$this->option['where']  : '';
@@ -290,7 +291,7 @@ class Model{
 		$this->setSQL('select');
 		$query  = $this->db->query($this->sql,'U_B');
 		$result = $this->db->fetch_array($query, MYSQL_ASSOC);
-		return $result;
+		return $result ? $result : array();
 	}
 
     /**
@@ -332,9 +333,11 @@ class Model{
 
     /**
      * @param null $data
+     * @return $this
      */
     public function data($data = null){
-		$this->data = $data;
+		if (!is_null($data)) $this->data = $data;
+		return $this;
 	}
 
     /**
@@ -360,7 +363,7 @@ class Model{
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
 			$cmd = $replace ? 'REPLACE INTO' : 'INSERT INTO';
-			$return = $this->db->query("$cmd ".$this->table." SET $sql");
+			$return = $this->db->query("$cmd ".$this->tableName." SET $sql");
 			return $return_insert_id ? $this->db->insert_id() : $return;
 		}else {
 			return false;
@@ -391,7 +394,7 @@ class Model{
      * @return bool|int
      */
     public function delete(){
-		$res = $this->db->query("DELETE FROM ".$this->table." ".$this->option['where']);
+		$res = $this->db->query("DELETE FROM ".$this->tableName." ".$this->option['where']);
 		return $res ? $this->db->affected_rows() : false;
 	}
 
@@ -402,7 +405,7 @@ class Model{
      * @param bool $low_priority
      * @return bool|int
      */
-    public function save($data, $unbuffered = false, $low_priority = false){
+    public function save($data=null, $unbuffered = false, $low_priority = false){
 		return $this->update($data, $unbuffered, $low_priority);
 	}
 
@@ -414,11 +417,11 @@ class Model{
      * @return bool|int
      */
     public function update($data=null, $unbuffered = false, $low_priority = false) {
-		$this->data = $data ? $data : $this->data;
+		if (!is_null($data)) $this->data = $data;
 		if ($this->data) {
 			$sql = $this->db->implode_field_value($this->data);
 			$cmd = "UPDATE ".($low_priority ? 'LOW_PRIORITY' : '');
-			$res = $this->db->query("$cmd {$this->table} SET $sql ".$this->option['where'],$unbuffered ? 'UNBUFFERED' : '');
+			$res = $this->db->query("$cmd {$this->tableName} SET $sql ".$this->option['where'],$unbuffered ? 'UNBUFFERED' : '');
 			return $res ? $this->db->affected_rows() : false;
 		}else  {
 			return false;

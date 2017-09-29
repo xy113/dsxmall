@@ -6,6 +6,12 @@
  * Time: 下午12:08
  */
 namespace Model\Seller;
+use Data\Item\Builder\ItemContentBuilder;
+use Data\Item\ItemCatlogModel;
+use Data\Item\ItemDescModel;
+use Data\Item\ItemImageModel;
+use Data\Item\ItemModel;
+
 class ItemController extends BaseController{
     /**
      *
@@ -32,14 +38,16 @@ class ItemController extends BaseController{
 
                 if ($_GET['eventType'] == 'on_sale'){
                     foreach ($items as $itemid){
-                        item_update_data(array('itemid'=>$itemid), array('on_sale'=>1));
+                        $model = new ItemModel();
+                        $model->where(array('itemid'=>$itemid))->update(array('on_sale'=>1));
                     }
                     $this->showSuccess('update_succeed');
                 }
 
                 if ($_GET['eventType'] == 'off_sale'){
                     foreach ($items as $itemid){
-                        item_update_data(array('itemid'=>$itemid), array('on_sale'=>0));
+                        $model = new ItemModel();
+                        $model->where(array('itemid'=>$itemid))->update(array('on_sale'=>0));
                     }
                     $this->showSuccess('update_succeed');
                 }
@@ -58,14 +66,12 @@ class ItemController extends BaseController{
                 $_G['menu'] = 'on_sale_item';
                 $condition['on_sale'] = 1;
             }
-            $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-            if ($q) $condition['name'] = array('LIKE', $q);
 
-            $totalnum   = item_get_count($condition);
+            $totalnum   = (new ItemModel())->where($condition)->count();
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
-            $itemlist = item_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
-            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "type=$type&q=$q", true);
+            $itemlist = (new ItemModel())->where($condition)->page($_G['page'], $pagesize)->order('itemid', 'DESC')->select();
+            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "type=$type", true);
 
             $_G['title'] = $_lang['on_sale_item'];
             include template('item_list');
@@ -81,17 +87,17 @@ class ItemController extends BaseController{
         $itemid = intval($_GET['itemid']);
         if ($this->checkFormSubmit()){
             $catid = intval($_GET['catid']);
+            $itemModel = new ItemModel();
+
             if ($itemid) {
-                item_update_data(array('itemid'=>$itemid), array('catid'=>$catid));
+                $itemModel->where(array('itemid'=>$itemid))->update(array('catid'=>$catid));
             }else {
-                $itemid = item_add_data(array(
-                    'uid'=>$this->uid,
-                    'catid'=>$catid,
-                    'shop_id'=>$this->shop_id,
-                    'item_sn'=>item_create_sn(),
-                    'on_sale'=>0,
-                    'create_time'=>time()
-                ));
+                $itemContent = new ItemContentBuilder();
+                $itemContent->setUid($this->uid);
+                $itemContent->setCatid($catid);
+                $itemContent->setShop_id($this->shop_id);
+                $itemContent->setOn_sale('0');
+                $itemid = $itemModel->insertObject($itemContent);
             }
 
             $this->redirect(U('c=item&a=publish&catid='.$catid.'&itemid='.$itemid));
@@ -129,37 +135,44 @@ class ItemController extends BaseController{
                     $item['thumb'] = $gallery[0]['thumb'];
                     $item['image'] = $gallery[0]['image'];
                 }
-                item_update_data(array('itemid'=>$itemid, 'uid'=>$this->uid), $item);
+                $itemModel = new ItemModel();
+                $itemModel->where(array('itemid'=>$itemid, 'uid'=>$this->uid))->update($item);
 
                 //添加产品介绍
                 $content = trim($_GET['content']);
-                $res = item_update_desc(array('itemid'=>$itemid, 'uid'=>$this->uid), array('content'=>$content, 'update_time'=>time()));
+                $itemDesc = new ItemDescModel();
+                $res = $itemDesc->where(array('itemid'=>$itemid, 'uid'=>$this->uid))->update(array('content'=>$content, 'update_time'=>time()));
                 if (!$res) {
-                    item_add_desc(array(
+                    $itemDesc->add(array(
+                        'uid'=>$this->uid,
                         'itemid'=>$itemid,
                         'content'=>$content,
-                        'uid'=>$this->uid,
                         'update_time'=>time()
                     ));
                 }
 
-                foreach ($gallery as $ga){
-                    $id = intval($ga['id']);
-                    if ($ga['thumb'] && $ga['image']){
-                        if ($id > 0) {
-                            item_update_image(array('id'=>$id, 'uid'=>$this->uid), array(
-                                'thumb'=>$ga['thumb'],'image'=>$ga['image']
-                            ));
-                        }else {
-                            item_add_image(array(
-                                'uid'=>$this->uid,
-                                'itemid'=>$itemid,
-                                'thumb'=>$ga['thumb'],
-                                'image'=>$ga['image']
-                            ));
+                if ($gallery) {
+                    $itemImage = new ItemImageModel();
+                    foreach ($gallery as $ga){
+                        $id = intval($ga['id']);
+                        if ($ga['thumb'] && $ga['image']){
+                            if ($id > 0) {
+                                $itemImage->where(array('id'=>$id, 'uid'=>$this->uid))->update(array(
+                                    'thumb'=>$ga['thumb'],
+                                    'image'=>$ga['image']
+                                ));
+                            }else {
+                                $itemImage->add(array(
+                                    'uid'=>$this->uid,
+                                    'itemid'=>$itemid,
+                                    'thumb'=>$ga['thumb'],
+                                    'image'=>$ga['image']
+                                ));
+                            }
                         }
                     }
                 }
+
                 $this->showSuccess('update_succeed', null, array(
                     array('text'=>'reedit', 'url'=>curPageURL()),
                     array('text'=>'sell_item', 'url'=>U('c=item&a=sell')),
@@ -170,10 +183,10 @@ class ItemController extends BaseController{
             }
         }else {
 
-            $item = item_get_data(array('itemid'=>$itemid));
-            $desc = item_get_desc(array('itemid'=>$itemid, 'uid'=>$this->uid));
-            $gallery = item_get_image_list(array('itemid'=>$itemid));
-            $catlog = item_get_cat(array('catid'=>$catid));
+            $item    = (new ItemModel())->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->getOne();
+            $desc    = (new ItemDescModel())->where(array('itemid'=>$itemid, 'uid'=>$this->uid))->getOne();
+            $gallery = (new ItemImageModel())->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->select();
+            $catlog  = (new ItemCatlogModel())->where(array('catid'=>$catid))->getOne();
 
             $editorname = 'content';
             $editorcontent = $desc['content'];
@@ -183,18 +196,17 @@ class ItemController extends BaseController{
     }
 
     /**
-     *
+     * 获取商品列表
      */
     public function get_catelist(){
-        $category_list = item_get_cat_list();
+        $catlog_list = array();
         $fid = intval($_GET['fid']);
-        $new_category_list = array();
-        foreach ($category_list as $cat){
-            if ($cat['fid'] == $fid){
-                $new_category_list[] = array('catid'=>$cat['catid'], 'name'=>$cat['name']);
+        foreach ((new ItemCatlogModel())->getCache() as $catlog){
+            if ($catlog['fid'] == $fid){
+                $catlog_list[] = array('catid'=>$catlog['catid'], 'name'=>$catlog['name']);
             }
         }
-        $this->showAjaxReturn($new_category_list);
+        $this->showAjaxReturn($catlog_list);
     }
 
     /**
@@ -211,36 +223,12 @@ class ItemController extends BaseController{
      * @param $itemid
      */
     private function delItemData($itemid){
-        item_delete_data(array('uid'=>$this->uid, 'itemid'=>$itemid));
-        item_delete_desc(array('uid'=>$this->uid, 'itemid'=>$itemid));
-        item_delete_image(array('uid'=>$this->uid, 'itemid'=>$itemid));
-    }
-
-    /**
-     * 获取产品分类列表
-     * @return array
-     */
-    private function getCatList(){
-        $itemlist = item_get_cat_list();
-        if ($itemlist) {
-            $datalist = array();
-            foreach ($itemlist as $item){
-                $datalist[$item['fid']][$item['catid']] = array(
-                    'fid'=>$item['fid'],
-                    'catid'=>$item['catid'],
-                    'name'=>$item['name']
-                );
-            }
-            return $datalist;
-        }else {
-            return array();
-        }
-    }
-
-    private function update(){
-        $itemlist = item_get_list(array('item_sn'=>''),0);
-        foreach ($itemlist as $item){
-            item_update_data(array('itemid'=>$item['itemid']), array('item_sn'=>item_create_sn()));
+        $model = new ItemModel();
+        if ($model->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->delete()){
+            //删除商品图片
+            (new ItemImageModel())->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->delete();
+            //删除商品描述
+            (new ItemDescModel())->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->delete();
         }
     }
 }

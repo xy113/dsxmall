@@ -13,7 +13,7 @@ use Core\Model;
 
 class PostLogModel extends Model
 {
-    protected $table = 'post_catlog';
+    protected $table = 'post_log';
 
     /**
      * PostLogModel constructor.

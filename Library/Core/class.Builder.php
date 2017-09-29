@@ -18,6 +18,17 @@ abstract class Builder
     public function getData();*/
 
     /**
+     * Builder constructor.
+     * @param array $data
+     */
+    function __construct($data = array())
+    {
+        if ($data) {
+            $this->data = $data;
+        }
+    }
+
+    /**
      * @param $key
      * @param $value
      */
@@ -37,6 +48,7 @@ abstract class Builder
      * @param array $data
      */
     public function setData(array $data){
+        /*
         if (empty($this->data)){
             $this->data = $data;
         }else {
@@ -46,6 +58,8 @@ abstract class Builder
                 }
             }
         }
+        */
+        $this->data = $data;
     }
 
     /**
@@ -53,5 +67,20 @@ abstract class Builder
      */
     public function getData(){
         return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBizContent(){
+        $content = array();
+        foreach ($this->data as $key=>$value){
+            if ($key == '' || $value == ''){
+                continue;
+            }else {
+                $content[$key] = $value;
+            }
+        }
+        return $content;
     }
 }

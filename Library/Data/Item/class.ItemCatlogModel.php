@@ -34,4 +34,29 @@ class ItemCatlogModel extends Model
         }
         return $this->add($object->getData(), true);
     }
+
+    /**
+     * @return bool|mixed
+     */
+    public function updateCache(){
+        $catloglist = $this->order('displayorder ASC, catid ASC')->select();
+        $datalist = array();
+        foreach ($catloglist as $catlog){
+            $catlog[$catlog['catid']] = $catlog;
+        }
+        return cache('item_catlog', $catloglist);
+    }
+
+    /**
+     * @return bool|mixed
+     */
+    public function getCache(){
+        $catloglist = cache('item_catlog');
+        if (!is_array($catloglist)){
+            $this->updateCache();
+            return $this->getCache();
+        }else {
+            return $catloglist;
+        }
+    }
 }

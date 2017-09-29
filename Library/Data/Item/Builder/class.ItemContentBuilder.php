@@ -12,10 +12,10 @@ use Core\Builder;
 class ItemContentBuilder extends Builder
 {
     protected $data = array(
-        'itemid'=>0,//商品ID
-        'uid'=>0,//用户ID
-        'catid'=>0,
-        'shop_id'=>0,
+        'itemid'=>'',//商品ID
+        'uid'=>'',//用户ID
+        'catid'=>'',
+        'shop_id'=>'',
         'title'=>'',
         'subtitle'=>'',
         'item_sn'=>'',
@@ -23,12 +23,12 @@ class ItemContentBuilder extends Builder
         'image'=>'',
         'price'=>'',
         'on_sale'=>'',
-        'is_best'=>0,
-        'stock'=>0,
-        'sold'=>0,
+        'is_best'=>'',
+        'stock'=>'',
+        'sold'=>'',
         'view_num'=>'',
         'collection_num'=>'',
-        'reviews_num'=>'',
+        'review_num'=>'',
         'create_time'=>'',
         'update_time'=>'',
         'shipping_fee'=>''
@@ -253,15 +253,15 @@ class ItemContentBuilder extends Builder
     /**
      * @param $value
      */
-    public function setReviews_num($value){
-        $this->data['reviews_num'] = $value;
+    public function setReview_num($value){
+        $this->data['review_num'] = $value;
     }
 
     /**
      * @return mixed
      */
-    public function getReviews_num(){
-        return $this->data['reviews_num'];
+    public function getReview_num(){
+        return $this->data['review_num'];
     }
 
     /**

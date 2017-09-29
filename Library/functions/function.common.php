@@ -88,19 +88,15 @@ function C($name=null, $value=''){
  * @return \Core\Model
  */
 function M($name){
-	if (is_array($name)){
-		$model = new \Core\Model($name);
-		return $model;
-	}else {
-		$modelclass = ucfirst($name).'Model';
-		if (is_file(MODEL_PATH.ucfirst($name).'/class.'.$modelclass.'.php')){
-			$class = 'Model\\'.ucfirst($name).'\\'.$modelclass;
-		}else {
-            $class = 'Core\\Model';
-		}
-		$model = new $class($name);
-		return $model;
-	}
+    return new \Core\Model($name);
+}
+
+/**
+ * 获取Mysqli 实例
+ * @return DB_Mysqli
+ */
+function DB(){
+    return \Core\DB_Mysqli::getInstance();
 }
 
 /**
@@ -164,14 +160,6 @@ function setting($name=null, $value=''){
             return $value;
         }
     }
-}
-
-/**
- * 获取Mysqli 实例
- * @return DB_Mysqli
- */
-function DB(){
-    return \Core\DB_Mysqli::getInstance();
 }
 
 /**
@@ -610,7 +598,7 @@ function template($file, $tpldir = '', $theme='') {
     	}
     }
     
-    $objfile = DATA_PATH.'template/'.$theme.'/'.$tpldir.'/'.$file.'.tpl.php';
+    $objfile = RUNTIME_DIR.'template/'.$theme.'/'.$tpldir.'/'.$file.'.tpl.php';
     if (!is_file($objfile) || filemtime($tplfile)>filemtime($objfile)){
     	@mkdir(dirname($objfile),0777,true);
         \Core\Template::parse_template($tplfile,$tpldir,$objfile);

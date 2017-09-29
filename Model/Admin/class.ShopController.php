@@ -223,14 +223,14 @@ class ShopController extends BaseController{
             shop_update_data(array('shop_id'=>$shop_id),
                 array(
                     'auth_status'=>'SUCCESS',
-                    'shop_status'=>'OPEN'
+                    'closed'=>'0'
                 ));
             shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
         }else {
             shop_update_data(array('shop_id'=>$shop_id),
                 array(
                     'auth_status'=>'FAIL',
-                    'shop_status'=>'CLOSE'
+                    'closed'=>'1'
                 ));
             shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'FAIL', 'auth_time'=>time()));
         }
@@ -287,7 +287,7 @@ class ShopController extends BaseController{
             $rows.= $excel->getRow(array(
                 $shop['shop_name'], $shop['username'],$shop['phone'],
                 $shop['province'].' '.$shop['city'].' '.$shop['county'],
-                $_lang['shop_status'][$shop['shop_status']], date('Y-m-d', $shop['create_time'])
+                $_lang['shop_status'][$shop['closed']], date('Y-m-d', $shop['create_time'])
             ));
         }
         file_put_contents($excelfile, $rows, FILE_APPEND);

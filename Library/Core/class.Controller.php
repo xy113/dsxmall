@@ -222,6 +222,19 @@ abstract class Controller{
 	}
 
     /**
+     * 分页
+     * @param $curr_page
+     * @param $page_count
+     * @param $total_count
+     * @param string $extra
+     * @param bool $show_total
+     * @return string
+     */
+    protected function pagination($curr_page, $page_count, $total_count, $extra='', $show_total=FALSE){
+	    return $this->showPages($curr_page, $page_count, $total_count, $extra, $show_total);
+    }
+
+    /**
      * Discuz 风格分页
      * @param int $curr_page 当前页
      * @param int $page_count 总页数

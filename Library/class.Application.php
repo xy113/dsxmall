@@ -7,8 +7,9 @@ defined('CERT_PATH')      or define('CERT_PATH',   ROOT_PATH.'/cert/');
 defined('CONFIG_PATH')    or define('CONFIG_PATH', ROOT_PATH.'Config/');
 defined('LANG_PATH')      or define('LANG_PATH',   ROOT_PATH.'Lang/');
 defined('DATA_PATH')      or define('DATA_PATH',   ROOT_PATH.'data/');
-defined('CACHE_PATH')     or define('CACHE_PATH',  ROOT_PATH.'data/cache/');
 defined('TPL_PATH')       or define('TPL_PATH',    ROOT_PATH.'templates/');
+defined('RUNTIME_DIR')    or define('RUNTIME_DIR',  ROOT_PATH.'runtime/');
+defined('CACHE_PATH')     or define('CACHE_PATH',  RUNTIME_DIR.'cache/');
 defined('DEFAULT_MODEL')  or define('DEFAULT_MODEL', 'home');
 defined('DEFAULT_LANG')   or define('DEFAULT_LANG', 'zh_cn');
 defined('THEME')  or define('THEME', 'default');
@@ -83,7 +84,7 @@ class Application{
 		unset($langlist, $langfile, $name);
 		
 		//加载function文件
-		$functionlist = array('material', 'member', 'misc', 'shop', 'item', 'trade', 'post', 'weixin','notice');
+		$functionlist = array();
 		if (is_array(C('AUTO_LOAD_FUNCTIONS'))){
 			$functionlist = array_merge($functionlist, C('AUTO_LOAD_FUNCTIONS'));
 		}
@@ -183,17 +184,13 @@ class Application{
             $classname  = substr($class, strrpos($class, '\\')+1);
             $namespace  = substr($class, 0, strrpos($class, '\\')+1);
             $namespace  = str_replace('\\','/',$namespace);
-			$name_array = explode('\\', $class);
-            if (strtolower($name_array[0]) == 'model'){
-                $path = ROOT_PATH.$namespace;
-            }else {
-                $path = LIB_PATH.$namespace;
-            }
 
-            //echo $path.'class.'.$classname.'.php<br>';
-			if (is_file($path.'class.'.$classname.'.php')){
-				require $path.'class.'.$classname.'.php';
-			}
+			$filename = 'class.'.$classname.'.php';
+			if (is_file(LIB_PATH.$namespace.$filename)){
+			    require LIB_PATH.$namespace.$filename;
+            }elseif (is_file(ROOT_PATH.$namespace.$filename)) {
+			    require ROOT_PATH.$namespace.$filename;
+            }
 		}else {
 			if (is_file(LIB_PATH.'Core/class.'.$class.'.php')){
 				require LIB_PATH.'Core/class.'.$class.'.php';

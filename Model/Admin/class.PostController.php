@@ -1,5 +1,12 @@
 <?php
+/**
+ *
+ */
 namespace Model\Admin;
+use Data\Member\MemberModel;
+use Data\Post\PostCatlogModel;
+use Data\Post\PostItemModel;
+
 class PostController extends BaseController{
 	public function index(){
 		$this->itemlist();
@@ -10,80 +17,135 @@ class PostController extends BaseController{
 	 */
 	public function itemlist(){
 		global $_G,$_lang;
-		if ($this->checkFormSubmit()){
-			$articleids = $_GET['id'];
-			if (is_array($articleids) && !empty($articleids)) {
-				$articleids = $articleids ? implode(',', $articleids) : 0;
-				if($_GET['option'] == 'delete'){
-					post_delete_item(array('id'=>array('IN', $articleids)));
-					post_delete_content(array('aid'=>array('IN', $articleids)));
-					post_delete_image(array('aid'=>array('IN', $articleids)));
-					post_delete_media(array('aid'=>array('IN', $articleids)));
-					$this->showAjaxReturn($_lang['article_delete_succeed']);
-				}
-				
-				if ($_GET['option'] == 'move'){
-					$categoryoptions = post_get_category_options(0,0,1);
-					include template('post_move');
-					exit();
-				}
-				
-				if ($_GET['option'] == 'audit') {
-					post_update_item(array('id'=>array('IN', $articleids)), array('status'=>0));
-					$this->showAjaxReturn($_lang['article_update_succeed']);
-				}
-				
-				if ($_GET['option'] == 'unaudit'){
-					post_update_item(array('id'=>array('IN', $articleids)), array('status'=>-1));
-					$this->showAjaxReturn($_lang['article_update_succeed']);
-				}
-			}else{
-				$this->showAjaxError(-1, $_lang['no_select']);
-			}
-		}else {
-						
-			$condition = array();
-			$catid     = intval($_GET['catid']);
-			$keyword   = trim($_GET['keyword']);
-			if ($catid) $condition['catid'] = array('IN',$catid);
-			if ($keyword) $condition['title'] = array('LIKE',$keyword);
-			
-			$pagesize  = 20;
-			$totalnum  = post_get_item_count($condition);
-			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$postlist = post_get_item_page($condition, min(array($_G['page'], $pagecount)), $pagesize, 'id DESC');
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum,"catid=$catid&keyword=$keyword",1);
-			
-			$categorylist = post_get_category_list();
-			$categoryoptions = post_get_category_options(0, $catid);
-			if ($postlist) {
-				$datalist = array();
-				foreach ($postlist as $item){
-					$item['type_name'] = $_lang['post_types'][$item['type']];
-					$item['status_name'] = $_lang['post_status'][$item['status']];
-					$item['cat_name'] = $categorylist[$item['catid']]['name'];
-					$datalist[$item['id']] = $item;
-				}
-				$postlist = $datalist;
-			}
-			unset($datalist, $item);
 
-            $_GET['menu'] = 'article_list';
-			include template('post_list');
-		}
+        $condition = $queryParams = array();
+        $searchType = intval($_GET['searchType']);
+        $queryParams['searchType'] = $searchType;
+
+        $title = htmlspecialchars($_GET['title']);
+        if ($title) {
+            $condition[] = "i.title LIKE '$title'";
+            $queryParams['title'] = $title;
+        }
+
+        $username = htmlspecialchars($_GET['username']);
+        if ($username) {
+            $condition[] = "i.username='$username'";
+            $queryParams['username'] = $username;
+        }
+
+        $catid = htmlspecialchars($_GET['catid']);
+        if ($catid) {
+            $condition[] = "i.catid='$catid'";
+            $queryParams['catid'] = $catid;
+        }
+
+        $status = htmlspecialchars($_GET['status']);
+        if ($status != '') {
+            $condition[] = "i.status='$status'";
+            $queryParams['status'] = $status;
+        }
+
+        $type = htmlspecialchars($_GET['type']);
+        if ($type) {
+            $condition[] = "i.type='$type'";
+            $queryParams['type'] = $type;
+        }
+
+        $time_begin = htmlspecialchars($_GET['time_begin']);
+        if ($time_begin) {
+            $condition[] = "i.pubtime>".strtotime($time_begin);
+            $queryParams['time_begin'] = $time_begin;
+        }
+
+        $time_end = htmlspecialchars($_GET['time_end']);
+        if ($time_end) {
+            $condition[] = "i.pubtime<".strtotime($time_end);
+            $queryParams['time_end'] = $time_end;
+        }
+
+        $q = htmlspecialchars($_GET['q']);
+        if ($q) $condition[] = "i.title LIKE '%$q%'";
+
+        $pagesize  = 20;
+        $totalnum  = M('post_item i')->join('post_catlog c', 'c.catid=i.catid')->where($condition)->count();
+        $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+        $itemlist = M('post_item i')->join('post_catlog c', 'c.catid=i.catid')->field('i.*,c.name as cat_name')
+            ->where($condition)->page($_G['page'], $pagesize)->order('aid', 'DESC')->select();
+        $pagination = $this->pagination($_G['page'], $pagecount, $totalnum,http_build_query($queryParams),1);
+        unset($condition, $queryParams);
+
+        $catloglist = (new PostCatlogModel())->getCatlogTree();
+        include template('post/post_list');
 	}
+
+    /**
+     * 删除文章
+     */
+    public function delete(){
+	    if ($this->checkFormSubmit()){
+            $items = $_GET['items'];
+            if ($items && is_array($items)){
+                $itemModel = new PostItemModel();
+                foreach ($items as $aid){
+                    $itemModel->deleteAllData($aid);
+                }
+            }
+        }
+        $this->showAjaxReturn();
+    }
 	
 	/**
 	 * 移动文章
 	 */
-	public function moveto(){
+	public function move(){
 		if ($this->checkFormSubmit()){
-			$articleids = trim($_GET['articleids']);
-			$target = intval($_GET['target']);
-			post_update_item(array('id'=>array('IN', $articleids)), array('catid'=>$target));
-			$this->showSuccess('update_succeed', U('a=itemlist&catid='.$target));
+            $items = $_GET['items'];
+            $target = intval($_GET['target']);
+            if ($items && is_array($items)){
+                $itemModel = new PostItemModel();
+                foreach ($items as $aid){
+                    $itemModel->where(array('aid'=>$aid))->data(array('catid'=>$target))->save();
+                }
+            }
 		}
+		$this->showAjaxReturn();
 	}
+
+    /**
+     * 审核文章
+     */
+    public function review(){
+        $event = trim($_GET['event']);
+        if ($this->checkFormSubmit()){
+            $items = $_GET['items'];
+            if ($items && is_array($items)){
+                $itemModel = new PostItemModel();
+                foreach ($items as $aid){
+                    if ($event == 'pass'){
+                        $itemModel->where(array('aid'=>$aid))->data(array('status'=>1))->save();
+                    }else {
+                        $itemModel->where(array('aid'=>$aid))->data(array('status'=>-1))->save();
+                    }
+                }
+            }
+        }
+        $this->showAjaxReturn();
+    }
+
+    /**
+     * 设置文章图片
+     */
+    public function setimage(){
+        $aid = intval($_GET['aid']);
+        $image = htmlspecialchars($_GET['image']);
+        if ($aid && $image){
+            (new PostItemModel())->where(array('aid'=>$aid))->data(array('image'=>$image))->save();
+            $this->showAjaxReturn(0);
+        }else {
+            $this->showAjaxError(1, 'invalid_parameter');
+        }
+    }
 	
 	/**
 	 * 发布文章
@@ -340,18 +402,5 @@ class PostController extends BaseController{
 			$this->showError('undefined_error');
 		}
 	}
-	
-	/**
-	 * 设置文章图片
-	 */
-	public function setimage(){
-		$id = intval($_GET['id']);
-		$image = htmlspecialchars($_GET['image']);
-		if ($id && $image){
-			post_update_item(array('id'=>$id), array('image'=>$image));
-			$this->showAjaxReturn(0);
-		}else {
-			$this->showAjaxError(100, 'INVALID PARAMETER');
-		}
-	}
+
 }

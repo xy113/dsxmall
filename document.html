@@ -243,6 +243,16 @@
     3.31 支付宝获取签名:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=alipay&a=get_trade_content&order_id=订单ID
     3.32 支付宝查询支付结果:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=alipay&a=query&order_id=订单ID
     3.33 支付完成显示结果页面:http://cg.liaidi.com/?m=app&c=pay&a=order_query&order_id=订单ID
+    #密码找回部分
+    3.34 验证手机号:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=findpass&a=check_mobile
+    参数1：mobile=手机号
+    3.35 获取短信验证码:http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=findpass&a=get_sms
+    参数1：mobile=手机号
+    3.36 设置新密码：http://cg.liaidi.com/?m=api&appid=应用appid&token=API令牌&c=findpass&a=set_password
+    参数1：uid=用户ID
+    参数2：seccode=短信验证码
+    参数3：mobile=手机号
+    参数4：newpassword=新密码
 
     四、JSBridge部分
     （1）客户端注册的方法

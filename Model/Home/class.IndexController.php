@@ -1,10 +1,9 @@
 <?php
 namespace Model\Home;
 
-use Apns\ApnsNotification;
-use Apns\ApnsPush;
-use Data\Item\Builder\ItemContentBuilder;
+use Data\Item\ItemCatlogModel;
 use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
 
 class IndexController extends BaseController{
     /**
@@ -14,21 +13,22 @@ class IndexController extends BaseController{
 		global $_G,$_lang;
 
         //商品分类列表
-        $item_cat_list = array();
-        foreach (item_get_cat_list() as $cat){
-            $item_cat_list[$cat['fid']][$cat['catid']] = $cat;
+        $item_catlog_list = array();
+        foreach ((new ItemCatlogModel())->getCache() as $catlog){
+            $item_catlog_list[$catlog['fid']][$catlog['catid']] = $catlog;
         }
-        unset($cat);
+        unset($catlog);
 
-        $item_list['baopin']  = item_get_list(array('on_sale'=>1, 'catid=47'), 5);
-        $item_list['youxuan'] = item_get_list(array('on_sale'=>1, 'catid=48'), 5);
-        $item_list['jingpin'] = item_get_list(array('on_sale'=>1, 'catid=50'), 5);
-        $item_list['haoping'] = item_get_list(array('on_sale'=>1, 'catid=66'), 5);
-        $item_list['xihuan']  = item_get_list(array('on_sale'=>1, 'catid=71'), 5);
-        $item_list['new'] = item_get_list(array('on_sale'=>1, 'catid'=>47), 6, 0);
-        $item_list['hot'] = item_get_list(array('on_sale'=>1), 5, 0, 'sold DESC');
+        $itemModel = new ItemModel();
+        $item_list['baopin']  = $itemModel->where(array('on_sale'=>1, 'catid=47'))->limit(0, 5)->selectNew();
+        $item_list['youxuan'] = $itemModel->where(array('on_sale'=>1, 'catid=48'))->limit(0, 5)->selectNew();
+        $item_list['jingpin'] = $itemModel->where(array('on_sale'=>1, 'catid=50'))->limit(0, 5)->selectNew();
+        $item_list['haoping'] = $itemModel->where(array('on_sale'=>1, 'catid=66'))->limit(0, 5)->selectNew();
+        $item_list['xihuan']  = $itemModel->where(array('on_sale'=>1, 'catid=71'))->limit(0, 5)->selectNew();
+        $item_list['new'] = $itemModel->where(array('on_sale'=>1, 'catid=47'))->limit(0, 6)->selectNew();
+        $item_list['hot'] = $itemModel->where(array('on_sale'=>1))->limit(0, 5)->selectHot();
         //企业店铺
-        $shop_list = shop_get_list(array('closed'=>'0'), 10);
+        $shop_list = (new ShopModel())->where(array('closed'=>0))->limit(0, 10)->select();
         $_G['nav'] = 'home';
 		include template('index');
 	}
@@ -41,71 +41,5 @@ class IndexController extends BaseController{
         echo '<br>';
         echo md5(random(10));
         print_array($_SERVER);
-    }
-
-    public function update(){
-/*	    $order_list = M('order')->field("shop_id,total_fee, FROM_UNIXTIME(create_time, '%Y%m%d') AS datestamp")->order('create_time')->select();
-	    $datalist = array();
-	    foreach ($order_list as $order){
-	        if (!isset($datalist[$order['shop_id']][$order['datestamp']]['order_num'])){
-                $datalist[$order['shop_id']][$order['datestamp']]['order_num'] = 0;
-            }
-            if (!isset($datalist[$order['shop_id']][$order['datestamp']]['turnovers'])){
-                $datalist[$order['shop_id']][$order['datestamp']]['turnovers'] = 0;
-            }
-            $datalist[$order['shop_id']][$order['datestamp']]['order_num']+= 1;
-            $datalist[$order['shop_id']][$order['datestamp']]['turnovers']+= $order['total_fee'];
-        }
-        print_array($datalist);
-
-        foreach ($datalist as $shop_id=>$record_list){
-            foreach ($record_list as $datestamp=>$record){
-                shop_add_record(array(
-                    'shop_id'=>$shop_id,
-                    'order_num'=>$record['order_num'],
-                    'datestamp'=>$datestamp,
-                    'turnovers'=>$record['turnovers']
-                ));
-            }
-        }
-        echo '111111';*/
-    }
-
-    /**
-     *
-     */
-    public function angular(){
-        include template('angular');
-    }
-
-    /**
-     *
-     */
-    public function get_items(){
-        $itemlist = item_get_list(0,10);
-        $this->showAjaxReturn($itemlist);
-    }
-
-    /**
-     *
-     */
-    public function apns(){
-
-        $notice = new ApnsNotification();
-        $notice->setAlert('粗耕已有新版本了，请及时更新');
-        $notice->setBadge(1);
-
-        $push = new ApnsPush();
-        $push->setDeviceToken('7b7a5ef6cc1038c1f7cba653dbe50b2d92c473a1e4799550aa215a7d2ac76afb');
-        $push->send($notice);
-    }
-
-    public function test(){
-        $itemContent = new ItemContentBuilder();
-        print_array($itemContent->getData());
-
-        $item = new ItemModel();
-        $itemlst = $item->page(0, 10)->select();
-        print_array($itemlst);
     }
 }

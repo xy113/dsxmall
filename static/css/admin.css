@@ -110,13 +110,14 @@
 .listtable .subtitle{font-size: 12px; display: block; color: #777;}
 .listtable .subtitle a{color: #777;}
 .listtable .subtitle a:hover{text-decoration: underline;}
+.listtable .catlog{background: url("../images/admin/join.png") left center no-repeat; padding-left: 30px;}
 
 .formtable{}
 .formtable td,.formtable th{padding:10px 0; font-size:12px; text-align:left;}
 .formtable .cell-name{text-align:right; padding-right:10px; font-weight: 500;}
 .formtable .cell-tips{padding: 10px; color: #666;}
 .formtable .input-text,.formtable .select,.formtable .textarea{width: 300px;}
-.formtable th, td{padding:8px 0; text-align:left; font-size:12px;}
+.formtable th, .formtable td{padding:8px 0; text-align:left; font-size:12px; vertical-align: top;}
 .formtable .a-bind-link{color:#008FBF;}
 .formtable .a-bind-link:hover{text-decoration:underline;}
 .formtable .img-upload-box{
@@ -150,6 +151,8 @@
     background-size: 50px 50px; float: left; position: relative;
 }
 .formtable .image-upload-button .file{position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; opacity: 0; cursor: pointer;}
+.formtable label{margin-right: 6px;}
+.formtable .button-long{padding: 0 30px;}
 
 .searchtable{}
 .searchtable th,.searchtable td{font-size: 12px; padding: 3px 10px; text-align: left;}

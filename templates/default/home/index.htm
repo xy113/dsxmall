@@ -2,16 +2,16 @@
 <div class="area">
     <div class="category-panel">
         <ul class="cat-list" id="cat-list" style="height: 496px;">
-            {loop $item_cat_list[0] $cat}
+            {loop $item_catlog_list[0] $cat}
             <li><a href="{U:('m=item&c=search&catid='.$cat[catid])}"><span>{$cat[name]}</span></a></li>
             {/loop}
         </ul>
         <div class="childs-panel" id="childs-panel">
-            {loop $item_cat_list[0] $cat}
+            {loop $item_catlog_list[0] $cat}
             <div class="cat-group">
                 <h3><a href="{U:('m=item&c=search&catid='.$cat[catid])}" class="more">更多 >></a> {$cat[name]}</h3>
                 <ul>
-                    {loop $item_cat_list[$cat[catid]] $child}
+                    {loop $item_catlog_list[$cat[catid]] $child}
                     <li><a href="{U:('m=item&c=search&catid='.$child[catid])}">{$child[name]}</a></li>
                     {/loop}
                 </ul>
