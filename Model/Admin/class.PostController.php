@@ -3,9 +3,12 @@
  *
  */
 namespace Model\Admin;
-use Data\Member\MemberModel;
+use Core\ParseVideoUrl;
 use Data\Post\PostCatlogModel;
+use Data\Post\PostContentModel;
+use Data\Post\PostImageModel;
 use Data\Post\PostItemModel;
+use Data\Post\PostMediaModel;
 
 class PostController extends BaseController{
 	public function index(){
@@ -151,256 +154,193 @@ class PostController extends BaseController{
 	 * 发布文章
 	 */
 	public function add(){
-		if ($this->checkFormSubmit()){
-			$this->save();
-		}else {
-			global $_G,$_lang,$config;
-			$catid = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
-			$categoryoptions = post_get_category_options(0, $catid,1);
-			$type = in_array($_GET['type'], array('image','video')) ? $_GET['type'] : 'article';
-			$article['from']    = setting('sitename');
-			$article['fromurl'] = setting('siteurl');
-			$article['author']  = $this->username;
-			$article['price']   = 0;
-			$article['pubtime'] = @date('Y-m-d H:i:s');
+        global $_G,$_lang;
 
-            $editorname = "content";
-            $_GET['menu'] = 'add_article';
-			include template('post_form');
-		}
+        $catid = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
+        $type = in_array($_GET['type'], array('image','video', 'voice')) ? $_GET['type'] : 'article';
+        $item['from']    = setting('sitename');
+        $item['fromurl'] = setting('siteurl');
+        $item['author']  = $this->username;
+        $item['price']   = 0;
+        $item['pubtime'] = @date('Y-m-d H:i:s');
+
+        $editorname = "content";
+        $catloglist = (new PostCatlogModel())->getCatlogTree();
+        include template('post/post_form');
 	}
+
+    /**
+     * 编辑文章
+     */
+    public function edit(){
+        global $_G,$_lang;
+
+        $aid = intval($_GET['aid']);
+        $itemModel = new PostItemModel();
+        $item = $itemModel->where(array('aid'=>$aid))->getOne();
+        $item['pubtime'] = $item['pubtime'] ? @date('Y-m-d H:i:s', $item['pubtime']) : @date('Y-m-d H:i:s');
+        $type = in_array($item['type'], array('image','video')) ? $item['type'] : 'article';
+        $catid = $item['catid'];
+
+        $content = (new PostContentModel())->where(array('aid'=>$aid))->getOne();
+        $editorname = "content";
+        $editorcontent = $content['content'];
+        //相册列表
+        $gallery = (new PostImageModel())->where(array('aid'=>$aid))->order('displayorder ASC,id ASC')->select();
+        //获取媒体信息
+        $media = (new PostMediaModel())->where(array('aid'=>$aid))->getOne();
+        //文章分类列表
+        $catloglist = (new PostCatlogModel())->getCatlogTree();
+
+        //载入模板
+        include template('post/post_form');
+    }
 	
 	/**
 	 * 保存文章
 	 */
-	private function save(){
+	public function save(){
 		global $_G;
-		
+
+		$aid = intval($_GET['aid']);
 		$newpost = $_GET['newpost'];
-		$content = $_GET['content'];
+		$eventType = htmlspecialchars($_GET['eventType']);
 		if (is_array ($newpost)) {
-			$newpost['uid'] = $this->uid;
-			$newpost['pubtime']  = strtotime($newpost['pubtime']);
- 			$newpost['modified'] = TIMESTAMP;
-			$newpost['author']   = $newpost['author'] ? $newpost['author'] : $this->username;
-			$newpost['from']     = isset($newpost['from']) ? $newpost['from'] : setting('sitename');
-			$newpost['fromurl']  = isset($newpost['fromurl']) ? $newpost['fromurl'] : setting('siteurl');
+		    if (!$newpost) {
+		        $this->showError('empry_post_title');
+            }
+			$newpost['author']  = $newpost['author']  ? $newpost['author']  : $this->username;
+			$newpost['from']    = $newpost['from']    ? $newpost['from']    : setting('sitename');
+			$newpost['fromurl'] = $newpost['fromurl'] ? $newpost['fromurl'] : setting('siteurl');
 			$newpost['tags'] = $newpost['tags'] ? $newpost['tags'] : '';
 			$newpost['allowcomment'] = intval($newpost['allowcomment']);
-			if (!$newpost['summary']) {
-				$newpost['summary'] = cutstr(stripHtml($content), 300);
-			}
+			//文章摘要
+			$newpost['summary'] = $newpost['summary'] ? $newpost['summary'] : cutstr(stripHtml($content), 300);
 			$newpost['summary'] = str_replace('&amp;', '&', $newpost['summary']);
 			$newpost['summary'] = str_replace('&nbsp;', '', $newpost['summary']);
 			$newpost['summary'] = str_replace('　', '', $newpost['summary']);
 			$newpost['summary'] = preg_replace('/\s/', '', $newpost['summary']);
+            $newpost['pubtime'] = $newpost['pubtime'] ? strtotime($newpost['pubtime']) : time();
+
+			$itemModel = new PostItemModel();
+			if ($eventType == 'edit') {
+			    //更新文章信息
+                $newpost['modified'] = time();
+			    $itemModel->where(array('aid'=>$aid))->data($newpost)->save();
+            }else {
+			    //添加文章信息
+                $newpost['uid'] = $this->uid;
+                $newpost['username'] = $this->username;
+			    $aid = $itemModel->data($newpost)->add();
+            }
+
+            //添加文章内容
+            $contentModel = new PostContentModel();
+			$content = trim($_GET['content']);
+            if ($eventType == 'edit') {
+                $contentModel->where(array('aid'=>$aid))->data(array('content'=>$content))->save();
+            }else {
+                $contentModel->data(array('aid'=>$aid, 'uid'=>$this->uid, 'content'=>$content))->add();
+            }
 			
-			$id = post_add_item($newpost);
-			if ($newpost['type'] == 'article') {
-				if ($content) {
-					$contentlist = preg_split('/<hr class=\"ke-pagebreak\" style=\"page-break-after: always;\">/', $content);
-					foreach ($contentlist as $key=>$value){
-						$data = array(
-								'aid'=>$id,
-								'uid'=>$this->uid,
-								'content'=>$value,
-								'pageorder'=>$key+1
-						);
-						post_add_content($data);
-					}
-					post_update_item(array('id'=>$id), array('contents'=>count($contentlist)));
-				}
-			}
-			
-			if ($newpost['type'] == 'image'){
-				$piclist = $_GET['piclist'];
-				if (is_array($piclist)) {
-					foreach ($piclist as $key=>$pic){
-						$pic['aid'] = $id;
-						$pic['uid'] = $this->uid;
-						$pic['isremote'] = 0;
-						post_add_image($pic);
-					}
-					if (!$newpost['image']) {
-						$image = reset($piclist);
-						post_update_item(array('id'=>$id), array('image'=>$image['image']));
-					}
-				}
-			}
-			
-			if ($newpost['type'] == 'video'){
-				$videourl = trim($_GET['videourl']);
-				if ($videourl) {
-					$videodata = \Core\ParseVideoUrl::ParseUrl ($videourl);
-					if ($videodata) {
-						post_add_media(array(
-								'aid'=>$id,
-								'uid'=>$this->uid,
-								'image'=>$videodata['img'],
-								'source'=>$videodata['swf'],
-								'original_url'=>$videodata['url']
-						));
-						if (!$newpost['image']) post_update_item(array('id'=>$id), array('image'=>$videodata['img']));
-					}
-				}
-			}
-			
-			$links = array (
-					array (
-							'text' => 'continue_publish',
-							'url' => U('c=post&a=add&type='.$newpost['type'].'&catid='.$newpost['catid'])
-					),
-					array (
-							'text'=>'view',
-							'url'=>U('m=post&c=detail&id='.$id),
-							'target'=>'_blank'
-					),
-					array(
-							'text'=>'back_list',
-							'url'=>U('c=post&a=itemlist')
-					)
-			);
-			$this->showSuccess('article_save_succeed', null, $links, null,true);
+            //添加相册
+            $gallery = $_GET['gallery'];
+            //print_array($gallery);exit();
+            if ($gallery) {
+                $imageList = array();
+                $imageModel = new PostImageModel();
+                if ($eventType == 'edit') {
+                    foreach ($imageModel->where(array('aid'=>$aid))->order('displayorder')->select() as $img){
+                        $imageList[$img['id']]['mark'] = 'delete';
+                        $imageList[$img['id']]['img'] = $img;
+                    }
+                }
+
+                $displayorder = 0;
+                foreach ($gallery as $id=>$img){
+                    $imageList[$id]['img'] = $img;
+                    $imageList[$id]['img']['displayorder'] = $displayorder++;
+                    if (isset($imageList[$id])) {
+                        $imageList[$id]['mark'] = 'update';
+                    }else {
+                        $imageList[$id]['mark'] = 'insert';
+                    }
+                }
+
+                foreach ($imageList as $id=>$img){
+                    if ($img['mark'] == 'insert'){
+                        $img['img']['aid'] = $aid;
+                        $img['img']['uid'] = $this->uid;
+                        $imageModel->data($img['img'])->add();
+                    }elseif ($img['mark'] == 'update'){
+                        $imageModel->where(array('id'=>$id))->data($img['img'])->save();
+                    }else {
+                        $imageModel->where(array('id'=>$id))->delete();
+                    }
+                }
+                //将第一张设为文章图片
+                if (!$newpost['image']) {
+                    $image = reset($gallery);
+                    $itemModel->where(array('aid'=>$aid))->data(array('image'=>$image['image']))->save();
+                }
+            }
+
+            $media = $_GET['media'];
+            if ($media && $media['original_url']){
+                if ($source = ParseVideoUrl::ParseUrl($media['original_url'])) {
+                    $media['source'] = $source['swf'];
+                    $media['image'] = $source['img'];
+                    $media['original_url'] = $source['url'];
+
+                    $mediaModel = new PostMediaModel();
+                    if ($eventType == 'edit') {
+                        $mediaModel->where(array('aid'=>$aid))->data($media)->save();
+                    }else {
+                        $media['aid'] = $aid;
+                        $media['uid'] = $this->uid;
+                        $mediaModel->data($media)->add();
+                    }
+                }
+            }
+
+            if ($eventType == 'edit'){
+                $links = array (
+                    array (
+                        'text' => 'reedit',
+                        'url' => U('c=post&a=edit&aid='.$aid)
+                    ),
+                    array (
+                        'text'=>'view',
+                        'url'=>U('m=post&c=detail&aid='.$aid),
+                        'target'=>'_blank'
+                    ),
+                    array(
+                        'text'=>'back_list',
+                        'url'=>U('c=post&a=itemlist')
+                    )
+                );
+                $this->showSuccess('post_update_succeed', null, $links, null,true);
+            }else {
+                $links = array (
+                    array (
+                        'text' => 'continue_publish',
+                        'url' => U('c=post&a=add&type='.$newpost['type'].'&catid='.$newpost['catid'])
+                    ),
+                    array (
+                        'text'=>'view',
+                        'url'=>U('m=post&c=detail&aid='.$aid),
+                        'target'=>'_blank'
+                    ),
+                    array(
+                        'text'=>'back_list',
+                        'url'=>U('c=post&a=itemlist')
+                    )
+                );
+                $this->showSuccess('post_save_succeed', null, $links, null,true);
+            }
+
 		} else {
-			$this->showError('undefined_error');
+			$this->showError('invalid_parameter');
 		}
 	}
-	
-	/**
-	 * 编辑文章
-	 */
-	public function edit(){
-		if ($this->checkFormSubmit()){
-			$this->update();
-		}else {
-			global $_G,$_lang;
-			$id = intval($_GET['id']);
-			$article = post_get_item(array('id'=>$id));
-			$article['pubtime'] = @date('Y-m-d H:i:s', $article['pubtime']);
-			if (in_array($article['type'], array('image','video'))){
-				$type = $article['type'];
-			}else {
-				$type = 'article';
-			}
-			
-			if ($article['type'] == 'article'){
-				$content = post_get_content(array('aid'=>$id));
-			}
-			
-			if ($article['type'] == 'image'){
-				$piclist = post_get_image_list(array('aid'=>$id), 0);
-			}
-			
-			if ($article['type'] == 'video'){
-				$videodata = post_get_media_data(array('aid'=>$id));
-			}
-			$categoryoptions = post_get_category_options(0, $article['catid'],1);
-
-            $editorname = "content";
-            $editorcontent = $content;
-
-            $_G['menu'] = 'add_article';
-			include template('post_form');
-		}
-	}
-	
-	/**
-	 * 更新文章
-	 */
-	public function update(){
-		global $_G;
-
-		$id = intval($_GET['id']);
-		$newpost = $_GET['newpost'];
-		$content = $_GET['content'];
-		if (is_array($newpost)) {
-			$newpost['pubtime']  = strtotime($newpost['pubtime']);
-			$newpost['modified'] = TIMESTAMP;
-			$newpost['author']   = $newpost['author'] ? $newpost['author'] : $this->username;
-			$newpost['from']     = isset($newpost['from']) ? $newpost['from'] : setting('sitename');
-			$newpost['fromurl']  = isset($newpost['fromurl']) ? $newpost['fromurl'] : setting('siteurl');
-			$newpost['tags'] = $newpost['tags'] ? $newpost['tags'] : '';
-			$newpost['allowcomment'] = intval($newpost['allowcomment']);
-			if (!$newpost['summary']) {
-				$newpost['summary'] = cutstr(stripHtml($content), 300);
-			}
-			$newpost['summary'] = str_replace('&amp;', '&', $newpost['summary']);
-			$newpost['summary'] = str_replace('&nbsp;', '', $newpost['summary']);
-			$newpost['summary'] = str_replace('　', '', $newpost['summary']);
-			$newpost['summary'] = preg_replace('/\s/', '', $newpost['summary']);
-			//$newpost['summary'] = preg_replace('/[\n|\r]/', '', $newpost['summary']);
-			
-			post_update_item(array('id'=>$id), $newpost);
-			if ($newpost['type'] == 'article') {
-				if ($content) {
-					post_delete_content(array('aid'=>$id));
-					$contentlist = preg_split('/<hr class=\"ke-pagebreak\" style=\"page-break-after: always;\">/', $content);
-					foreach ($contentlist as $key=>$value){
-						$data = array(
-								'aid'=>$id,
-								'uid'=>$this->uid,
-								'content'=>$value,
-								'pageorder'=>$key+1
-						);
-						post_add_content($data);
-					}
-				}
-			}
-			
-			if ($newpost['type'] == 'image'){
-				post_delete_image(array('aid'=>$id));
-				$piclist = $_GET['piclist'];
-				if ($piclist) {
-					foreach ($piclist as $pic){
-						$pic['aid'] = $id;
-						$pic['uid'] = $this->uid;
-						$pic['isremote'] = 0;
-						post_add_image($pic);
-					}
-					if (!$newpost['image']) {
-						$image = reset($piclist);
-						post_update_item(array('id'=>$id), array('image'=>$image['image']));
-					}
-				}
-			}
-			
-			if ($newpost['type'] == 'video'){
-				$videourl = trim($_GET['videourl']);
-				if ($videourl) {
-					$videodata = \Core\ParseVideoUrl::ParseUrl ($videourl);
-					if ($videodata) {
-						post_update_media(
-								array('aid'=>$id), 
-								array(
-										'image'=>$videodata['img'],
-										'source'=>$videodata['swf'],
-										'original_url'=>$videodata['url']
-								)
-						);
-						if (!$newpost['image']) post_update_item(array('id'=>$id), array('image'=>$videodata['img']));
-					}
-				}
-			}
-		
-			$links = array (
-					array (
-							'text' => 'reedit',
-							'url' => U('c=post&a=edit&id='.$id)
-					),
-					array (
-							'text' => 'view',
-							'url' => U('m=post&c=detail&id='.$id),
-							'target' => '_blank'
-					),
-					array(
-							'text'=>'back_list',
-							'url'=>U('c=post&a=itemlist')
-					)
-			);
-			$this->showSuccess('article_update_succeed',null, $links,null,true);
-		} else {
-			$this->showError('undefined_error');
-		}
-	}
-
 }

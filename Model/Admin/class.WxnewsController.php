@@ -44,7 +44,7 @@ class WxnewsController extends  BaseController{
 				$itemlist = $datalist;
 				unset($datalist, $item);
 			}
-			include template('weixin_news_list');
+			include template('weixin/weixin_news_list');
 		}
 	}
 	
@@ -84,7 +84,7 @@ class WxnewsController extends  BaseController{
 				}
 			}
 		}else {
-			include template('weixin_news_form');
+			include template('weixin/weixin_news_form');
 		}
 	}
 	
@@ -119,7 +119,7 @@ class WxnewsController extends  BaseController{
 		}else {
 			$news = weixin_get_material($access_token, $media_id, 'news');
 			$news_item = $news['news_item'];
-			include template('weixin_news_form');
+			include template('weixin/weixin_news_form');
 		}
 	}
 }

@@ -35,4 +35,18 @@ class PostItemModel extends Model
             (new PostLogModel())->where(array('aid'=>$aid))->delete();
         }
     }
+
+    /**
+     * @param $aid
+     * @param int $num
+     * @param int $type
+     * @return bool|int
+     */
+    public function updateView_num($aid, $num=1, $type=1){
+        if ($type) {
+            return $this->where(array('aid'=>$aid))->update("`view_num`=`view_num`+$num");
+        }else {
+            return $this->where(array('aid'=>$aid))->update("`view_num`=`view_num`-$num");
+        }
+    }
 }

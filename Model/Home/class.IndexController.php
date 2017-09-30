@@ -3,6 +3,7 @@ namespace Model\Home;
 
 use Data\Item\ItemCatlogModel;
 use Data\Item\ItemModel;
+use Data\Post\PostItemModel;
 use Data\Shop\ShopModel;
 
 class IndexController extends BaseController{
@@ -18,6 +19,8 @@ class IndexController extends BaseController{
             $item_catlog_list[$catlog['fid']][$catlog['catid']] = $catlog;
         }
         unset($catlog);
+        //最新资讯
+        $newPostList = (new PostItemModel())->where(array('status'=>1))->field('aid, title')->order('aid', 'DESC')->limit(0, 12)->select();
 
         $itemModel = new ItemModel();
         $item_list['baopin']  = $itemModel->where(array('on_sale'=>1, 'catid=47'))->limit(0, 5)->selectNew();

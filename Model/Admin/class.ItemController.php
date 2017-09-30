@@ -111,7 +111,7 @@ class ItemController extends BaseController{
             unset($condition, $queryParams);
 
             $_G['title'] = $_lang['item_manage'];
-            include template('item_list');
+            include template('item/item_list');
         }
     }
 
@@ -188,7 +188,7 @@ class ItemController extends BaseController{
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, null, true);
             unset($condition, $queryParams);
 
-            include template('item_recommend');
+            include template('item/item_recommend');
         }
     }
 

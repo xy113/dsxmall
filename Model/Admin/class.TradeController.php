@@ -112,7 +112,7 @@ class TradeController extends BaseController{
 			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
 			unset($condition, $queryParams);
 			
-			include template('trade_list');
+			include template('trade/trade_list');
 		}
 	}
 

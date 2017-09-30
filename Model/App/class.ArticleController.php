@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Post\PostContentModel;
+use Data\Post\PostItemModel;
+
 class ArticleController extends BaseController
 {
     /**
@@ -31,8 +34,9 @@ class ArticleController extends BaseController
      *
      */
     public function batchget(){
-        $offset = (G('page') - 1) * 20;
-        $itemlist = post_get_item_list(0, 20, $offset);
+
+        $itemlist = (new PostItemModel())->where(array('status'=>1))->field('aid,title,image,pubtime,view_num')
+            ->page(G('page'), 20)->order('aid', 'DESC')->select();
         $datalist = array();
         foreach ($itemlist as $item){
             $item['pubtime'] = date('Y-m-d H:i', $item['pubtime']);
@@ -47,11 +51,14 @@ class ArticleController extends BaseController
      */
     public function detail(){
         global $_G, $_lang;
-        $id = intval($_GET['id']);
-        post_update_item(array('id'=>$id), '`viewnum`=`viewnum`+1');
-        $article = post_get_item(array('id'=>$id));
-        $content = post_get_content(array('aid'=>$id));
-        $content = cleanUpStyle($content);
+        $aid = $_GET['aid'] ? intval($_GET['aid']) : intval($_GET['id']);
+
+        $postItem = new PostItemModel();
+        $postItem->updateView_num($aid);
+
+        $article = $postItem->where(array('aid'=>$aid, 'status'=>1))->getOne();
+        $content = (new PostContentModel())->where(array('aid'=>$aid))->getOne();
+        $content = cleanUpStyle($content['content']);
         $content = preg_replace('/\<a(.*?)\>(.*?)\<\/a\>/is', '\\2', $content);
         $content = preg_replace('/\<img(.*?)src=\"(.*?)\"(.*?)>/is', '<img src="\\2">', $content);
 

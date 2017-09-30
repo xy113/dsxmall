@@ -41,9 +41,8 @@
             <div class="content">
                 <h3>农产品资讯</h3>
                 <ul>
-                    {eval $itemlist=post_get_item_list(0,12)}
-                    {loop $itemlist $item}
-                    <li><a href="/?m=post&c=detail&id={$item[id]}" target="_blank">&bull; {$item[title]}</a></li>
+                    {loop $newPostList $item}
+                    <li><a href="{U:('m=post&c=detail&aid='.$item[aid])}" target="_blank">&bull; {$item[title]}</a></li>
                     {/loop}
                 </ul>
             </div>

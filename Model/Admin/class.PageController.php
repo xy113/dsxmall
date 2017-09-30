@@ -1,5 +1,7 @@
 <?php
 namespace Model\Admin;
+use Data\Common\PageModel;
+
 class PageController extends BaseController{
 	public function index(){
 		$this->itemlist();
@@ -10,19 +12,21 @@ class PageController extends BaseController{
      */
     public function itemlist(){
 		global $_G, $_lang;
-        $_GET['menu'] = 'page_list';
+
+		$model = new PageModel();
 		if ($this->checkFormSubmit()){
 			//删除页面
 			$delete = $_GET['delete'];
 			if (!empty($delete) && is_array($delete)){
-				$deleteids = implode(',', $delete);
-				page_delete_data(array('pageid'=>array('IN', $deleteids)));
+			    foreach ($delete as $pageid){
+			        $model->where(array('pageid'=>$pageid))->delete();
+                }
 			}
 			//更新页面
 			$pagelist  = $_GET['pagelist'];
 			if ($pagelist && is_array($pagelist)){
 				foreach ($pagelist as $pageid=>$page){
-					page_update_data(array('pageid'=>$pageid), $page);
+					$model->where(array('pageid'=>$pageid))->data($page)->select();
 				}
 			}
 			$this->showSuccess('update_succeed');
@@ -32,13 +36,14 @@ class PageController extends BaseController{
 			$catid = intval($_GET['catid']);
 			if ($catid) $condition['catid'] = $catid;
 			
-			$pagesize  = 20;
-			$totalnum  = page_get_count($condition);
-			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$pagelist  = page_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize);
-			$pages = $this->showPages($_G['page'], $pagecount,$totalnum,"catid=$catid", 1);
-			$categorylist = page_get_list(array('type'=>'category'), 0);
-			include template('page_list');
+			$pagesize   = 20;
+			$totalnum   = $model->where($condition)->count();
+			$pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+			$pagelist   = $model->where($condition)->page($_G['page'], $pagesize)->select();
+			$pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "catid=$catid", true);
+			$categorylist = $model->where(array('type'=>'category'))->select();
+
+			include template('page/page_list');
 		}
 		
 	}
@@ -48,7 +53,8 @@ class PageController extends BaseController{
      */
     public function add(){
 		global $_G, $_lang;
-        $_GET['menu'] = 'page_add';
+
+        $model = new PageModel();
 		if ($this->checkFormSubmit()) {
 			$newpage = $_GET['newpage'];
 			$newpage['pubtime']  = TIMESTAMP;
@@ -56,18 +62,22 @@ class PageController extends BaseController{
 			if (!$newpage['summary']) {
 				$newpage['summary'] = cutstr(stripHtml($newpage['body']), 400);
 			}
-			page_add_data($newpage);
+            $model->data($newpage)->add();
 			$this->showSuccess('save_succeed');
 		}else{
-			$categorylist = page_get_list(array('type'=>'category'));
+            $categorylist = $model->where(array('type'=>'category'))->select();
 			$editorname = 'newpage[body]';
-			include template('page_form');
+			include template('page/page_form');
 		}
 	}
 
-	public function edit(){
+    /**
+     * 编辑页面
+     */
+    public function edit(){
 		global $_G, $_lang;
-        $_GET['menu'] = 'page_add';
+
+		$model = new PageModel();
 		$pageid = intval($_GET['pageid']);
 		if($this->checkFormSubmit()){
 			$newpage = $_GET['newpage'];
@@ -75,14 +85,14 @@ class PageController extends BaseController{
 			if (!$newpage['summary']) {
 				$newpage['summary'] = cutstr(stripHtml($newpage['body']), 400);
 			}
-			page_update_data(array('pageid'=>$pageid), $newpage);
-			$this->showSuccess('modi_succeed');
+			$model->where(array('pageid'=>$pageid))->data($newpage)->save();
+			$this->showSuccess('update_succeed');
 		}else {
-			$page = page_get_data(array('pageid'=>$pageid));
-			$categorylist = page_get_list(array('type'=>'category'));
+			$page = $model->where(array('pageid'=>$pageid))->getOne();
+			$categorylist = $model->where(array('type'=>'category'))->select();
 			$editorname = 'newpage[body]';
 			$editorcontent = $page['body'];
-			include template('page_form');
+			include template('page/page_form');
 		}
 	}
 	
@@ -91,13 +101,15 @@ class PageController extends BaseController{
 	 */
 	public function category(){
 		global $_G,$_lang;
-        $_GET['menu'] = 'page_cat';
+
+		$model = new PageModel();
 		if($this->checkFormSubmit()){
 			$delete = $_GET['delete'];
 			if (!empty($delete) && is_array($delete)){
-				$deleteids = implode(',', $delete);
-				page_delete_data(array('pageid'=>array('IN', $deleteids)));
-				page_delete_data(array('catid'=>array('IN', $deleteids)));
+			    foreach ($delete as $pageid){
+			        $model->where(array('pageid'=>$pageid))->delete();
+			        $model->where(array('catid'=>$pageid))->delete();
+                }
 			}
 			
 			$categorylist = $_GET['categorylist'];
@@ -105,18 +117,19 @@ class PageController extends BaseController{
 				foreach ($categorylist as $pageid=>$category){
 					if ($category['title']){
 						if ($pageid > 0){
-							page_update_data(array('pageid'=>$pageid), $category);
+							$model->where(array('pageid'=>$pageid))->data($category)->save();
 						}else {
 							$category['type'] = 'category';
-							page_add_data($category);
+							$model->data($category)->add();
 						}
 					}
 				}
 			}
 			$this->showSuccess('save_succeed');
 		}else {
-			$categorylist = page_get_list(array('type'=>'category'), 0);
-			include template('page_category');
+
+			$categorylist = $model->where(array('type'=>'category'))->select();
+			include template('page/page_category');
 		}
 	}
 }

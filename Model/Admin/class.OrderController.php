@@ -220,7 +220,7 @@ class OrderController extends BaseController{
                     unset($order_ids, $itemlist, $item);
                 }
 			}
-			include template('order_list');
+			include template('trade/order_list');
 		}
 	}
 
@@ -400,6 +400,6 @@ class OrderController extends BaseController{
         $itemlist = order_get_item_list(array('order_id'=>$order_id));
 
         $_G['title'] = '订单详情';
-        include template('order_detail');
+        include template('trade/order_detail');
     }
 }

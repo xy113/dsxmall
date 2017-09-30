@@ -11,5 +11,7 @@ return array(
         '0'=>'等待审核',
         '-1'=>'审核不过'
     ),
-    'post_title_required'=>'文章标题不能为空'
+    'empry_post_title'=>'文章标题不能为空',
+    'post_save_succeed'=>'文章保存成功',
+    'post_update_succeed'=>'文章更新成功'
 );

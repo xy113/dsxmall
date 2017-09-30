@@ -1,68 +1,61 @@
 <?php
 namespace Model\Admin;
-class LinkController extends BaseController{
-    /**
-     * LinkController constructor.
-     */
-    function __construct()
-    {
-        parent::__construct();
-        $_GET['menu'] = 'link';
-    }
+use Data\Common\LinkModel;
 
+class LinkController extends BaseController{
+
+    /**
+     *
+     */
     public function index(){
+        $model = new LinkModel();
 		if ($this->checkFormSubmit()){
 			$delete = $_GET['delete'];
 			if ($delete && is_array($delete)){
-				$deleteids = implodeids($delete);
-				link_delete_data(array('id'=>array('IN', $deleteids)));
+				foreach ($delete as $id){
+				    $model->where(array('id'=>$id))->delete();
+                }
 			}
 			
-			$linklist = $_GET['linklist'];
-			if ($linklist && is_array($linklist)) {
-				foreach ($linklist as $id=>$link){
-					if ($link['title']) {
+			$itemlist = $_GET['itemlist'];
+			if ($itemlist && is_array($itemlist)) {
+				foreach ($itemlist as $id=>$item){
+					if ($item['title']) {
 						if ($id > 0){
-							link_update_data(array('id'=>$id), $link);
+							$model->where(array('id'=>$id))->data($item)->save();
 						}else {
-							link_add_data($link);
+							$model->data($item)->add();
 						}
 					}
 				}
 			}
 			
-			$this->updatecache();
+			$model->updateCache();
 			$this->showSuccess('update_succeed');
 			
 		}else {
 			global $_G,$_lang;
-			$categorylist = link_get_list(array('type'=>'category'), 0);
-			$linklist = link_get_list(array('type'=>'item'), 0);
-			if ($linklist) {
-				$datalist = array();
-				foreach ($linklist as $link){
-					$link['image'] = image($link['image']);
-					$datalist[$link['catid']][$link['id']] = $link;
-				}
-				$linklist = $datalist;
-				unset($datalist, $link);
-			}
+
+			$categorylist = $model->where(array('type'=>'category'))->select();
+			$itemlist = array();
+			foreach ($model->where(array('type'=>'item'))->select() as $item){
+			    $itemlist[$item['catid']][$item['id']] = $item;
+            }
 			include template('link_list');
 		}
 	}
-	
-	public function setimage(){
+
+    /**
+     *
+     */
+    public function setimage(){
 		$id = intval($_GET['id']);
 		$image = htmlspecialchars($_GET['image']);
-		link_update_data(array('id'=>$id), array('image'=>$image));
-		$this->updatecache();
+		if ($id && $image){
+            $model = new LinkModel();
+            $model->where(array('id'=>$id))->data(array('image'=>$image))->save();
+            $model->updateCache();
+        }
 		$this->showAjaxReturn(0);
-	}
-	
-	private function updatecache(){
-		$categorylist = link_get_list(array('type'=>'category'), 0);
-		$linklist = link_get_list(array('type'=>'item'), 0);
-		cache('link_cateogory', $categorylist);
-		cache('link_item', $linklist);
 	}
 }

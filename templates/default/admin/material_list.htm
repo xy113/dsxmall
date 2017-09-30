@@ -1,204 +1,148 @@
 {template header}
-<div class="console-title">
-	<div class="float-right">
-    	<form name="search" action="{U:('/')}">
-          <input type="hidden" name="m" value="{$_G[m]}">
-          <input type="hidden" name="c" value="{$_G[c]}">
-          <input type="hidden" name="a" value="{$_G[a]}">
-          <input type="hidden" name="type" value="{$type}">
-          <input type="text" class="input-text" name="keyword" value="{$keyword}" placeholder="请输入关键字">
-          <input type="submit" class="button" value="{$_lang[search]}">
-          <div class="button material-add-button"><span>添加素材</span><div class="swfbutton" id="swfbutton"></div></div>
-      </form>
-        
-    </div>
-    <h2>素材管理</h2>
+<div class="navigation">
+    <a>后台管理</a>
+    <span>></span>
+    <a>素材管理</a>
+    <span>></span>
+    <a>素材列表</a>
 </div>
-<div class="toolbar">
-    {loop $lang[material_types] $k $v}
-    <a href="{echo U("type=$k")}" class="baritem{if $type==$k} baritem-on{/if}">{$v}</a>
-    {/loop}
-</div>
-<div class="content-div">
-    <form method="post" autocomplete="off" id="materialForm">
-    <input type="hidden" name="formsubmit" value="yes" />
-    <input type="hidden" name="formhash" value="{FORMHASH}">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="listtable">
-    <thead>
-      <tr>
-        <th width="50" class="center">选?</th>
-        <th width="60">图片</th>
-        <th>名称</th>
-        <th>所属用户</th>
-        <th width="80">大小</th>
-        <th width="140">上传时间</th>
-      </tr>
-     </thead>
-     <tbody>
-      {loop $itemlist $id $item}
-      <tr>
-        <td class="center"><input type="checkbox" class="checkbox checkmark" name="id[]" value="{$item[id]}"></td>
-        <td>
-        	{if $type=='image'}
-        	<img src="{echo image($item[thumb])}" width="50" height="50">
-            {elseif $type=='video'}
-            <img src="/static/images/common/video.png" width="50" height="50">
-            {elseif $type=='voice'}
-            <img src="/static/images/common/audio.png" width="50" height="50">
-            {elseif $type=='doc'}
-            <img src="/static/images/common/doc.png" width="50" height="50">
-            {else}
-            <img src="/static/images/common/file.png" width="50" height="50">
-            {/if}
-        </td>
-        <td>{$item[name]}</td>
-        <td>{$userlist[$item[uid]][username]}</td>
-        <td>{echo formatSize($item[size])}</td>
-        <td>{echo formatTime($item[dateline],'Y-m-d H:i:s')}</td>
-      </tr>
-      {/loop}
-      </tbody>
-      <tfoot>
-      <tr>
-        <td colspan="10">
-            <label><input type="checkbox" class="checkbox checkall"> {$lang[selectall]}</label>
-            <label><input type="radio" class="radio" name="option" value="delete" checked> 删除</label>
-        </td>
-      </tr>
-      <tr>
-          <td colspan="10">
-              <span class="pagination float-right">{$pages}</span>
-              <input type="button" class="button" value="{$_lang[submit]}" id="submitButton">
-              <input type="button" class="button cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
-          </td>
-      </tr>
-     </tfoot>
-    </table>
+<script src="/static/DatePicker/WdatePicker.js" type="text/javascript"></script>
+<div class="search-container" id="search-container">
+    <form method="get" id="searchFrom">
+        <input type="hidden" name="m" value="{$_G[m]}">
+        <input type="hidden" name="c" value="{$_G[c]}">
+        <input type="hidden" name="a" value="{$_G[a]}">
+        <input type="hidden" name="type" value="{$type}">
+        <div class="row">
+            <div class="cell">
+                <label>用户ID:</label>
+                <div class="field"><input type="text" title="" class="input-text" name="uid" value="{$uid}"></div>
+            </div>
+            <div class="cell">
+                <label>用户名:</label>
+                <div class="field"><input type="text" title="" class="input-text" name="username" value="{$username}"></div>
+            </div>
+            <div class="cell">
+                <label>名称:</label>
+                <div class="field"><input type="text" title="" class="input-text" name="name" value="{$name}"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <label>上传时间:</label>
+                <div class="field">
+                    <input type="text" title="" class="input-text" name="time_begin" value="{$time_begin}" onclick="WdatePicker()" style="width: 100px;"> -
+                    <input type="text" title="" class="input-text" name="time_end" value="{$time_end}" onclick="WdatePicker()" style="width: 100px;">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="cell">
+                <label></label>
+                <div class="field">
+                    <button type="submit" class="button">搜索</button>
+                    <button type="button" class="button button-cancel" id="addMaterial">添加素材</button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
-{eval $token=md5($G[uid].FORMHASH);}
-<script type="text/javascript">
-var spinner;
-$("#submitButton").click(function(e) {
-    if($("input.checkmark:checked").length > 0){
-		$("#materialForm").ajaxSubmit({
-			dataType:'json',
-			beforeSend:function(){
-				spinner = DSXUI.showSpinner();
-			},
-			success:function(json){
-				setTimeout(function(){
-					spinner.close();
-					if(json.errcode == 0){
-						DSXUtil.reFresh();
-					}
-				}, 1500);
-			}
-		});
-	}else {
-		DSXUI.error('请至少选择一个选项');
-	}
-});
 
-var swfu = new DSXUpload({
-	multi:false,
-	upload_url : "/?m=jsapi&c=material&a=add_material&type={$type}&from=swfupload",
-	post_params:{uid:'$G[uid]',token:'$token'},
-	file_types : '$file_types',
-	button_id:'swfbutton',
-	button_text:'',
-	button_class:'swfbutton',
-	button_width:'80',
-	button_height:'28',
-	onSelect:function(file){
-		try {
-			spinner = DSXUI.showSpinner();
-		} catch (ex) {
-			this.debug(ex);
-		}
-	},
-	onUploadSuccess:function(file, data, response){
-		//console.log(data);
-		var json = $.parseJSON(data);
-		setTimeout(function(){
-			spinner.close();
-			if(json.errcode == 0){
-				DSXUtil.reFresh();
-			}else {
-				DSXUI.error(json.errmsg);
-			}
-		},1000);
-	}
-});
-/*
-$("#add_material").click(function(e) {
-    var type = $(this).attr('data-type');
-	var html = '<div class="ui-dialog-upload">';
-	html+='<div class="title-bar"><div class="ui-button btn"><span>选择文件</span><div class="swfbutton" id="ui-dialog-swfbutton"></div></div></div>';
-	html+='<div class="upload-div"><div class="scrollView"><div class="queue" id="ui-dialog-queue"></div></div></div>';
-	html+='</div>';
-	DSXUI.dialog({
-		title:'添加素材',
-		width:750,
-		html:html,
-		afterShow:function(dlg){
-			var swfu = new DSXUpload({
-				multi:true,
-				upload_url : "/?m=jsapi&c=material&a=add_material&type="+type+"&from=swfupload",
-				post_params:{},
-				file_types : '*.*',
-				button_id:'ui-dialog-swfbutton',
-				button_text:'',
-				button_class:'swfbutton',
-				button_width:'80',
-				button_height:'30',
-				onSelect:function(file){
-					try {
-						var fileitem = '<div id="f_'+file.id+'" class="file-item"><div class="name">'+file.name+'</div>';
-						fileitem+= '<div class="progress"><div class="bar"></div></div>';
-						fileitem+= '<a class="icon cancel" title="取消上传">&#xf0155;</a><a class="icon success">&#xf0156;</a></div>';
-						$("#ui-dialog-queue").append(fileitem).show();
-						$("#f_"+file.id).find(".cancel").click(function(e) {
-						   swfu.cancelUpload(file.id, false);
-							//$("#f_"+file.id).fadeOut('slow', function(){$(this).remove();});
-					   });
-					} catch (ex) {
-						this.debug(ex);
-					}
-				},
-				onProgress:function(file, bytesLoaded, bytesTotal, percentage, averageSpeed){
-					$("#f_"+file.id).find(".progress .bar").css('width',percentage+'%');
-				},
-				onUploadSuccess:function(file, data, response){
-					//console.log(data);
-					var json = $.parseJSON(data);
-					$("#dialog-upload-queue").hide();
-					if(json.errcode == 0) {
-						var row = '<a id="file_'+json.data.attachid+'" attachid="'+json.data.attachid+'" attachurl="'+json.data.attachurl+'" attachment="'+json.data.attachment+'">'+json.data.attachname+'</a>';
-						row = '<tr><td class="name">'+row+'</td><td width="80" class="size">'+json.data.formated_size+'</td></tr>';
-						$("#file-list-table").prepend(row);
-						$("#file_"+json.data.attachid).click(function(e) {
-							if(opts.onPicked) opts.onPicked(json.data);
-							 dlg.close();
-						});
-					}
-					//loadFiles({type:current_type});
-				},
-				onUploadError:function(file, errorCode, errorMsg){
-					alert(errorMsg);
-				},
-				onCancel:function(){
-					$("#dialog-upload-queue").hide();
-				}
-			});
-			
-			
-		},
-		onConfirm:function(dlg){
-			
-		}
-	});
-});
-*/
+<div class="tabs-container">
+    <div class="tabs">
+        {loop $_lang[material_types] $k $v}
+        <div class="tab{if $type==$k} on{/if}"><a href="{U:('c=material&a=itemlist&type='.$k)}">{$v}</a><span>|</span></div>
+        {/loop}
+    </div>
+</div>
+<div class="content-div">
+    <form method="post" autocomplete="off" id="listForm">
+        <input type="hidden" name="formsubmit" value="yes" />
+        <input type="hidden" name="formhash" value="{FORMHASH}">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="listtable">
+            <thead>
+            <tr>
+                <th width="50" class="center">选?</th>
+                <th width="60">图片</th>
+                <th>名称</th>
+                <th>所属用户</th>
+                <th width="80">大小</th>
+                <th width="140">上传时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop $itemlist $item}
+            <tr>
+                <td class="center"><input type="checkbox" title="" class="checkbox checkmark itemCheckBox" name="materials[]" value="{$item[id]}"></td>
+                <td>
+                    {if $type=='image'}
+                    <img src="{img $item[thumb]}" width="50" height="50">
+                    {elseif $type=='video'}
+                    <img src="/static/images/common/video.png" width="50" height="50">
+                    {elseif $type=='voice'}
+                    <img src="/static/images/common/audio.png" width="50" height="50">
+                    {elseif $type=='doc'}
+                    <img src="/static/images/common/doc.png" width="50" height="50">
+                    {else}
+                    <img src="/static/images/common/file.png" width="50" height="50">
+                    {/if}
+                </td>
+                <td>{$item[name]}</td>
+                <td>{$item[username]}</td>
+                <td>{echo formatSize($item[size])}</td>
+                <td>{date:$item[dateline]|'Y-m-d H:i:s'}</td>
+            </tr>
+            {/loop}
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="10">
+                    <span class="pagination float-right">{$pagination}</span>
+                    <label><input type="checkbox" class="checkbox checkall"> {$lang[selectall]}</label>
+                    <label><button type="button" class="btn" id="deleteButton">删除</button></label>
+                    <label><button type="button" class="btn" onclick="DSXUtil.reFresh()">刷新</button></label>
+                </td>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+
+<script type="text/javascript">
+    var spinner;
+    $(function () {
+        $("#deleteButton").on('click', function () {
+            if ($(".itemCheckBox:checked").length === 0){
+                DSXUI.error('请选择项目');
+                return false;
+            }
+            DSXUI.showConfirm('删除素材', '确认要删除所选素材吗?', function () {
+                $("#listForm").ajaxSubmit({
+                    dataType:'json',
+                    beforeSend:function () {
+                        spinner = DSXUI.showSpinner();
+                    },success:function (response) {
+                        setTimeout(function () {
+                            spinner.close();
+                            if (response.errcode === 0){
+                                DSXUtil.reFresh();
+                            }else {
+                                DSXUI.error('删除失败');
+                            }
+                        }, 500);
+                    }
+                });
+            });
+        });
+    });
 </script>
+{if $type=='image'}
+<script type="text/javascript">
+    $("#addMaterial").on('click', function () {
+        DSXUI.showImagePicker(function () {
+            DSXUtil.reFresh();
+        });
+    });
+</script>
+{/if}
 {template footer}

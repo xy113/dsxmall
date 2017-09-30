@@ -63,7 +63,7 @@ class ItemcatController extends BaseController{
                 unset($datalist, $item);
             }
             $_G['title'] = L('item_cat_manage');
-            include template('item_cat_list');
+            include template('item/item_cat_list');
         }
     }
 
@@ -98,7 +98,7 @@ class ItemcatController extends BaseController{
             }
 
             $_G['title'] = L('item_cat_manage');
-            include template('item_cat_form');
+            include template('item/item_cat_form');
         }
     }
 

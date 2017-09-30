@@ -1,5 +1,7 @@
 <?php
 namespace Model\App;
+use Data\Post\PostItemModel;
+
 class IndexController extends BaseController{
     /**
      * APP首页
@@ -8,6 +10,7 @@ class IndexController extends BaseController{
 		global $_G,$_lang;
 
         $menu_list = menu_get_cache(2);
+        $newPostList = (new PostItemModel())->where(array('status'=>1))->order('aid', 'DESC')->limit(0, 6)->select();
 		include template('index');
 	}
 

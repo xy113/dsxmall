@@ -14,13 +14,4 @@ use Core\Model;
 class PageModel extends Model
 {
     protected $table = 'page';
-
-    /**
-     * PageModel constructor.
-     * @param string $name
-     */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
-    }
 }

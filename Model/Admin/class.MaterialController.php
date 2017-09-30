@@ -1,12 +1,8 @@
 <?php
 namespace Model\Admin;
-class MaterialController extends BaseController{
-    function __construct()
-    {
-        parent::__construct();
-        $_GET['menu'] = 'material';
-    }
+use Data\Common\MaterialModel;
 
+class MaterialController extends BaseController{
     /**
      *
      */
@@ -18,78 +14,66 @@ class MaterialController extends BaseController{
 	 */
 	public function itemlist(){
 		global $_G,$_lang;
+
 		if ($this->checkFormSubmit()){
-			$material_ids = $_GET['id'];
-			if ($material_ids && is_array($material_ids)){
-				$material_ids = implodeids($material_ids);
-				if ($_GET['option'] == 'delete'){
-					$itemlist = material_get_list(array('id'=>array('IN', $material_ids)), 0);
-					foreach ($itemlist as $item){
-						if ($item['path']) @unlink(C('ATTACHDIR').$item['type'].'/'.$item['path']);
-						if ($item['thumb']) @unlink(C('ATTACHDIR').$item['type'].'/'.$item['thumb']);
-					}
-					material_delete_data(array('id'=>array('IN', $material_ids)));
-					$this->showAjaxReturn();
-				}
-			}else {
-				$this->showAjaxError(-1);
+			$materials = $_GET['materials'];
+			if ($materials && is_array($materials)){
+			    $model = new MaterialModel();
+                foreach ($model->where(array('id'=>array('IN', implodeids($materials))))->select() as $material){
+                    if ($material['path']) @unlink(C('ATTACHDIR').$material['type'].'/'.$material['path']);
+                    if ($material['thumb']) @unlink(C('ATTACHDIR').$material['type'].'/'.$material['thumb']);
+                    $model->where(array('id'=>$material['id']))->delete();
+                }
 			}
+            $this->showAjaxReturn();
 		}else {
-			$pagesize = 20;
-			$condition = array();
-			$type = $_GET['type'] ? $_GET['type'] : 'image';
-			$condition['type'] = $type;
+
+			$condition = $queryParams = array();
+
+            $type = $_GET['type'] ? $_GET['type'] : 'image';
+            $condition[] = "m.type='$type'";
+            $queryParams['type'] = $type;
+
+			$uid = htmlspecialchars($_GET['uid']);
+			if ($uid) {
+			    $condition[] = "m.uid='$uid'";
+			    $queryParams['uid'] = $uid;
+            }
+
+            $username = htmlspecialchars($_GET['username']);
+			if ($username) {
+			    $condition[] = "mb.username='$username'";
+			    $queryParams['username'] = $username;
+            }
+
+            $name = htmlspecialchars($_GET['name']);
+			if ($name) {
+			    $condition[] = "m.name LIKE '%$name%'";
+			    $queryParams['name'] = $name;
+            }
+
+            $time_begin = htmlspecialchars($_GET['time_begin']);
+			if ($time_begin) {
+			    $condition[] = "m.dateline>".strtotime($time_begin);
+			    $queryParams['time_begin'] = $time_begin;
+            }
+
+            $time_end = htmlspecialchars($_GET['time_end']);
+			if ($time_end) {
+			    $condition[] = "m.dateline<".strtotime($time_end);
+			    $queryParams['time_end'] = $time_end;
+            }
+
+            $pagesize = 20;
+			$totalcount = M('material m')->join('member mb', 'mb.uid=m.uid')->where($condition)->count();
+			$pagecount = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);
+			$itemlist = M('material m')->join('member mb', 'mb.uid=m.uid')->field('m.*,mb.username')
+                ->where($condition)->page($_G['page'], $pagesize)->order('m.id', 'DESC')->select();
+			$pagination = $this->pagination($_G['page'], $pagecount, $totalcount, http_build_query($queryParams), true);
+			unset($condition, $queryParams);
 			
-			$keyword = trim($_GET['keyword']);
-			if ($keyword) $condition['name'] = array('LIKE', $keyword);
-			$total_count = material_get_count($condition);
-			$page_count = $total_count < $pagesize ? 1 : ceil($total_count/$pagesize);
-			$itemlist = material_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize);
-			$pages = $this->showPages($_G['page'], $page_count, $total_count,"type=$type&keyword=$keyword", 1);
-			
-			if ($itemlist) {
-				$datalist = $uids = array();
-				foreach ($itemlist as $item){
-					$datalist[$item['id']] = $item;
-					array_push($uids, $item['uid']);
-				}
-				$itemlist = $datalist;
-				$uids = $uids ? implodeids($uids) : 0;
-				$userlist = member_get_list(array('uid'=>array('IN', $uids)), 0);
-				unset($datalist, $uids, $item);
-			}
-			
-			if ($type == 'image') {
-				$allowtypes = setting('image_allow_types') ? explode(',', setting('image_allow_types')) : array('jpg,jpeg,png,gif');
-			}elseif ($type == 'voice'){
-				$allowtypes = array('mp3','wma');
-			}elseif ($type == 'video'){
-				$allowtypes = array('mp4');
-			}elseif ($type == 'doc'){
-				$allowtypes = array('txt','doc','xls','ppt','docx','xlsx','pptx','pdf');
-			}else {
-				$allowtypes = explode(',', setting('file_allow_types'));
-			}
-			$file_types = $comma = '';
-			foreach ($allowtypes as $t){
-				$file_types.= $comma.'*.'.$t;
-				$comma = ';';
-			}
-			unset($allowtypes, $comma, $t);
+			//载入模板
 			include template('material_list');
-		}
-	}
-	
-	/**
-	 * 添加素材
-	 */
-	public function add(){
-		global $_G,$_lang;
-		if ($this->checkFormSubmit()){
-			
-		}else {
-			
-			include template('material_form');
 		}
 	}
 }

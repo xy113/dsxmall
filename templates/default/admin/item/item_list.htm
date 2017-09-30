@@ -14,16 +14,16 @@
         <div class="row">
             <div class="cell">
                 <label>店铺名称:</label>
-                <div class="field"><input type="text" class="input-text" name="shop_name" value="{$shop_name}"></div>
+                <div class="field"><input type="text" title="" class="input-text" name="shop_name" value="{$shop_name}"></div>
             </div>
             <div class="cell">
                 <label>卖家账号:</label>
-                <div class="field"><input type="text" class="input-text" name="seller_name" value="{$seller_name}"></div>
+                <div class="field"><input type="text" title="" class="input-text" name="seller_name" value="{$seller_name}"></div>
             </div>
             <div class="cell">
                 <label>销售状态:</label>
                 <div class="field">
-                    <select class="select" name="sale_status">
+                    <select title="" class="select" name="sale_status">
                         <option value="0">全部</option>
                         <option value="on_sale"{if $sale_status=='on_sale'} selected{/if}>出售中</option>
                         <option value="off_sale"{if $sale_status=='off_sale'} selected{/if}>已下架</option>
@@ -34,20 +34,20 @@
         <div class="row">
             <div class="cell">
                 <label>产品名称:</label>
-                <div class="field"><input type="text" class="input-text" name="title" value="{$title}"></div>
+                <div class="field"><input type="text" title="" class="input-text" name="title" value="{$title}"></div>
             </div>
             <div class="cell" style="width: auto;">
                 <label>价格区间:</label>
                 <div class="field">
-                    <input type="text" class="input-text" name="min_price" value="{$min_price}"> -
-                    <input type="text" class="input-text" name="max_price" value="{$max_price}">
+                    <input type="text" title="" class="input-text" name="min_price" value="{$min_price}"> -
+                    <input type="text" title="" class="input-text" name="max_price" value="{$max_price}">
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="cell">
                 <label>商品ID:</label>
-                <div class="field"><input type="text" class="input-text" name="itemid" value="{$itemid}"></div>
+                <div class="field"><input type="text" title="" class="input-text" name="itemid" value="{$itemid}"></div>
             </div>
         </div>
         <div class="row">

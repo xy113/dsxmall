@@ -42,7 +42,7 @@ class WxmenuController extends BaseController{
 				$menulist = $datalist;
 				unset($datalist, $menu);
 			}
-			include template('weixin_menu_list');
+			include template('weixin/weixin_menu_list');
 		}
 	}
 	

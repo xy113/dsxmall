@@ -113,7 +113,7 @@ class ShopController extends BaseController{
             unset($condition, $queryParams);
 
             $_G['title'] = $_lang['shop_manage'];
-            include template('shop_list');
+            include template('shop/shop_list');
         }
     }
 
@@ -191,7 +191,7 @@ class ShopController extends BaseController{
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", true);
 
             $_G['title'] = $_lang['shop_manage'];
-            include template('shop_pending');
+            include template('shop/shop_pending');
         }
     }
 
@@ -207,7 +207,7 @@ class ShopController extends BaseController{
         $auth = shop_get_auth(array('shop_id'=>$shop_id));
 
         $_G['title'] = $shop['shop_name'];
-        include template('shop_detail');
+        include template('shop/shop_detail');
     }
 
     /**
@@ -322,7 +322,7 @@ class ShopController extends BaseController{
             $this->showAjaxReturn();
         }else {
             $notice_template_list = notice_get_template_list(array('template_type'=>'shop'));
-            include template('shop_close');
+            include template('shop/shop_close');
         }
     }
 }

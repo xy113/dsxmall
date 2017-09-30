@@ -143,6 +143,7 @@ class PostcatlogController extends BaseController
                     $itemModel = new PostItemModel();
                     $itemModel->where(array('catid'=>$catid))->data(array('catid'=>$moveto))->save();
                 }
+                $catlogModel->updateCache();
             }
             $this->showSuccess('delete_succeed', null, array(
                 array('text'=>'back_list', 'url'=>U('c=postcatlog&a=index'))

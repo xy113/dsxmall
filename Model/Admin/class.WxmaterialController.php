@@ -32,7 +32,7 @@ class WxmaterialController extends  BaseController{
 			$itemlist = $res['item'];
 			$pagecount = $totalbum < $pagesize ? 1 : ceil($totalbum/$pagesize);
 			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "type=$type", 1);
-			include template('weixin_material_list');
+			include template('weixin/weixin_material_list');
 		}
 	}
 	

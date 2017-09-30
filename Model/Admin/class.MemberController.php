@@ -96,7 +96,7 @@ class MemberController extends BaseController{
 			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "field=$field&q=$q", 1);
 
             $_G['title'] = 'memberlist';
-			include template('member_list');
+			include template('member/member_list');
 		}
 	}
 
@@ -125,7 +125,7 @@ class MemberController extends BaseController{
 			$member = unserialize(cookie('membernew'));
 
             $_G['title'] = 'memberlist';
-			include template('member_form');
+			include template('member/member_form');
 		}
 	}
 
@@ -167,7 +167,7 @@ class MemberController extends BaseController{
 			$_Grouplist  = usergroup_get_list(0);
 
             $_G['title'] = 'memberlist';
-			include template('member_form');
+			include template('member/member_form');
 		}
 	}
 
@@ -214,7 +214,7 @@ class MemberController extends BaseController{
 			foreach (member_get_group_list() as $_Group){
 				$usergrouplist[$_Group['type']][$_Group['gid']] = $_Group;
 			}
-			include template('member_group');
+			include template('member/member_group');
 		}
 	}
 }

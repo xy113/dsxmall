@@ -279,6 +279,7 @@ class Model{
 		while ($data = $this->db->fetch_array($query)){
 			$result[] = $data;
 		}
+        $this->option = array();
 		return $result;
 	}
 
@@ -291,32 +292,8 @@ class Model{
 		$this->setSQL('select');
 		$query  = $this->db->query($this->sql,'U_B');
 		$result = $this->db->fetch_array($query, MYSQL_ASSOC);
+        $this->option = array();
 		return $result ? $result : array();
-	}
-
-    /**
-     * @param int $limit
-     * @param int $num
-     * @return array
-     */
-    public function find($limit=0, $num=0){
-		$limit = intval($limit);
-		$num   = intval($num);
-		if (func_num_args() == 1) {
-			if ($limit) {
-				if(is_numeric($limit)) {
-					$limitstr = "0,$limit";
-				}else {
-					$limitstr = $limit;
-				}
-			}else {
-				$limitstr = '';
-			}
-		}else {
-			$limitstr = "$limit, $num";
-		}
-		$this->option['limit'] = $limitstr ? 'LIMIT '.$limitstr : '';
-		return $this->select();
 	}
 
     /**
@@ -324,10 +301,11 @@ class Model{
      * @param string $field
      * @return mixed
      */
-    public function count($field=''){
+    public function count($field='*'){
 		!$field && $field = '*';
 		$this->option['field'] = "COUNT($field) AS num";
 		$row = $this->getOne();
+        $this->option = array();
 		return $row["num"];
 	}
 
@@ -347,7 +325,7 @@ class Model{
      * @param bool $replace
      * @return bool|int|\mysqli_result|string
      */
-    public function add($data=null, $return_insert_id=false, $replace=false){
+    public function add($data=null, $return_insert_id=true, $replace=false){
 		return $this->insert($data, $return_insert_id, $replace);
 	}
 
@@ -422,6 +400,7 @@ class Model{
 			$sql = $this->db->implode_field_value($this->data);
 			$cmd = "UPDATE ".($low_priority ? 'LOW_PRIORITY' : '');
 			$res = $this->db->query("$cmd {$this->tableName} SET $sql ".$this->option['where'],$unbuffered ? 'UNBUFFERED' : '');
+			$this->option = array();
 			return $res ? $this->db->affected_rows() : false;
 		}else  {
 			return false;

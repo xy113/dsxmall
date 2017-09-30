@@ -16,11 +16,38 @@ class LinkModel extends Model
     protected $table = 'link';
 
     /**
-     * LinkModel constructor.
-     * @param string $name
+     *
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public function updateCache(){
+        $categorylist = $this->where(array('type'=>'categry'))->select();
+        cache('link_category', $categorylist);
+        $itemlist = $this->where(array('type'=>'item'))->select();
+        cache('link_item', $itemlist);
+    }
+
+    /**
+     * @return bool|mixed
+     */
+    public function getCategoryCache(){
+        $categorylist = cache('link_category');
+        if (!is_array($categorylist)) {
+            $this->updateCache();
+            return $this->getCategoryCache();
+        }else {
+            return $categorylist;
+        }
+    }
+
+    /**
+     * @return bool|mixed
+     */
+    public function getItemCache(){
+        $itemlist = cache('link_item');
+        if (!is_array($itemlist)) {
+            $this->updateCache();
+            return $this->getItemCache();
+        }else {
+            return $itemlist;
+        }
     }
 }
