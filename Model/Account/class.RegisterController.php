@@ -6,6 +6,12 @@
  * Time: 下午2:27
  */
 namespace Model\Account;
+use Core\Validate;
+use Data\Member\MemberGroupModel;
+use Data\Member\MemberInfoModel;
+use Data\Member\MemberModel;
+use Data\Member\MemberStatusModel;
+
 class RegisterController extends BaseController{
     /**
      * RegisterController constructor.
@@ -27,29 +33,35 @@ class RegisterController extends BaseController{
      * 保存注册信息
      */
     function save(){
-        $username = htmlspecialchars(trim($_GET['username_'.FORMHASH]));
+        $username = htmlspecialchars($_GET['username_'.FORMHASH]);
         $password = trim($_GET['password_'.FORMHASH]);
-        $email    = trim($_GET['email_'.FORMHASH]);
         $mobile   = trim($_GET['mobile_'.FORMHASH]);
-        $captchacode = trim($_GET['captchacode']);
-        $this->checkCaptchacode($captchacode, true);
 
-        if ($username && $mobile && $password){
-            $data = array(
-                'username'=>$username,
-                'password'=>$password,
-                'email'=>$email,
-                'mobile'=>$mobile
-            );
-
-            $returns = member_register($data, true);
-            if ($returns['errcode'] == 0 && $returns['userinfo']) {
-                $this->showAjaxReturn($returns['userinfo']);
-            }else {
-                $this->showAjaxError('FAIL', $returns['errmsg']);
-            }
-        }else {
-            $this->showAjaxError('FAIL', 'invalid_parameter');
+        $memberModel = new MemberModel();
+        if ($memberModel->where(array('username'=>$username))->count()){
+            $this->showAjaxError(1, 'username_be_occupied');
         }
+
+        if (!Validate::ismobile($mobile)){
+            $this->showAjaxError(2, 'mobile_incorrect');
+        }
+
+        if ($memberModel->where(array('mobile'=>$mobile))->count()){
+            $this->showAjaxError(3, 'mobile_be_occupied');
+        }
+
+        if (strlen($password)<6 || strlen($password)>20){
+            $this->showAjaxError(4, 'password_input_incorrect');
+        }
+
+        $group = (new MemberGroupModel())->where(array('type'=>'member'))->order('creditslower', 'ASC')->getOne();
+        $uid = $memberModel->data(array('gid'=>$group['gid'],'username'=>$username, 'password'=>getPassword($password), 'mobile'=>$mobile))->add();
+        (new MemberStatusModel())->data(array('uid'=>$uid,'regdate'=>time(),'regip'=>getIp()))->add();
+        (new MemberInfoModel())->data(array('uid'=>$uid))->add();
+
+        cookie('uid', $uid, 1800);
+        cookie('username', $username, 1800);
+
+        $this->showAjaxReturn();
     }
 }

@@ -73,7 +73,7 @@ class MaterialController extends BaseController{
 			unset($condition, $queryParams);
 			
 			//载入模板
-			include template('material_list');
+			include template('common/material_list');
 		}
 	}
 }

@@ -4,42 +4,37 @@
     <h2>内容板块管理</h2>
 </div>
 <div class="content-div">
-    <form method="post" autocomplete="off">
+    <form method="post" id="listForm" autocomplete="off">
         <input type="hidden" name="formsubmit" value="yes" />
         <input type="hidden" name="formhash" value="{FORMHASH}">
         <table width="100%" border="0" cellspacing="0" cellpadding="0" class="listtable">
             <thead>
             <tr>
-                <th width="50" class="center">删?</th>
+                <th width="50"><label><input type="checkbox" class="checkbox checkall checkmark"></label></th>
                 <th width="60">ID</th>
                 <th width="300">名称</th>
                 <th>说明</th>
                 <th width="80">编辑</th>
             </tr>
             </thead>
-            <tbody id="mainbody">
-            {loop $itemlist $item}
+            <tbody>
+            {loop $blocklist $block}
             <tr>
-                <td><input type="checkbox" class="checkbox checkmark" name="ids[]" value="{$item[block_id]}"></td>
-                <td>{$item[block_id]}</td>
-                <td><a rel="edit" data-id="{$item[block_id]}">{$item[block_name]}</a></td>
-                <td>{$item[block_desc]}</td>
-                <td><a href="{U:("c=block&a=itemlist&block_id=$item[block_id]")}" target="_blank">内容管理</a></td>
+                <td><input title="" type="checkbox" class="checkbox checkmark itemCheckBox" name="blocks[]" value="{$block[block_id]}"></td>
+                <td>{$block[block_id]}</td>
+                <td><a rel="edit" data-id="{$block[block_id]}">{$block[block_name]}</a></td>
+                <td>{$block[block_desc]}</td>
+                <td><a href="{U:("c=block&a=itemlist&block_id=$block[block_id]")}">内容管理</a></td>
             </tr>
             {/loop}
             </tbody>
             <tfoot>
             <tr>
                 <td colspan="10">
-                    <label><input type="checkbox" class="checkbox checkall"> 全选</label>
-                    <label><input type="radio" class="radio" name="option" value="delete" checked> 删除</label>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="10">
-                    <span class="pagination float-right">{$pages}</span>
-                    <input type="submit" class="button" value="{$_lang[submit]}">
-                    <input type="button" class="button button-cancel" value="{$_lang[refresh]}" onclick="window.location.reload()">
+                    <div class="pagination float-right">{$pagination}</div>
+                    <label><input type="checkbox" class="checkbox checkall checkmark"> 全选</label>
+                    <label><button type="button" class="btn" id="deleteButton">删除</button></label>
+                    <label><button type="button" class="btn" data-action="refresh">刷新</button></label>
                 </td>
             </tr>
             </tfoot>
@@ -56,11 +51,11 @@
                 <tbody>
                     <tr>
                         <td class="cell-name">板块名称</td>
-                        <td><input type="text" class="input-text w300" name="block[block_name]" value="{block[block_name]}" id="J_block_name"></td>
+                        <td><input title="" type="text" class="input-text w300" name="block[block_name]" value="{block[block_name]}" id="J_block_name"></td>
                     </tr>
                     <tr>
                         <td class="cell-name">板块说明</td>
-                        <td><textarea class="textarea" name="block[block_desc]" id="J_block_desc" style="height: 100px;">{block[block_desc]}</textarea></td>
+                        <td><textarea title="" class="textarea" name="block[block_desc]" id="J_block_desc" style="height: 100px;">{block[block_desc]}</textarea></td>
                     </tr>
                 </tbody>
             </table>
@@ -85,7 +80,7 @@
                     $("#J_Frmblock").ajaxSubmit({
                         dataType:'json',
                         success:function (response) {
-                            if (response.errcode == 0){
+                            if (response.errcode === 0){
                                 dlg.close();
                                 window.location.href = "{U:('c=block&a=namelist&page='.$pagecount)}&sp="+Math.random();
                             }
@@ -117,7 +112,7 @@
                             $("#J_Frmblock").ajaxSubmit({
                                 dataType:'json',
                                 success:function (response) {
-                                    if (response.errcode == 0){
+                                    if (response.errcode === 0){
                                         dlg.close();
                                         window.location.href = "{U:('c=block&a=namelist&page='.$pagecount)}&sp="+Math.random();
                                     }
@@ -126,6 +121,31 @@
                         }
                     });
                 }
+            });
+        });
+
+        $("#deleteButton").on('click', function () {
+            if ($(".itemCheckBox:checked").length === 0){
+                DSXUI.error('请选择选项');
+                return false;
+            }
+            var spinner = null;
+            DSXUI.showConfirm('删除板块', '确认删除所选板块吗?', function () {
+                $("#listForm").ajaxSubmit({
+                    dataType:'json',
+                    beforeSend:function () {
+                        spinner = DSXUI.showSpinner();
+                    },success:function (response) {
+                        setTimeout(function () {
+                            spinner.close();
+                            if (response.errcode === 0){
+                                DSXUtil.reFresh();
+                            }else {
+                                DSXUI.error(response.errmsg);
+                            }
+                        }, 500);
+                    }
+                });
             });
         });
     });

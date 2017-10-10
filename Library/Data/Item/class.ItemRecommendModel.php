@@ -14,4 +14,12 @@ use Core\Model;
 class ItemRecommendModel extends Model
 {
     protected $table = 'item_recommend';
+
+    /**
+     * @param $itemid
+     * @return bool|int|\mysqli_result|string
+     */
+    public function addItem($itemid){
+        return $this->data(array('itemid'=>$itemid))->add(null, false, true);
+    }
 }

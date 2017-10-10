@@ -1,5 +1,7 @@
 <?php
 namespace Model\Admin;
+use Data\Common\AdModel;
+
 class AdController extends BaseController{
     /**
      * AdController constructor.
@@ -13,10 +15,37 @@ class AdController extends BaseController{
     public function index(){
 		$this->itemlist();
 	}
-	
-	public function itemlist(){
+
+    /**
+     * 广告列表
+     */
+    public function itemlist(){
+        global $_G,$_lang;
+
+        $model = new AdModel();
 		if ($this->checkFormSubmit()){
-			$ids = $_GET['id'];
+			$ads = $_GET['ads'];
+			$eventType = trim($_GET['eventType']);
+			if ($ads) {
+			    if ($eventType === 'delete'){
+                    foreach ($ads as $id){
+                        $model->where(array('id'=>$id))->delete();
+                    }
+                }
+
+                if ($eventType === 'enable'){
+                    foreach ($ads as $id){
+                        $model->where(array('id'=>$id))->data(array('available'=>1))->save();
+                    }
+                }
+
+                if ($eventType === 'disable'){
+                    foreach ($ads as $id){
+                        $model->where(array('id'=>$id))->data(array('available'=>0))->save();
+                    }
+                }
+                $this->showAjaxReturn();
+            }
 			if (!empty($ids) && is_array($ids)){
 				$ids = implodeids($ids);
 				switch ($_GET['option']) {
@@ -36,63 +65,61 @@ class AdController extends BaseController{
 				$this->showError('no_select');
 			}
 		}else {
-			global $_G,$_lang;
+
 			$pagesize  = 30;
-			$totalnum  = ad_get_count(0);
+			$totalnum  = $model->count();
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-            $offset = ($_G['page'] - 1) * $pagesize;
-			$adlist = ad_get_list(0, $pagesize, $offset, 'id DESC');
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum);
-			include template('ad_list');
+			$adlist = $model->page($_G['page'], $pagesize)->select();
+			$pagination = $this->pagination($_G['page'], $pagecount, $totalnum, null, true);
+			include template('common/ad_list');
 		}
 	}
-	
-	public function add(){
+
+    /**
+     * 添加广告
+     */
+    public function add(){
+        global $_G,$_lang;
+
 		if ($this->checkFormSubmit()){
 			$adnew  = $_GET['adnew'];
 			$addata = $_GET['addata'];
 			if ($adnew['title']) {
-				if ($adnew['type'] == 'image') {
-					if ($filedata = photo_upload_data()){
-						$addata['image']['image'] = image($filedata['image']);
-					}
-				}
-				
 				$adnew['data'] = serialize($addata[$adnew['type']]);
-				ad_add_data($adnew);
+                (new AdModel())->data($adnew)->save();
 				$this->showSuccess('save_succeed');
 			}else {
 				$this->showError('undefined_action');
 			}
 		}else {
-			global $G,$lang;
-			include template('ad_form');
+
+			include template('common/ad_form');
 		}
 	}
-	
-	public function edit(){
+
+    /**
+     * 编辑广告
+     */
+    public function edit(){
+        global $_G,$_lang;
 		$id = intval($_GET['id']);
+
+		$model = new AdModel();
 		if ($this->checkFormSubmit()){
 			$adnew  = $_GET['adnew'];
 			$addata = $_GET['addata'];
 			if ($adnew['title']) {
-				if ($adnew['type'] == 'image') {
-					if ($filedata = photo_upload_data()){
-						$addata['image']['image'] = image($filedata['image']);
-					}
-				}
-			
-				$adnew['data'] = serialize($addata[$adnew['type']]);
-				ad_update_data(array('id'=>$id), $adnew);
+                $adnew['data'] = serialize($addata[$adnew['type']]);
+				$model->where(array('id'=>$id))->data($adnew)->save();
 				$this->showSuccess('update_succeed');
 			}else {
 				$this->showError('undefined_action');
 			}	
 		}else {
-			global $_G,$_lang;
-			$ad = ad_get_data(array('id'=>$id));
+
+			$ad = $model->where(array('id'=>$id))->getOne();
 			$addata[$ad['type']] = unserialize($ad['data']);
-			include template('ad_form');
+			include template('common/ad_form');
 		}
 	}
 }

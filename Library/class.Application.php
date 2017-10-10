@@ -21,7 +21,26 @@ class Application{
      * Application constructor.
      */
     function __construct(){
-		spl_autoload_register('Application::autoload', true);
+        //自动加载类
+		spl_autoload_register(function ($class){
+            if (false !== strpos($class, '\\')){
+                $classname  = substr($class, strrpos($class, '\\')+1);
+                $namespace  = substr($class, 0, strrpos($class, '\\')+1);
+                $namespace  = str_replace('\\','/',$namespace);
+
+                $filename = 'class.'.$classname.'.php';
+                if (is_file(LIB_PATH.$namespace.$filename)){
+                    require LIB_PATH.$namespace.$filename;
+                }elseif (is_file(ROOT_PATH.$namespace.$filename)) {
+                    require ROOT_PATH.$namespace.$filename;
+                }
+            }else {
+                if (is_file(LIB_PATH.'Core/class.'.$class.'.php')){
+                    require LIB_PATH.'Core/class.'.$class.'.php';
+                }
+            }
+        }, true);
+		//设置调试模式
 		if (defined('DEBUG') && DEBUG) {
             ini_set('display_errors', 'on');
             error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
@@ -141,19 +160,6 @@ class Application{
 		}else {
 			define('IN_MOBILE', false);
 		}
-		
-		$this->var['setting'] = cache('settings');
-		if (!$this->var['setting']){
-			$settinglist = M('setting')->select();
-			foreach ($settinglist as $list){
-				$svalue = unserialize($list['svalue']);
-				$this->var['setting'][$list['skey']] = is_array($svalue) ? $svalue : $list['svalue'];
-			}
-			cache('settings', $this->var['setting']);
-		}
-		$this->var['title'] = $this->var['setting']['sitename'];
-		$this->var['keywords'] = $this->var['setting']['keywords'];
-		$this->var['description'] = $this->var['setting']['description'];
 	}
 
 	public function start(){
@@ -172,29 +178,6 @@ class Application{
 	public function timezone_set($timeoffset = 0) {
 		if(function_exists('date_default_timezone_set')) {
 			@date_default_timezone_set('Etc/GMT'.($timeoffset > 0 ? '-' : '+').(abs($timeoffset)));
-		}
-	}
-	
-	/**
-	 * 自动加载类
-	 * @param string $class
-	 */
-	public static function autoload($class){
-		if (false !== strpos($class, '\\')){
-            $classname  = substr($class, strrpos($class, '\\')+1);
-            $namespace  = substr($class, 0, strrpos($class, '\\')+1);
-            $namespace  = str_replace('\\','/',$namespace);
-
-			$filename = 'class.'.$classname.'.php';
-			if (is_file(LIB_PATH.$namespace.$filename)){
-			    require LIB_PATH.$namespace.$filename;
-            }elseif (is_file(ROOT_PATH.$namespace.$filename)) {
-			    require ROOT_PATH.$namespace.$filename;
-            }
-		}else {
-			if (is_file(LIB_PATH.'Core/class.'.$class.'.php')){
-				require LIB_PATH.'Core/class.'.$class.'.php';
-			}
 		}
 	}
 }

@@ -8,6 +8,11 @@
 namespace Model\Admin;
 use Core\Download;
 use Core\ExcelXML;
+use Data\Item\ItemModel;
+use Data\Shop\ShopAuthModel;
+use Data\Shop\ShopDescModel;
+use Data\Shop\ShopModel;
+use Data\Shop\ShopRecordModel;
 
 class ShopController extends BaseController{
     /**
@@ -23,6 +28,7 @@ class ShopController extends BaseController{
     public function itemlist(){
         global $_G,$_lang;
 
+        $model = new ShopModel();
         if ($this->checkFormSubmit()){
             $shops = $_GET['shops'];
             if ($shops && is_array($shops)) {
@@ -35,15 +41,17 @@ class ShopController extends BaseController{
                 }
 
                 if ($_GET['eventType'] == 'open'){
-                    shop_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('closed'=>'0'));
-                    //$this->showSuccess('update_succeed');
+                    foreach ($shops as $shop_id) {
+                        $model->where(array('shop_id'=>$shop_id))->data(array('closed'=>0))->save();
+                    }
                     $this->showAjaxReturn();
                 }
 
                 if ($_GET['eventType'] == 'close'){
-                    shop_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('closed'=>'1'));
-                    item_update_data(array('shop_id'=>array('IN', implodeids($shops))), array('on_sale'=>'0'));
-                    //$this->showSuccess('update_succeed');
+                    foreach ($shops as $shop_id) {
+                        $model->where(array('shop_id'=>$shop_id))->data(array('closed'=>0))->save();
+                        (new ItemModel())->where(array('shop_id'=>$shop_id))->data(array('on_sale'=>0))->save();
+                    }
                     $this->showAjaxReturn();
                 }
 
@@ -103,13 +111,12 @@ class ShopController extends BaseController{
                 $queryParams['time_end'] = $time_end;
             }
 
-            $pagesize = 20;
-            $totalnum = shop_get_count($condition);
+            $pagesize  = 20;
+            $totalnum  = $model->where($condition)->count();
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
-            $start_limit = ($_G['page'] - 1) * $pagesize;
-            $itemlist = shop_get_list($condition, $pagesize, $start_limit, 'shop_id DESC');
-            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), true);
+            $shoplist   = $model->where($condition)->page($_G['page'], $pagesize)->order('shop_id', 'DESC')->select();
+            $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), true);
             unset($condition, $queryParams);
 
             $_G['title'] = $_lang['shop_manage'];
@@ -122,14 +129,15 @@ class ShopController extends BaseController{
      * @param $shop_id
      */
     private function delShop($shop_id){
-        shop_delete_data(array('shop_id'=>$shop_id));
-        shop_delete_auth(array('shop_id'=>$shop_id));
-        $itemlist = item_get_list(array('shop_id'=>$shop_id), 0, 0, null, 'itemid');
-        foreach ($itemlist as $item){
-            item_delete_data(array('itemid'=>$item['itemid']));
-            item_delete_desc(array('itemid'=>$item['itemid']));
-            item_delete_image(array('itemid'=>$item['itemid']));
-            item_detete_recommend(array('itemid'=>$item['itemid']));
+        $condition = array('shop_id'=>$shop_id);
+        (new ShopModel())->where($condition)->delete();
+        (new ShopAuthModel())->where($condition)->delete();
+        (new ShopDescModel())->where($condition)->delete();
+        (new ShopRecordModel())->where($condition)->delete();
+
+        $itemModel = new ItemModel();
+        foreach ($itemModel->where(array('shop_id'=>$shop_id))->field('itemid')->select() as $item){
+            $itemModel->deleteAllData($item['itemid']);
         }
     }
 
@@ -139,56 +147,46 @@ class ShopController extends BaseController{
     public function pending(){
         global $_G,$_lang;
 
+        $model = new ShopModel();
         if ($this->checkFormSubmit()){
-            $ids = $_GET['ids'];
-            if ($ids && is_array($ids)){
-                if ($_GET['option'] == 'delete'){
-                    foreach ($ids as $shop_id){
-                        $this->delShop(intval($shop_id));
+            $shops = $_GET['shops'];
+            $eventType = trim($_GET['eventType']);
+            if ($shops) {
+                if ($eventType === 'delete'){
+                    foreach ($shops as $shop_id){
+                        $this->delShop($shop_id);
                     }
-                    $this->showSuccess('delete_succeed');
                 }
 
-                if ($_GET['option'] == 'auth_success'){
-                    foreach ($ids as $shop_id){
-                        $shop = shop_get_data(array('shop_id'=>$shop_id));
-                        shop_update_data(array('shop_id'=>$shop_id),
-                            array(
-                                'auth_status'=>'SUCCESS',
-                                'closed'=>'0'
-                            ));
-                        shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
+                if ($eventType === 'accept'){
+                    foreach ($shops as $shop_id){
+                        $model->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'SUCCESS', 'closed'=>0))->save();
                     }
-                    $this->showSuccess('update_succeed');
                 }
 
-                if ($_GET['option'] == 'auth_fail'){
-                    foreach ($ids as $shop_id){
-                        $shop = shop_get_data(array('shop_id'=>$shop_id));
-                        shop_update_data(array('shop_id'=>$shop_id),
-                            array(
-                                'auth_status'=>'FAIL',
-                                'closed'=>'1'
-                            ));
-                        shop_update_auth(array('shop_id'=>$shop_id), array('auth_status'=>'FAIL', 'auth_time'=>time()));
+                if ($eventType === 'refuse'){
+                    foreach ($shops as $shop_id){
+                        $model->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'FAIL', 'closed'=>1))->save();
                     }
-                    $this->showSuccess('update_succeed');
                 }
-            }else {
-                $this->showError('no_select');
             }
+            $this->showAjaxReturn();
         }else {
             $pagesize = 20;
+            $queryParams = array();
             $condition = array("(`auth_status`='PENDING' OR `auth_status`='FAIL')");
             $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-            if ($q) $condition['shop_name'] = array('LIKE', $q);
+            if ($q) {
+                $condition['shop_name'] = array('LIKE', $q);
+                $queryParams['q'] = $q;
+            }
 
-            $totalnum = shop_get_count($condition);
+            $totalnum = $model->where($condition)->count();
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
-            $start_limit = ($_G['page'] - 1) * $pagesize;
-            $itemlist = shop_get_list($condition, $pagesize, $start_limit, 'shop_id DESC');
-            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", true);
+            $shoplist   = $model->where($condition)->page($_G['page'], $pagesize)->order('shop_id', 'DESC')->select();
+            $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), true);
+            unset($condition, $queryParams);
 
             $_G['title'] = $_lang['shop_manage'];
             include template('shop/shop_pending');
@@ -203,8 +201,8 @@ class ShopController extends BaseController{
         G('menu', 'shop_pending');
 
         $shop_id = intval($_GET['shop_id']);
-        $shop = shop_get_data(array('shop_id'=>$shop_id));
-        $auth = shop_get_auth(array('shop_id'=>$shop_id));
+        $shop = (new ShopModel())->where(array('shop_id'=>$shop_id))->getOne();
+        $auth = (new ShopAuthModel())->where(array('shop_id'=>$shop_id))->getOne();
 
         $_G['title'] = $shop['shop_name'];
         include template('shop/shop_detail');
@@ -218,21 +216,14 @@ class ShopController extends BaseController{
         $auth_status = strtoupper($_GET['auth_status']);
         $message = htmlspecialchars($_GET['message']);
 
-        $shop = shop_get_data(array('shop_id'=>$shop_id));
+
+        $model = new ShopModel();
         if ($auth_status == 'SUCCESS') {
-            shop_update_data(array('shop_id'=>$shop_id),
-                array(
-                    'auth_status'=>'SUCCESS',
-                    'closed'=>'0'
-                ));
-            shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'SUCCESS', 'auth_time'=>time()));
+            $model->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'SUCCESS', 'closed'=>'0'))->save();
+            (new ShopAuthModel())->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'SUCCESS', 'auth_time'=>time()))->save();
         }else {
-            shop_update_data(array('shop_id'=>$shop_id),
-                array(
-                    'auth_status'=>'FAIL',
-                    'closed'=>'1'
-                ));
-            shop_update_auth(array('shop_id'=>$shop['shop_id']), array('auth_status'=>'FAIL', 'auth_time'=>time()));
+            $model->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'FAIL', 'closed'=>'1'))->save();
+            (new ShopAuthModel())->where(array('shop_id'=>$shop_id))->data(array('auth_status'=>'FAIL', 'auth_time'=>time()))->save();
         }
         $this->showSuccess('shop_auth_success');
     }
@@ -282,8 +273,8 @@ class ShopController extends BaseController{
 
         global $_lang;
         $rows = '';
-        $shop_list = shop_get_list($condition, 0, 0);
-        foreach ($shop_list as $shop){
+        $shoplist = (new ShopModel())->where($condition)->order('shop_id')->select();
+        foreach ($shoplist as $shop){
             $rows.= $excel->getRow(array(
                 $shop['shop_name'], $shop['username'],$shop['phone'],
                 $shop['province'].' '.$shop['city'].' '.$shop['county'],

@@ -21,9 +21,9 @@
      <table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
         <tbody>
             <tr>
-                <td width="20"><input type="checkbox" class="checkbox checkmark" name="delete[]" value="{$id}"></td>
-                <td width="220"><input type="text" name="menulist[{$id}][name]" class="input-text" value="{$menu[name]}"></td>
-                <td><a href="{echo U("c=menu&menuid=$id")}">查看菜单项</a></td>
+                <td width="20"><input title="" type="checkbox" class="checkbox checkmark" name="delete[]" value="{$id}"></td>
+                <td width="220"><input title="" type="text" name="menulist[{$id}][name]" class="input-text" value="{$menu[name]}"></td>
+                <td><a href="{U:("c=menu&menuid=$id")}">管理菜单项</a></td>
             </tr>
         </tbody>
     </table>

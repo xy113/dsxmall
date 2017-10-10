@@ -38,7 +38,7 @@ class ExpressController extends BaseController
             $this->showSuccess('save_succeed');
         }else {
             $express_list = express_get_list(0, 0);
-            include template('express_list');
+            include template('common/express');
         }
     }
 }

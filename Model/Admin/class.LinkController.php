@@ -41,7 +41,7 @@ class LinkController extends BaseController{
 			foreach ($model->where(array('type'=>'item'))->select() as $item){
 			    $itemlist[$item['catid']][$item['id']] = $item;
             }
-			include template('link_list');
+			include template('common/link_list');
 		}
 	}
 

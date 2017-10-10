@@ -56,6 +56,9 @@ var DSXUI={message:function(a){var c,d,e,b=$.extend({type:"success",text:"操作
             });
         }
     });
+    $("[data-action=refresh]").on('click', function () {
+        DSXUtil.reFresh();
+    });
     //加入收藏
     $("[collection]").on('click', function (e) {
         var dataid = $(this).attr('data-id');

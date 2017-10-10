@@ -1,5 +1,7 @@
 <?php
 namespace Model\Admin;
+use Data\Common\MenuModel;
+
 class MenuController extends BaseController{
     /**
      * MenuController constructor.
@@ -18,14 +20,21 @@ class MenuController extends BaseController{
 			$this->menulist();
 		}
 	}
-	
-	public function menulist(){
+
+    /**
+     * 菜单列表
+     */
+    public function menulist(){
 		global $_G,$_lang;
+
+		$model = new MenuModel();
 		if ($this->checkFormSubmit()){
 			$delete = $_GET['delete'];
 			if ($delete && is_array($delete)){
-				$deleteids = implodeids($delete);
-				menu_delete_data(array('id'=>array('IN', $deleteids)));
+			    foreach ($delete as $id){
+			        $model->where(array('id'=>$id))->delete();
+			        $model->where(array('menuid'=>$id))->delete();
+                }
 			}
 			$menulist = $_GET['menulist'];
 			if ($menulist && is_array($menulist)){
@@ -36,29 +45,34 @@ class MenuController extends BaseController{
 						$menu['displayorder'] = $displayorder;
 						$displayorder++;
 						if ($id > 0){
-							menu_update_data(array('id'=>$id), $menu);
+							$model->where(array('id'=>$id))->data($menu)->save();
 						}else {
-							menu_add_data($menu);
+							$model->data($menu)->add();
 						}
 					}
 				}
 			}
-			menu_update_cache();
+			$this->updateCache();
 			$this->showSuccess('save_succeed');
 		}else {
-			$menulist = menu_get_list(array('type'=>'menu'), 0);
-			include template('menu_name_list');
+			$menulist = $model->where(array('type'=>'menu'))->select();
+			include template('common/menu_name_list');
 		}
 	}
-	
-	public function itemlist(){
+
+    /**
+     * 菜单项列表
+     */
+    public function itemlist(){
 		global $_G,$_lang;
 		$menuid = intval($_GET['menuid']);
+        $model = new MenuModel();
 		if ($this->checkFormSubmit()){
 			$delete = $_GET['delete'];
 			if ($delete && is_array($delete)){
-				$deleteids = implodeids($delete);
-				menu_delete_data(array('id'=>array('IN', $deleteids)));
+                foreach ($delete as $id){
+                    $model->where(array('id'=>$id))->delete();
+                }
 			}
 			$itemlist = $_GET['itemlist'];
 			if ($itemlist && is_array($itemlist)){
@@ -70,27 +84,23 @@ class MenuController extends BaseController{
 					$displayorder++;
 					if ($item['name']) {
 						if ($id > 0){
-							menu_update_data(array('id'=>$id), $item);
+                            $model->where(array('id'=>$id))->data($item)->save();
 						}else {
-							menu_add_data($item);
+                            $model->data($item)->add();
 						}
 					}
 				}
 			}
-			menu_update_cache();
+			$this->updateCache();
 			$this->showSuccess('save_succeed');
 		}else {
-			$menu = menu_get_data(array('id'=>$menuid));
-			$itemlist = menu_get_list(array('type'=>'item', 'menuid'=>$menuid), 0);
-			if ($itemlist) {
-				$datalist = array();
-				foreach ($itemlist as $item){
-					$datalist[$item['id']] = $item;
-				}
-				$itemlist = $datalist;
-				unset($datalist, $item);
-			}
-			include template('menu_item_list');
+			$menu = $model->where(array('id'=>$menuid))->getOne();
+            $itemlist = array();
+            foreach ($model->where(array('menuid'=>$menuid))->order('displayorder ASC, id ASC')->select() as $item){
+                $itemlist[$item['id']] = $item;
+            }
+
+			include template('common/menu_item_list');
 		}
 	}
 	
@@ -104,19 +114,19 @@ class MenuController extends BaseController{
 					$available = $item['available'] ? ' checked' : '';
 					$iconurl = image($item['icon']);
 					echo <<<END
-					<div class="menu-item">				     
-				     <table cellpadding="0" cellspacing="0" width="100%" class="listtable">
+					<div class="menu-item" style="margin: 0;">				     
+				     <table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
 				        <tbody>
 				            <tr>
-				            	<td width="20">
+				            	<td width="40">
 				            		<input type="checkbox" class="checkbox checkmark" name="delete[]" value="$id">
 				            		<input type="hidden" name="itemlist[$id][fid]" class="fid" value="$item[fid]">
 				            	</td>
-				            	<td width="50"><img src="$iconurl" width="50" height="50" rel="menuicon" data-id="{$id}"></td>
-				            	<td width="100"><input type="text" name="itemlist[$id][name]" class="input-text w100" value="$item[name]"></td>
+				            	<td width="70"><img src="$iconurl" width="50" height="50" rel="menuicon" data-id="{$id}"></td>
+				            	<td width="120"><input type="text" name="itemlist[$id][name]" class="input-text" value="$item[name]" style="width: 100px;"></td>
 				                <td><input type="text" name="itemlist[$id][url]" class="input-text w300" value="$item[url]"$disabled></td>
 				                <td width="80">
-				                	<select name="itemlist[$id][target]">
+				                	<select name="itemlist[$id][target]" style="width: auto;">
 				                        <option value="_self"$target[_self]>本窗口</option>
 				                        <option value="_blank"$target[_blank]>新窗口</option>
 				                        <option value="_top"$target[_top]>顶层框架</option>
@@ -143,4 +153,22 @@ END;
 		menu_update_cache();
 		$this->showAjaxReturn();
 	}
+
+    /**
+     * 更新菜单缓存
+     */
+    private function updateCache(){
+        $model = new MenuModel();
+	    $menulist = $model->where(array('type'=>'menu', 'available'=>1))->order('displayorder ASC,id ASC')->select();
+	    $itemlist = $model->where(array('type'=>'item', 'available'=>1))->order('displayorder ASC,id ASC')->select();
+
+	    $cachelist = array();
+	    foreach ($itemlist as $item){
+            $cachelist[$item['menuid']][$item['id']] = $item;
+        }
+
+        foreach ($cachelist as $menuid=>$menus){
+	        cache('menu_'.$menuid, $menus);
+        }
+    }
 }

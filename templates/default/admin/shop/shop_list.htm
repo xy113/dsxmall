@@ -15,22 +15,22 @@
         <div class="row">
             <div class="cell">
                 <label>店铺名称:</label>
-                <div class="field"><input type="text" class="input-text" name="shop_name" value="{$shop_name}"></div>
+                <div class="field"><input title="" type="text" class="input-text" name="shop_name" value="{$shop_name}"></div>
             </div>
             <div class="cell">
                 <label>卖家账号:</label>
-                <div class="field"><input type="text" class="input-text" name="username" value="{$username}"></div>
+                <div class="field"><input title="" type="text" class="input-text" name="username" value="{$username}"></div>
             </div>
             <div class="cell">
                 <label>联系电话:</label>
-                <div class="field"><input type="text" class="input-text" name="phone" value="{$phone}"></div>
+                <div class="field"><input title="" type="text" class="input-text" name="phone" value="{$phone}"></div>
             </div>
         </div>
         <div class="row">
             <div class="cell">
                 <label>店铺状态:</label>
                 <div class="field">
-                    <select class="select" name="shop_status">
+                    <select title="" class="select" name="shop_status">
                         <option value="0">全部</option>
                         <option value="OPEN"{if $shop_status=='OPEN'} selected{/if}>正常营业</option>
                         <option value="CLOSE"{if $shop_status=='CLOSE'} selected{/if}>已关闭</option>
@@ -40,8 +40,8 @@
             <div class="cell" style="width: auto;">
                 <label>开店时间:</label>
                 <div class="field">
-                    <input type="text" class="input-text" name="time_begin" onclick="WdatePicker()" value="{$time_begin}"> -
-                    <input type="text" class="input-text" name="time_end" onclick="WdatePicker()" value="{$time_end}">
+                    <input title="" type="text" class="input-text" name="time_begin" onclick="WdatePicker()" value="{$time_begin}"> -
+                    <input title="" type="text" class="input-text" name="time_end" onclick="WdatePicker()" value="{$time_end}">
                 </div>
             </div>
         </div>
@@ -83,36 +83,37 @@
             </tr>
             </thead>
             <tbody>
-            {loop $itemlist $item}
-            <tr id="row_{$goods[id]}">
-                <td><input type="checkbox" class="checkbox checkmark shopItem" name="shops[]" value="{$item[shop_id]}"></td>
+            {loop $shoplist $shop}
+            <tr>
+                <td><input title="" type="checkbox" class="checkbox checkmark shopItem" name="shops[]" value="{$shop[shop_id]}"></td>
                 <td>
-                    <a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">
-                        <div class="bg-cover asyncload" data-original="{img $item[shop_logo]}" style="width: 50px; height: 50px;"></div>
+                    <a href="{U:('m=shop&c=viewshop&shop_id='.$shop['shop_id'])}" target="_blank">
+                        <div class="bg-cover asyncload" data-original="{img $shop[shop_logo]}" style="width: 50px; height: 50px;"></div>
                     </a>
                 </td>
-                <td><a href="{U:('m=shop&c=viewshop&shop_id='.$item['shop_id'])}" target="_blank">{$item[shop_name]}</a></td>
-                <td>{$item[username]}</td>
-                <td>{$item[phone]}</td>
+                <td><a href="{U:('m=shop&c=viewshop&shop_id='.$shop['shop_id'])}" target="_blank">{$shop[shop_name]}</a></td>
+                <td>{$shop[username]}</td>
+                <td>{$shop[phone]}</td>
                 <td>
-                    {if $item[closed]}
+                    {if $shop[closed]}
                     <span style="color: #ff0000">已打烊</span>
                     {else}
                     <span style="color: #4cae4c;">营业中</span>
                     {/if}
                 </td>
-                <td>{date:$item[create_time]|'Y年m月d日'}</td>
+                <td>{date:$shop[create_time]|'Y年m月d日'}</td>
             </tr>
             {/loop}
             </tbody>
             <tfoot>
             <tr>
                 <td colspan="20">
-                    <div class="pagination float-right">{$pages}</div>
+                    <div class="pagination float-right">{$pagination}</div>
                     <label><input type="checkbox" class="checkbox checkall checkmark"> 全选</label>
                     <label><button type="button" class="btn" id="deleteShopBtn">删除店铺</button></label>
                     <label><button type="button" class="btn" id="closeShopBtn">关闭店铺</button></label>
                     <label><button type="button" class="btn" id="openShopBtn">开启店铺</button></label>
+                    <label><button type="button" class="btn" data-action="refresh">刷新</button></label>
                 </td>
             </tr>
             </tfoot>

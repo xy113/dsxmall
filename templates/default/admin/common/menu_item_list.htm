@@ -3,16 +3,16 @@
 	<a href="/?m={$_G[m]}&c={$_G[c]}&a=index" class="button float-right">返回菜单列表</a>
 	<h2>菜单管理->{$menu[name]}</h2>
 </div>
-<div class="content-div">
+<div class="table-wrap">
 	<form method="post" id="menuForm">
 		<input type="hidden" name="formsubmit" value="yes">
 		<input type="hidden" name="formhash" value="{FORMHASH}">
 		<table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
 			<thead>
 			<tr>
-				<th>删?</th>
-				<th width="50">图标</th>
-				<th width="100">名称</th>
+				<th width="40">删?</th>
+				<th width="70">图标</th>
+				<th width="120">名称</th>
 				<th>链接</th>
 				<th width="80">打开方式</th>
 				<th width="40">可用</th>
@@ -28,7 +28,7 @@
 			<tr>
 				<td>
 					<label><input type="checkbox" class="checkbox checkall"> 全选</label>
-					<a href="javascript:;" id="addnew"><i class="iconfont icon-add1"></i>添加菜单项</a></td>
+					<a href="javascript:;" id="addnew"><i class="iconfont icon-roundadd"></i>添加菜单项</a>
 				</td>
 			</tr>
 			<tr>
@@ -45,18 +45,18 @@
 	<table cellpadding="0" cellspacing="0" width="100%" class="listtable border-none">
 		<tbody>
 		<tr>
-			<td width="20"><input type="hidden" name="itemlist[#k#][fid]" class="fid" value="0"></td>
-			<td width="50"></td>
-			<td width="100"><input type="text" name="itemlist[#k#][name]" class="input-text w100" value=""></td>
-			<td><input type="text" name="itemlist[#k#][url]" class="input-text w300" value=""></td>
+			<td width="40"><input type="hidden" name="itemlist[#k#][fid]" class="fid" value="0"></td>
+			<td width="70"></td>
+			<td width="120"><input title="" type="text" name="itemlist[#k#][name]" class="input-text" value="" style="width: 100px;"></td>
+			<td><input title="" type="text" name="itemlist[#k#][url]" class="input-text w300" value=""></td>
 			<td width="80">
-				<select name="itemlist[#k#][target]">
+				<select title="" name="itemlist[#k#][target]" style="width: auto;">
 					<option value="_self">本窗口</option>
 					<option value="_blank">新窗口</option>
 					<option value="_top">顶层框架</option>
 				</select>
 			</td>
-			<td width="40"><input type="checkbox" name="itemlist[#k#][available]" value="1" checked></td>
+			<td width="40"><input title="" type="checkbox" name="itemlist[#k#][available]" value="1" checked></td>
 		</tr>
 		</tbody>
 	</table>

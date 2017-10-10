@@ -11,16 +11,7 @@ namespace Data\Common;
 
 use Core\Model;
 
-class BlockItem extends Model
+class BlockItemModel extends Model
 {
     protected $table = 'block_item';
-
-    /**
-     * BlockItem constructor.
-     * @param string $name
-     */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
-    }
 }

@@ -146,17 +146,17 @@ function URL($params=null){
  * @return bool|null|string
  */
 function setting($name=null, $value=''){
-	$setting = $GLOBALS['_G']['setting'];
+    global $_settings;
     if (is_null($name)) {
-        return $setting;
+        return $_settings;
     }else {
         if ($value === ''){
-            return isset($setting[$name]) ? $setting[$name] : null;
+            return isset($_settings[$name]) ? $_settings[$name] : null;
         }elseif (is_null($value)){
-            unset($setting[$name]);
+            unset($_settings[$name]);
             return true;
         }else {
-            $setting[$name] = $value;
+            $_settings[$name] = $value;
             return $value;
         }
     }

@@ -1,5 +1,15 @@
 <?php
 namespace Model\Admin;
+use Data\Member\MemberConnectModel;
+use Data\Member\MemberFieldModel;
+use Data\Member\MemberGroupModel;
+use Data\Member\MemberInfoModel;
+use Data\Member\MemberLogModel;
+use Data\Member\MemberModel;
+use Data\Member\MemberStatModel;
+use Data\Member\MemberStatusModel;
+use Data\Member\MemberTokenModel;
+
 class MemberController extends BaseController{
 	public function index(){
 		$this->memberlist();
@@ -13,87 +23,102 @@ class MemberController extends BaseController{
 		G('menu', 'memberlist');
 
 		if ($this->checkFormSubmit()){
-			$uids = $_GET['uid'];
-			if ($uids && is_array($uids)){
-				$uids = implode(',', $uids);
-				$condition = array('uid'=>array('IN', $uids));
-				switch ($_GET['option']){
-					case 'delete':
-						member_delete_data($condition);
-						member_delete_info($condition);
-						member_delete_status($condition);
-						member_delete_stat($condition);
-						member_delete_field($condition);
-						member_delete_log($condition);
-						member_delete_connect($condition);
-						member_delete_perm($condition);
-						break;
+			$members = $_GET['members'];
+			$eventType = trim($_GET['eventType']);
+			if ($members && is_array($members)){
+			    $model = new MemberModel();
+			    if ($eventType == 'delete'){
+			        foreach ($members as $uid){
+			            $condition = array('uid'=>$uid);
+			            $model->where($condition)->delete();
+                        (new MemberInfoModel())->where($condition)->delete();
+                        (new MemberFieldModel())->where($condition)->delete();
+                        (new MemberLogModel())->where($condition)->delete();
+                        (new MemberStatModel())->where($condition)->delete();
+                        (new MemberStatusModel())->where($condition)->delete();
+                        (new MemberConnectModel())->where($condition)->delete();
+                        (new MemberTokenModel())->where($condition)->delete();
+                    }
+                    $this->showAjaxReturn();
+                }
 
-					case 'move':
-						$usergrouplist = usergroup_get_list(0);
-						include template('member_move');
-						exit();
-						break;
+                if ($eventType == 'allow'){
+			        foreach ($members as $uid){
+			            $model->where(array('uid'=>$uid))->data(array('status'=>'1'))->save();
+                    }
+                    $this->showAjaxReturn();
+                }
 
-					case 'normal':
-						member_update_data($condition, array('status'=>0));
-						break;
+                if ($eventType == 'forbiden'){
+                    foreach ($members as $uid){
+                        $model->where(array('uid'=>$uid))->data(array('status'=>'-1'))->save();
+                    }
+                    $this->showAjaxReturn();
+                }
 
-					case 'nologin':
-						member_update_data($condition, array('status'=>-1));
-						break;
-
-					case 'nopost':
-						member_update_data($condition, array('status'=>-2));
-						break;
-					default:;
-				}
-				$this->showSuccess('update_succeed');
 			}else {
 				$this->showError('no_select');
 			}
 		}else {
 
-			$pagesize = 20;
-			$condition = array();
+			$condition = $queryParams = array();
 
-			$field = isset($_GET['field']) ? trim($_GET['field']) : '';
-			$q = isset($_GET['q']) ? trim($_GET['q']) : '';
-			if ($field && $q){
-				switch ($field) {
-					case 'uid': $condition['uid'] = $q;
-					break;
+			$uid = htmlspecialchars($_GET['uid']);
+			if ($uid) {
+			    $condition[] = "m.uid='$uid'";
+			    $queryParams['uid'] = $uid;
+            }
 
-					case 'username': $condition['username'] = array('LIKE', $q);
-					break;
+            $username = htmlspecialchars($_GET['username']);
+			if ($username) {
+			    $condition[] = "m.username LIKE '%$username%'";
+			    $queryParams['username'] = $username;
+            }
 
-					case 'mobile' : $condition['mobile'] = array('LIKE', $q);
-					break;
+            $mobile = htmlspecialchars($_GET['mobile']);
+			if ($mobile) {
+			    $condition[] = "m.`mobile`='$mobile'";
+			    $queryParams['mobile'] = $mobile;
+            }
 
-					case 'email' : $condition['email'] = array('LIKE', $q);
-					break;
-					 default: $condition['username'] = array('LIKE', $q);
-				}
-			}
+            $email = htmlspecialchars($_GET['email']);
+			if ($email) {
+			    $condition[] = "m.`email`=>'$email'";
+			    $queryParams['email'] = $email;
+            }
 
-			$totalnum   = member_get_count($condition);
+            $reg_time_begin = htmlspecialchars($_GET['reg_time_begin']);
+			if ($reg_time_begin) {
+			    $condition[] = "s.`regdate`>".strtotime($reg_time_begin);
+			    $queryParams['reg_time_begin'] = $reg_time_begin;
+            }
+
+            $reg_time_end = htmlspecialchars($_GET['reg_time_end']);
+			if ($reg_time_end) {
+                $condition[] = "s.`regdate`<".strtotime($reg_time_end);
+                $queryParams['reg_time_end'] = $reg_time_end;
+            }
+
+            $last_visit_begin = htmlspecialchars($_GET['last_visit_begin']);
+			if ($last_visit_begin) {
+			    $condition[] = "s.`lastvisit`>".strtotime($last_visit_begin);
+			    $queryParams['last_visit_begin'] = $last_visit_begin;
+            }
+
+            $last_visit_end = htmlspecialchars($_GET['last_visit_end']);
+			if ($last_visit_end) {
+                $condition[] = "s.`lastvisit`<".strtotime($last_visit_end);
+                $queryParams['last_visit_end'] = $last_visit_end;
+            }
+
+            $pagesize = 20;
+			$totalnum   = M('member m')->join('member_status s', 's.uid=m.uid')->where($condition)->count();
 			$pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$memberlist = member_get_list($condition, $pagesize, ($_G['page'] - 1)*$pagesize, 'uid ASC');
-			$grouplist  = member_get_group_list();
+			$memberlist = M('member m')->join('member_status s', 's.uid=m.uid')->field('m.*,s.regdate,s.lastvisit')
+                ->where($condition)->order('uid', 'ASC')->page($_G['page'], $pagesize)->select();
+            $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), true);
 
-			$uids = array_keys($memberlist);
-			$uids = !empty($uids) ? implode(',', $uids) : 0;
-			$memberstatuslist = $this->t('member_status')->where("uid IN($uids)")->select();
-			if ($memberstatuslist) {
-				foreach ($memberstatuslist as $status){
-					$memberlist[$status['uid']]['regdate'] = @date('Y-m-d H:i', $status['regdate']);
-					$memberlist[$status['uid']]['regip'] = $status['regip'];
-					$memberlist[$status['uid']]['lastvisit'] = @date('Y-m-d H:i', $status['lastvisit']);
-					$memberlist[$status['uid']]['lastvisitip'] = $status['lastvisitip'];
-				}
-			}
-			unset($memberstatuslist, $status);
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "field=$field&q=$q", 1);
+            $grouplist = (new MemberGroupModel())->getCache();
 
             $_G['title'] = 'memberlist';
 			include template('member/member_list');

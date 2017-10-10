@@ -42,18 +42,11 @@
                 </div>
                 <div class="input-div">
                     <div class="ico-box"><i class="iconfont icon-mobile"></i></div>
-                    <div class="input-box"><input type="text" class="text" id="mobile" name="mobile_{FORMHASH}" placeholder="请填写11手机号码"></div>
+                    <div class="input-box"><input type="text" class="text" id="mobile" name="mobile_{FORMHASH}" placeholder="请填写手机号码"></div>
                 </div>
                 <div class="input-div">
                     <div class="ico-box"><i class="iconfont icon-lock"></i></div>
-                    <div class="input-box"><input type="password" class="text" id="password" name="password_{FORMHASH}" placeholder="密码,6-20位"></div>
-                </div>
-                <div class="input-div">
-                    <div class="ico-box"><i class="iconfont icon-attention_light"></i></div>
-                    <div class="input-box">
-                        <input type="text" name="captchacode" class="text" id="captcha" placeholder="验证码">
-                        <img src="/?m=plugin&c=captcha" onclick="this.src='/?m=plugin&c=captcha&'+Math.random()" title="点击更换图片" class="captcha">
-                    </div>
+                    <div class="input-box"><input type="password" class="text" id="password" name="password_{FORMHASH}" placeholder="登录密码,6-20位"></div>
                 </div>
                 <div class="sign-button-div"><button type="submit" class="sign-button">注册</button></div>
                 <div class="sign-link" style="text-align:center;">
@@ -113,11 +106,6 @@
         });
         if (!checkflag) return;
 
-        var captcha = $("#captcha").val();
-        if(captcha.length != 4){
-            showTips('{lang captchacode_incorrect}');
-            return false;
-        }
         var spinner = null;
         $("#registerForm").ajaxSubmit({
             dataType:'json',

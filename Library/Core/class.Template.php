@@ -53,7 +53,7 @@ class Template{
 		}, $template);
 		
 		//替换头像
-		$template = preg_replace_callback('/{avatar:\s+(.+?)\|([big|middle|small]+)\}/is', function($matches){
+		$template = preg_replace_callback('/{avatar\:(.+?)\|([big|middle|small]+)\}/is', function($matches){
 			return Template::stripvtags('<?php echo avatar('.$matches[1].',\''.$matches[2].'\'); ?>','');
 		}, $template);
 

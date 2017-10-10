@@ -1,6 +1,9 @@
 <?php
 namespace Core;
+use Data\Common\SettingModel;
+
 abstract class Controller{
+    protected $var = array();
 	protected $uid = 0;
 	protected $username = '';
 	protected $member   = array();
@@ -11,13 +14,15 @@ abstract class Controller{
      * Controller constructor.
      */
     function __construct(){
-        global $_G;
+        global $_G, $_settings;
 
         ob_start();
+        $this->var = &$_G;
         $this->uid = intval(cookie('uid'));
         $this->username = trim(cookie('username'));
         if ($this->uid && $this->username){
             $this->islogin = 1;
+
             $member = unserialize(authcode(cookie('udata'), true));
             if (is_array($member)) {
                 $this->member = $member;
@@ -48,10 +53,11 @@ abstract class Controller{
             }
         }
         $_G['inajax'] = &$this->inAjax;
-	}
-	
-	protected function t($tableName) {
-		return M($tableName);
+
+        $_settings = (new SettingModel())->getCache();
+        $this->var['title'] = $_settings['sitename'];
+        $this->var['keywords'] = $_settings['keywords'];
+        $this->var['description'] = $_settings['description'];
 	}
 	
 	protected function m($tableName) {

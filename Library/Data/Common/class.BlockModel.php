@@ -16,11 +16,25 @@ class BlockModel extends Model
     protected $table = 'block';
 
     /**
-     * BlockModel constructor.
-     * @param string $name
+     * @param $block_id
+     * @return bool|mixed
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public function setCache($block_id){
+        $itemlist = (new BlockItemModel())->where(array('block_id'=>$block_id))->order('displayorder ASC,id ASC')->select();
+        return cache('block_items_'.$block_id, $itemlist);
+    }
+
+    /**
+     * @param $block_id
+     * @return bool|mixed
+     */
+    public function getCache($block_id){
+        $cache = cache('block_items_'.$block_id);
+        if (is_array($cache)) {
+            return $cache;
+        }else {
+            $this->setCache($block_id);
+            return $this->getCache($block_id);
+        }
     }
 }

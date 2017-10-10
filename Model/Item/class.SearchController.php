@@ -6,6 +6,8 @@
  * Time: 上午10:39
  */
 namespace Model\Item;
+use Data\Item\ItemCatlogModel;
+
 class SearchController extends BaseController{
     /**
      *
@@ -20,20 +22,21 @@ class SearchController extends BaseController{
     public function itemlist(){
         global $_G,$_lang;
 
-        $pagesize = 20;
         $condition = 'i.on_sale=1';
         $params = array();
         $catid = intval($_GET['catid']);
         if ($catid) {
             $params['catid'] = $catid;
             $condition.= " AND i.catid='$catid'";
-            $item_cat = item_get_cat(array('catid'=>$catid));
+            $catlog = (new ItemCatlogModel())->where(array('catid'=>$catid))->getOne();
         }
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) {
             $params['q'] = $q;
             $condition.= " AND (i.title LIKE '%$q%' OR s.shop_name LIKE '%$q%')";
         }
+
+        $pagesize = 20;
         $db = DB();
         $sql = "SELECT COUNT(*) AS total_count FROM ".$db->table('item')." i LEFT JOIN ".$db->table('shop').
             " s ON s.shop_id=i.shop_id WHERE $condition LIMIT 0, 1";

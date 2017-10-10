@@ -16,11 +16,26 @@ class MemberGroupModel extends Model
     protected $table = 'member_group';
 
     /**
-     * MemberGroupModel constructor.
-     * @param string $name
+     * @return bool|mixed
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public function updateCache(){
+        $grouplist = array();
+        foreach ($this->select() as $group){
+            $grouplist[$group['gid']] = $group;
+        }
+        return cache('member_groups', $grouplist);
+    }
+
+    /**
+     * @return bool|mixed
+     */
+    public function getCache(){
+        $grouplist = cache('member_groups');
+        if (is_array($grouplist)){
+            return $grouplist;
+        }else {
+            $this->updateCache();
+            return $this->getCache();
+        }
     }
 }

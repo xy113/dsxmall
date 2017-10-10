@@ -1,29 +1,24 @@
 <?php
 namespace Model\Admin;
+use Data\Common\SettingModel;
+
 class SettingController extends BaseController{
     /**
      * 保存配置信息
      */
     public function save(){
 		if ($this->checkFormSubmit()){
+		    $model = new SettingModel();
 			$settingnew = $_GET['settingnew'];
-			foreach ($settingnew as $key=>$value){
-				if(is_array($value)) $value = serialize($value);
-				M('setting')->insert(array('skey'=>$key, 'svalue'=>$value), 0, true);
+			foreach ($settingnew as $skey=>$svalue){
+				if(is_array($svalue)) $value = serialize($svalue);
+				$model->data(array('skey'=>$skey, 'svalue'=>$svalue))->add(null, false, true);
 			}
-			$this->updatecache();
+			$model->updateCache();
 			$this->showSuccess('update_succeed');
 		}else {
 			$this->showError('undefined_action');
 		}
-	}
-
-    /**
-     * 更新配置缓存
-     */
-    public function updatecache(){
-		$settings = $this->getSettings();
-		cache('settings', $settings);
 	}
 
     /**
@@ -45,8 +40,7 @@ class SettingController extends BaseController{
      */
     private function getSettings(){
         $settings = array();
-        $settinglist = M('setting')->field('skey,svalue')->select();
-        foreach ($settinglist as $list){
+        foreach ((new SettingModel())->select() as $list){
             $val = unserialize($list['svalue']);
             if(is_array($val)){
                 $list['svalue'] = $val;

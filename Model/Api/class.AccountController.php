@@ -9,6 +9,12 @@
 namespace Model\Api;
 
 
+use Core\Validate;
+use Data\Member\MemberGroupModel;
+use Data\Member\MemberInfoModel;
+use Data\Member\MemberModel;
+use Data\Member\MemberStatusModel;
+
 class AccountController extends BaseController
 {
     /**
@@ -75,22 +81,35 @@ class AccountController extends BaseController
 
         $check_sign = md5($username.$mobile.$password.$timestamp.$appid.$appkey);
         if ($check_sign == $_GET['sign']) {
-            $res = member_register(array(
-                'username'=>$username,
-                'password'=>$password,
-                'mobile'=>$mobile
-            ));
-            if ($res['errcode'] == 0){
-                $this->showAjaxReturn(array(
-                    'uid'=>$res['userinfo']['uid'],
-                    'username'=>$res['userinfo']['username']
-                ));
-            }else {
-                $this->showAjaxError($res['errcode'], $res['errmsg']);
+
+            $memberModel = new MemberModel();
+            if ($memberModel->where(array('username'=>$username))->count()){
+                $this->showAjaxError(1, 'username_be_occupied');
             }
+
+            if (!Validate::ismobile($mobile)){
+                $this->showAjaxError(2, 'mobile_incorrect');
+            }
+
+            if ($memberModel->where(array('mobile'=>$mobile))->count()){
+                $this->showAjaxError(3, 'mobile_be_occupied');
+            }
+
+            if (strlen($password)<6 || strlen($password)>20){
+                $this->showAjaxError(4, 'password_input_incorrect');
+            }
+
+            $group = (new MemberGroupModel())->where(array('type'=>'member'))->order('creditslower', 'ASC')->getOne();
+            $uid = $memberModel->data(array('gid'=>$group['gid'],'username'=>$username, 'password'=>getPassword($password), 'mobile'=>$mobile))->add();
+            (new MemberStatusModel())->data(array('uid'=>$uid,'regdate'=>time(),'regip'=>getIp()))->add();
+            (new MemberInfoModel())->data(array('uid'=>$uid))->add();
+
+            cookie('uid', $uid);
+            cookie('username', $username);
+
+            $this->showAjaxReturn();
         }else {
-            $_GET['sign2'] = $check_sign;
-            $this->showAjaxError('1001', 'sign_error', $_GET);
+            $this->showAjaxError('5', 'sign_error');
         }
     }
 }

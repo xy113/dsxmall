@@ -85,6 +85,17 @@ class ItemModel extends Model
 
     /**
      * @param $itemid
+     */
+    public function deleteAllData($itemid){
+        $condition = array('itemid'=>$itemid);
+        $this->where($condition)->delete();
+        (new ItemDescModel())->where($condition)->delete();
+        (new ItemImageModel())->where($condition)->delete();
+        (new ItemRecommendModel())->where($condition)->delete();
+    }
+
+    /**
+     * @param $itemid
      * @param $num
      * @param int $type
      * @return bool|int

@@ -16,11 +16,26 @@ class SettingModel extends Model
     protected $table = 'setting';
 
     /**
-     * SettingModel constructor.
-     * @param string $name
+     * @return bool|mixed
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public function updateCache(){
+        $settings = array();
+        foreach ($this->select() as $set){
+            $settings[$set['skey']] = $set['svalue'];
+        }
+        return cache('settings', $settings);
+    }
+
+    /**
+     * @return bool|mixed
+     */
+    public function getCache(){
+        $settings = cache('settings');
+        if (!is_array($settings)){
+            $this->updateCache();
+            return $this->getCache();
+        }else {
+            return $settings;
+        }
     }
 }

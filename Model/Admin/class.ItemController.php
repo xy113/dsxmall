@@ -6,6 +6,11 @@
  * Time: 下午3:00
  */
 namespace Model\Admin;
+use Data\Item\ItemDescModel;
+use Data\Item\ItemImageModel;
+use Data\Item\ItemModel;
+use Data\Item\ItemRecommendModel;
+
 class ItemController extends BaseController{
     private $items = array();
 
@@ -129,8 +134,9 @@ class ItemController extends BaseController{
      * 上架
      */
     private function on_sale(){
+        $model = new ItemModel();
         foreach ($this->items as $itemid){
-            item_update_data(array('itemid'=>$itemid), array('on_sale'=>1));
+            $model->where(array('itemid'=>$itemid))->data(array('on_sale'=>1))->save();
         }
         $this->showAjaxReturn();
     }
@@ -139,15 +145,20 @@ class ItemController extends BaseController{
      * 下架
      */
     private function off_sale(){
+        $model = new ItemModel();
         foreach ($this->items as $itemid){
-            item_update_data(array('itemid'=>$itemid), array('on_sale'=>0));
+            $model->where(array('itemid'=>$itemid))->data(array('on_sale'=>0))->save();
         }
         $this->showAjaxReturn();
     }
 
+    /**
+     *
+     */
     private function recommend(){
+        $model = new ItemRecommendModel();
         foreach ($this->items as $itemid){
-            item_add_recommend($itemid);
+            $model->data(array('itemid'=>$itemid))->add(null, false, true);
         }
         $this->showAjaxReturn();
     }
@@ -157,10 +168,11 @@ class ItemController extends BaseController{
      * @param $itemid
      */
     private function delItemData($itemid){
-        item_delete_data(array('itemid'=>$itemid));
-        item_delete_desc(array('itemid'=>$itemid));
-        item_delete_image(array('itemid'=>$itemid));
-        item_detete_recommend(array('itemid'=>$itemid));
+        $condition = array('itemid'=>$itemid);
+        (new ItemModel())->where($condition)->delete();
+        (new ItemDescModel())->where($condition)->delete();
+        (new ItemImageModel())->where($condition)->delete();
+        (new ItemRecommendModel())->where($condition)->delete();
     }
 
     //首页推荐商品
@@ -173,8 +185,9 @@ class ItemController extends BaseController{
 
         if ($this->checkFormSubmit()){
             $items = $_GET['items'];
-            if ($items) {
-                item_detete_recommend(array('itemid'=>array('IN', implodeids($items))));
+            $model = new ItemRecommendModel();
+            foreach ($items as $itemid){
+                $model->where(array('itemid'=>$itemid))->delete();
             }
             $this->showSuccess('delete_succeed');
         }else {
@@ -182,7 +195,7 @@ class ItemController extends BaseController{
             $totalnum = M('item_recommend r')->join('item i', 'i.itemid=r.itemid')->count();
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
-            $fileds = 'i.itemid,i.title,i.thumb,i.image,i.price,i.sold,i.on_sale,i.create_time';
+            $fileds = 'r.itemid,i.title,i.thumb,i.image,i.price,i.sold,i.on_sale,i.create_time';
             $itemlist   = M('item_recommend r')->field($fileds)->join('item i', 'i.itemid=r.itemid')
                 ->order('r.id DESC')->page($_G['page'], $pagesize)->select();
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, null, true);
@@ -193,11 +206,11 @@ class ItemController extends BaseController{
     }
 
     /**
-     *
+     * 添加推荐商品
      */
     public function add_recommend(){
         $itemid = intval($_GET['itemid']);
-        item_add_recommend($itemid);
+        (new ItemRecommendModel())->data(array('itemid'=>$itemid))->add(null, false, true);
         $this->showAjaxReturn();
     }
 }

@@ -91,7 +91,7 @@ class PostcatlogController extends BaseController
                 $pinyin = new Pinyin();
                 $catlog['identifer'] = $pinyin->getPinyin($catlog['name']);
 
-                $catlogModel->where(array('catid'=>$catid))->update($catlog);
+                $catlogModel->where(array('catid'=>$catid))->data($catlog)->save();
                 $catlogModel->updateCache();
                 $this->showSuccess('update_succeed', null, array(
                     array('text'=>'reedit', 'url'=>curPageURL()),
@@ -132,7 +132,7 @@ class PostcatlogController extends BaseController
                         $catlogModel->where(array('catid'=>$catid))->delete();
                     }
                     $itemModel = new PostItemModel();
-                    $itemlist = $itemModel->where(array('aid'=>array('IN', implodeids($childIds))))->select();
+                    $itemlist = $itemModel->where(array('catid'=>array('IN', implodeids($childIds))))->select();
                     foreach ($itemlist as $item){
                         $itemModel->deleteAllData($item['aid']);
                     }

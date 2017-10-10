@@ -17,6 +17,7 @@ return array(
     'username_be_occupied'=>'你输入的用户名已被人使用',
     'email_be_occupied'=>'你输入的邮箱已被人使用',
     'mobile_be_occupied'=>'你输入的手机号已被人使用',
+    'password_input_incorrect'=>'密码输入错误',
     'login_be_forbidden'=>'你已被限制登录',
     'account_unauthorized'=>'账号未通过认证',
 
@@ -71,10 +72,9 @@ return array(
         9=>'博士'
     ),
     'member_status'=>array(
-        '0'=>'正常',
+        '1'=>'正常',
         '-1'=>'禁止登录',
-        '-2'=>'等待验证',
-        '-3'=>'禁止发言'
+        '0'=>'等待验证'
     ),
     'member_perms'=>array(
         'allowpubpost'=>'发布文章',

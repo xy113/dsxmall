@@ -1,69 +1,97 @@
 <?php
-namespace Model\Admin;
-class DistrictController extends BaseController{
-    function __construct()
-    {
-        parent::__construct();
-        $_GET['menu'] = 'district';
-    }
+/**
+ * Created by PhpStorm.
+ * User: songdewei
+ * Date: 2017/10/10
+ * Time: 上午11:38
+ */
 
+namespace Model\Admin;
+
+
+use Core\Pinyin;
+use Data\Common\DistrictModel;
+
+class DistrictController extends BaseController
+{
+    /**
+     * 区域信息管理
+     */
     public function index(){
-		if ($this->checkFormSubmit()){
-			$delete = $_GET['delete'];
-			if ($delete && is_array($delete)) {
-				$deleteids = implodeids($delete);
-				district_delete_data(array('id'=>array('IN', $deleteids)));
-			}
-			
-			$districtnew = $_GET['districtnew'];
-			if ($districtnew && is_array($districtnew)) {
-				foreach ($districtnew as $id=>$district) {
-					if ($district['name']) {
-						district_update_data(array('id'=>$id), $district);
-					}
-				}
-			}
-			
-			$newdistrict = $_GET['newdistrict'];
-			if ($newdistrict && is_array($newdistrict)) {
-				foreach ($newdistrict as $district){
-					if ($district['name']) {
-						district_add_data($district);
-					}
-				}
-			}
-			
-			$this->showSuccess('update_succeed');
-		}else {
-			global $_G;
-			$province = intval($_GET['province']);
-			$city     = intval($_GET['city']);
-			$county   = intval($_GET['county']);
-			
-			$fid = 0;
-			$level = 1;
-			$districtlist = $provincelist = $citylist = $countylist = array();
-			$provincelist = district_get_list(array('fid'=>0), 0);
-			$districtlist = $provincelist;
-			if($province){
-				$level = 2;
-				$fid = $province;
-				$citylist = district_get_list(array('fid'=>$province), 0);
-				$districtlist = $citylist;
-			}
-			
-			if($city){
-				$level = 3;
-				$fid = $city;
-				$countylist = district_get_list(array('fid'=>$city), 0);
-				$districtlist = $countylist;
-			}
-			if($county){
-				$level = 4;
-				$fid = $county;
-				$districtlist = district_get_list(array('fid'=>$county), 0);
-			}
-			include template('district_list');
-		}
-	}
+        global $_G,$_lang;
+
+        $model = new DistrictModel();
+        if ($this->checkFormSubmit()){
+            $delete = $_GET['delete'];
+            if ($delete) {
+                foreach ($delete as $id){
+                    $model->where(array('id'=>$id))->delete();
+                }
+            }
+
+            $districtlist = $_GET['districtlist'];
+            if ($districtlist) {
+                $pinyin = new Pinyin();
+                foreach ($districtlist as $id=>$district){
+                    if ($district['name']){
+                        if (!$district['letter']){
+                            $district['letter'] = $pinyin->getFirstChar($district['name']);
+                        }
+
+                        if (!$district['pinyin']){
+                            $district['pinyin'] = $pinyin->getPinyin($district['name']);
+                        }
+                        if ($id > 0){
+                            $model->where(array('id'=>$id))->data($district)->save();
+                        }else {
+                            $province = intval($_GET['province']);
+                            $city     = intval($_GET['city']);
+                            $county   = intval($_GET['county']);
+                            if ($county){
+                                $district['fid'] = $county;
+                                $district['level'] = 4;
+                            }elseif ($city) {
+                                $district['fid'] = $city;
+                                $district['level'] = 3;
+                            }elseif ($province){
+                                $district['fid'] = $province;
+                                $district['level'] = 2;
+                            }else {
+                                $district['fid'] = 0;
+                                $district['level'] = 1;
+                            }
+                            $model->data($district)->add();
+                        }
+                    }
+                }
+            }
+            $this->showSuccess('save_succeed');
+        }else {
+            $province = intval($_GET['province']);
+            $city     = intval($_GET['city']);
+            $county   = intval($_GET['county']);
+
+            $provincelist = $citylist = $countylist = $districtlist = array();
+
+            $provincelist = $model->where(array('fid'=>0))->order('displayorder ASC,id ASC')->select();
+            $districtlist = $provincelist;
+
+            if ($province) {
+                $citylist = $model->where(array('fid'=>$province))->order('displayorder ASC,id ASC')->select();
+                $districtlist = $citylist;
+            }
+
+            if ($city) {
+                $countylist = $model->where(array('fid'=>$city))->order('displayorder ASC,id ASC')->select();
+                $districtlist = $countylist;
+            }
+
+
+            if ($county) {
+                $districtlist = $model->where(array('fid'=>$county))->order('displayorder ASC,id ASC')->select();
+            }
+
+            include template('common/district');
+        }
+    }
 }
