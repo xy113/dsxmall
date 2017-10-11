@@ -9,7 +9,7 @@ class IndexController extends BaseController{
     public function index(){
 		global $_G,$_lang;
 
-        $menu_list = menu_get_cache(2);
+        $menulist = cache('menu_2');
         $newPostList = (new PostItemModel())->where(array('status'=>1))->order('aid', 'DESC')->limit(0, 6)->select();
 		include template('index');
 	}

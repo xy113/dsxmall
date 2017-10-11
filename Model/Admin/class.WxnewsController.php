@@ -1,6 +1,8 @@
 <?php
 namespace Model\Admin;
 
+use WxApi\WxNewsApi;
+
 class WxnewsController extends  BaseController{
     /**
      * WxnewsController constructor.
@@ -11,14 +13,18 @@ class WxnewsController extends  BaseController{
         $_GET['menu'] = 'wxnews';
     }
 
+    /**
+     * 图文消息列表
+     */
     public function index(){
 		global $_G, $_lang;
-		$access_token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
+
+		$api = new WxNewsApi();
 		if ($this->checkFormSubmit()) {
-			$news_media_ids = $_GET['media_id'];
-			if ($news_media_ids && is_array($news_media_ids)) {
-				foreach ($news_media_ids as $media_id) {
-					$res = weixin_delete_news($access_token, $media_id);
+			$materials = $_GET['materials'];
+			if ($materials && is_array($materials)) {
+				foreach ($materials as $media_id) {
+
 				}
 				$this->showSuccess('delete_succeed');
 			}else {
@@ -26,11 +32,11 @@ class WxnewsController extends  BaseController{
 			}
 		}else {
 			$pagesize = 20;
-			$res = weixin_get_material_list($access_token, 'news', ($_G['page']-1)*$pagesize, $pagesize);
-			$itemlist = $res['item'];
-			$total_count = $res['total_count'];
-			$pagecount = $total_count < $pagesize ? 1 : ceil($total_count/$pagesize);
-			$pages = $this->showPages($_G['page'], $pagecount, $total_count, "", 1);
+			$data = $api->batchget(($_G['page']-1)*$pagesize, $pagesize);
+			$itemlist = $data['item'];
+			$totalcount = $data['total_count'];
+			$pagecount  = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);
+			$pagination = $this->pagination($_G['page'], $pagecount, $totalcount, "", 1);
 			
 			if ($itemlist) {
 				$datalist = array();
@@ -44,7 +50,7 @@ class WxnewsController extends  BaseController{
 				$itemlist = $datalist;
 				unset($datalist, $item);
 			}
-			include template('weixin/weixin_news_list');
+			include template('weixin/news_list');
 		}
 	}
 	

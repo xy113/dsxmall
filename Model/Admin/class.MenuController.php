@@ -164,7 +164,7 @@ END;
 
 	    $cachelist = array();
 	    foreach ($itemlist as $item){
-            $cachelist[$item['menuid']][$item['id']] = $item;
+            $cachelist[$item['menuid']][] = $item;
         }
 
         foreach ($cachelist as $menuid=>$menus){

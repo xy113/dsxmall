@@ -1,6 +1,10 @@
 <?php
 namespace Model\Admin;
 
+use WxApi\Builder\WxMaterialUploadContentBuilder;
+use WxApi\Builder\WxVideoUploadContentBuilder;
+use WxApi\WxMaterialApi;
+
 class WxmaterialController extends  BaseController{
     function __construct()
     {
@@ -8,66 +12,87 @@ class WxmaterialController extends  BaseController{
         $_GET['menu'] = 'wxmaterial';
     }
 
+    /**
+     * 微信素材列表
+     */
     public function index(){
 		global $_G,$_lang;
-		
-		$access_token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
+
 		if ($this->checkFormSubmit()) {
-			$material_ids = $_GET['media_id'];
-			if ($material_ids && is_array($material_ids)){
-				if ($_GET['option'] == 'delete') {
-					foreach ($material_ids as $media_id){
-						weixin_delete_material($access_token, $media_id);
-					}
-					$this->showSuccess('delete_succeed');
-				}
+			$materials = $_GET['materials'];
+			if ($materials && is_array($materials)){
+			    $api = new WxMaterialApi();
+			    foreach ($materials as $media_id){
+			        $api->del($media_id);
+                }
+				$this->showAjaxReturn();
 			}else {
-				$this->showError('no_select');
+				$this->showAjaxError(1,'no_select');
 			}
 		}else {
 			$pagesize = 20;
 			$type = isset($_GET['type']) ? trim($_GET['type']) : 'image';
-			$res = weixin_get_material_list($access_token, $type, ($_G['page']-1)*$pagesize, $pagesize);
-			$totalbum = $res['total_count'];
-			$itemlist = $res['item'];
-			$pagecount = $totalbum < $pagesize ? 1 : ceil($totalbum/$pagesize);
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, "type=$type", 1);
-			include template('weixin/weixin_material_list');
+			$data = (new WxMaterialApi())->batchget($type, ($_G['page']-1)*$pagesize, $pagesize);
+			$totalnum = $data['total_count'];
+			$itemlist = $data['item'];
+			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+			$pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "type=$type", 1);
+			include template('weixin/material_list');
 		}
 	}
-	
-	public function add(){
+
+    /**
+     * 添加素材
+     */
+    public function add(){
 		$type = isset($_GET['type']) ? trim($_GET['type']) : 'image';
-		$access_token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
-		$access_data = array();
-		$media = trim($_GET['media']);
+		$media = htmlspecialchars($_GET['media']);
 		if ($type == 'image') {//图片素材
-			$access_data = array('media'=>'@'.C('IMAGEDIR').$media);
-		}elseif ($type == 'video') {
-			$description = json_encode(array('title'=>urlencode($_GET['title']), 'introduction'=>urlencode($_GET['introduction'])));
-			$description = urldecode($description);
-			$access_data = array('media'=>'@'.C('ATTACHDIR').$media, 'description'=>$description);
-		}elseif ($type == 'voice') {
-			$access_data = array('media'=>'@'.C('ATTACHDIR').$media);
-		}
-		//$this->showAjaxReturn($access_data);
-		if ($access_data) {
-			$res = weixin_add_material($access_token, $type, $access_data);
+            $builder = new WxMaterialUploadContentBuilder();
+            $builder->media = C('ATTACHDIR').'image/'.$media;
+			$api = new WxMaterialApi();
+			$res = $api->add($type, $builder->getContent());
 			if ($res['media_id']) {
-				$this->showAjaxReturn();
-			}else {
-				$this->showAjaxError($res['errcode'], $res['errmsg']);
-			}
-		}else {
-			$this->showAjaxError(-1, 'invalid parameter');
+			    $this->showAjaxReturn(array('media_id'=>$res['media_id']));
+            }else {
+			    $this->showAjaxError(1, 'FAIL',$res);
+            }
 		}
+
+		if ($type == 'video'){
+		    $builder = new WxVideoUploadContentBuilder();
+		    $builder->media = C('ATTACHDIR').'video/'.$media;
+		    $builder->title = htmlspecialchars($_GET['title']);
+		    $builder->introduction = htmlspecialchars($_GET['introduction']);
+		    $api = new WxMaterialApi();
+		    $res = $api->add('video', $builder->getContent());
+            if ($res['media_id']) {
+                $this->showAjaxReturn(array('media_id'=>$res['media_id']));
+            }else {
+                $this->showAjaxError(1, 'FAIL',$res);
+            }
+        }
+
+        if ($type == 'voice'){
+            $builder = new WxMaterialUploadContentBuilder();
+            $builder->media = C('ATTACHDIR').'voice/'.$media;
+            $api = new WxMaterialApi();
+            $res = $api->add($type, $builder->getContent());
+            if ($res['media_id']) {
+                $this->showAjaxReturn(array('media_id'=>$res['media_id']));
+            }else {
+                $this->showAjaxError(1, 'FAIL',$res);
+            }
+        }
 	}
-	
-	public function viewimage(){
+
+    /**
+     * 显示素材图片
+     */
+    public function viewimage(){
 		//ob_end_clean();
 		$media_id = trim($_GET['media_id']);
-		$access_token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
-		$res = weixin_get_material($access_token, $media_id, 'image');
+		$res = (new WxMaterialApi())->get($media_id, 'image');
 		echo $res;
 		exit();
 	}

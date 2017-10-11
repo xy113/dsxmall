@@ -1,7 +1,10 @@
 <?php
-namespace Weixin;
+namespace Model\Weixin;
 class IndexController extends BaseController{
-	public function index(){
+    /**
+     *
+     */
+    public function index(){
 		
 	}
 }

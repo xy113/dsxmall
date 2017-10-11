@@ -1,26 +1,24 @@
 <?php
 namespace Model\Admin;
 
+use Data\Weixin\WeixinMenuModel;
+use WxApi\WxMenuApi;
+
 class WxmenuController extends BaseController{
-    /**
-     * WxmenuController constructor.
-     */
-    function __construct()
-    {
-        parent::__construct();
-        $_GET['menu'] = 'wxmenu';
-    }
 
     /**
 	 * 微信菜单列表
 	 */
 	public function index(){
 		global $_G,$_lang;
+
+		$model = new WeixinMenuModel();
 		if ($this->checkFormSubmit()) {
 			$delete = $_GET['delete'];
 			if ($delete && is_array($delete)){
-				$deleteids = implodeids($delete);
-				$this->m('weixin_menu')->where("id IN($deleteids)")->delete();
+			    foreach ($delete as $id){
+			        $model->where(array('id'=>$id))->delete();
+                }
 			}
 			$menulist = $_GET['menulist'];
 			if ($menulist && is_array($menulist)){
@@ -28,12 +26,12 @@ class WxmenuController extends BaseController{
 				foreach ($menulist as $id=>$menu){
 					$displayorder++;
 					$menu['displayorder'] = $displayorder;
-					$this->m('weixin_menu')->where(array('id'=>$id))->update($menu);
+					$model->where(array('id'=>$id))->data($menu)->save();
 				}
 			}
 			$this->showSuccess('update_succeed');
 		}else {
-			$menulist = $this->m('weixin_menu')->order('displayorder ASC, id ASC')->select();
+			$menulist = $model->order('displayorder ASC, id ASC')->select();
 			if ($menulist) {
 				$datalist = array();
 				foreach ($menulist as $menu){
@@ -42,7 +40,7 @@ class WxmenuController extends BaseController{
 				$menulist = $datalist;
 				unset($datalist, $menu);
 			}
-			include template('weixin/weixin_menu_list');
+			include template('weixin/menu_list');
 		}
 	}
 	
@@ -52,16 +50,16 @@ class WxmenuController extends BaseController{
 	public function add(){
 		global $_G,$_lang;
 		if ($this->checkFormSubmit()){
-			$menu = $_GET['menu'];
-			if ($menu['name']) {
-				$menu['fid'] = intval($_GET['fid']);
-				$id = $this->m('weixin_menu')->insert($menu, true);
-				$this->showAjaxReturn($id);
+            $newmenu = $_GET['newmenu'];
+			if ($newmenu['name']) {
+                $newmenu['fid'] = intval($_GET['fid']);
+                (new WeixinMenuModel())->data($newmenu)->add();
+				$this->showAjaxReturn();
 			}else {
 				$this->showAjaxError(-1);
 			}
 		}else {
-			include template('weixin_menu_form');
+			include template('weixin/menu_form');
 		}
 	}
 	
@@ -71,17 +69,18 @@ class WxmenuController extends BaseController{
 	public function edit(){
 		global $_G,$_lang;
 		$id = intval($_GET['id']);
+		$model = new WeixinMenuModel();
 		if ($this->checkFormSubmit()){
-			$menu = $_GET['menu'];
-			if ($menu['name']) {
-				$this->m('weixin_menu')->where(array('id'=>$id))->update($menu);
-				$this->showAjaxReturn($id);
+            $newmenu = $_GET['newmenu'];
+			if ($newmenu['name']) {
+				$model->where(array('id'=>$id))->data($newmenu)->save();
+				$this->showAjaxReturn();
 			}else {
 				$this->showAjaxError(-1);
 			}
 		}else {
-			$menu = $this->m('weixin_menu')->where(array('id'=>$id))->getOne();
-			include template('weixin_menu_form');
+			$menu = $model->where(array('id'=>$id))->getOne();
+			include template('weixin/menu_form');
 		}
 	}
 	
@@ -89,7 +88,7 @@ class WxmenuController extends BaseController{
 	 * 应用菜单
 	 */
 	public function apply(){
-		$menulist = $this->m('weixin_menu')->order('displayorder ASC, id ASC')->select();
+		$menulist = (new WeixinMenuModel())->order('displayorder ASC, id ASC')->select();
 		if ($menulist) {
 			$datalist = array();
 			foreach ($menulist as $menu){
@@ -134,8 +133,7 @@ class WxmenuController extends BaseController{
 							'name'=>urlencode($menu['name']),
 							'sub_button'=>$submenulist
 					));
-				}else {
-					//无二级菜单
+				}else {//无二级菜单
 					if ($menu['type'] == 'view'){
 						if ($menu['name'] && $menu['url']){
 							array_push($datalist, array(
@@ -170,17 +168,13 @@ class WxmenuController extends BaseController{
 			$jsondata = json_encode($menulist);
 			$jsondata = urldecode($jsondata);
 
-			$token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
-			$res = weixin_create_menu($token, $jsondata);
+			$api = new WxMenuApi();
+			$res = $api->create($jsondata);
 			if ($res['errcode'] == 0){
-				$this->showAjaxReturn($datalist);
+				$this->showAjaxReturn();
 			}else {
-				$this->showAjaxError(-1, $res, $datalist);
+				$this->showAjaxError(-1, 'FAIL', $res);
 			}
-		}else {
-			$token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
-			weixin_delete_menu($token);
-			$this->showAjaxReturn(0);
 		}
 	}
 	
@@ -188,8 +182,7 @@ class WxmenuController extends BaseController{
 	 * 删除菜单
 	 */
 	public function remove(){
-		$token = weixin_get_access_token(setting('wx_appid'), setting('wx_appsecret'));
-		$res = weixin_delete_menu($token);
+		$res = (new WxMenuApi())->delete();
 		if ($res['errcode'] == 0) {
 			$this->showAjaxReturn(0);
 		}else {

@@ -18,7 +18,7 @@
 </script>
 <div class="pin-menus">
     <ul>
-        {loop $menu_list['items'] $menu}
+        {loop $menulist $menu}
         <li handler="viewMenu" menu="goods">
             <img src="{img $menu[icon]}">
             <div class="t">{$menu[name]}</div>
