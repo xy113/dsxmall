@@ -9,6 +9,8 @@
 namespace Model\App;
 
 
+use Data\Common\PageModel;
+
 class PageController extends BaseController
 {
     public function index(){
@@ -22,7 +24,7 @@ class PageController extends BaseController
         global $_G,$_lang;
 
         $pageid = intval($_GET['pageid']);
-        $pagecontent = page_get_data(array('pageid'=>$pageid));
+        $pagecontent = (new PageModel())->where(array('pageid'=>$pageid))->getOne();
 
         $_G['title'] = $pagecontent['title'];
         include template('page_detail');

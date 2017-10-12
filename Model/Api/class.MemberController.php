@@ -8,6 +8,8 @@
 
 namespace Model\Api;
 use Core\Validate;
+use Data\Member\MemberInfoModel;
+use Data\Member\MemberModel;
 
 class MemberController extends BaseController
 {
@@ -15,8 +17,8 @@ class MemberController extends BaseController
      * 获取用户信息
      */
     public function get_info(){
-        $member = member_get_data(array('uid'=>$this->uid));
-        $info = member_get_info(array('uid'=>$this->uid));
+        $member = (new MemberModel())->where(array('uid'=>$this->uid))->getOne();
+        $info = (new MemberInfoModel())->where(array('uid'=>$this->uid))->getOne();
         $this->showAjaxReturn(array(
             'username'=>$member['username'],
             'mobile'=>$member['mobile'],
@@ -63,7 +65,7 @@ class MemberController extends BaseController
             $image->save($avatardir.'/'.$avatarsmall);
             $this->showAjaxReturn(array('headimg'=>avatar($this->uid)));
         }else {
-            $this->showAjaxError($upload->errno);
+            $this->showAjaxError($upload->errCode);
         }
     }
 
@@ -71,14 +73,15 @@ class MemberController extends BaseController
      * 修改用户名
      */
     public function edit_username(){
+        $memberModel = new MemberModel();
         $username = htmlspecialchars($_GET['username']);
         if ($username == $this->username || $username == ''){
             $this->showAjaxReturn();
         }else {
-            if (member_get_data(array('username'=>$username))){
+            if ($memberModel->where(array('username'=>$username))->count()){
                 $this->showAjaxError(1, 'username_be_occupied');
             }else {
-                member_update_data(array('uid'=>$this->uid), array('username'=>$username));
+                $memberModel->where(array('uid'=>$this->uid))->data(array('username'=>$username))->save();
                 $this->showAjaxReturn();
             }
         }
@@ -88,10 +91,10 @@ class MemberController extends BaseController
      * 修改手机号
      */
     public function edit_mobile(){
-
+        $memberModel = new MemberModel();
         $mobile = trim($_GET['mobile']);
-        $userinfo = member_get_info(array('uid'=>$this->uid));
-        if ($mobile == $userinfo['mobile']){
+        $member = $memberModel->where(array('uid'=>$this->uid))->getOne();
+        if ($mobile == $member['mobile']){
             $this->showAjaxReturn();
         }else {
             $ismobile = Validate::ismobile($mobile);
@@ -99,11 +102,11 @@ class MemberController extends BaseController
                 $this->showAjaxError(1, 'mobile_incorrect');
             }
 
-            if (member_get_count(array('mobile'=>$mobile))){
+            if ($memberModel->where(array('mobile'=>$mobile))->count()){
                 $this->showAjaxError(2, 'mobile_be_occupied');
             }
 
-            member_update_data(array('uid'=>$this->uid), array('mobile'=>$mobile));
+            $memberModel->where(array('uid'=>$this->uid))->data(array('mobile'=>$mobile))->save();
             $this->showAjaxReturn();
         }
     }
@@ -113,7 +116,9 @@ class MemberController extends BaseController
      */
     public function edit_email(){
         $email = trim($_GET['email']);
-        if ($email == $this->userinfo['email']){
+        $memberModel = new MemberModel();
+        $member = $memberModel->where(array('uid'=>$this->uid))->getOne();
+        if ($email == $member['email']){
             $this->showAjaxReturn();
         }else {
             $isemail = Validate::isemail($email);
@@ -121,11 +126,10 @@ class MemberController extends BaseController
                 $this->showAjaxError(1, 'email_incorrect');
             }
 
-            if (member_get_count(array('email'=>$email))) {
+            if ($memberModel->where(array('email'=>$email))->count()) {
                 $this->showAjaxError(2, 'email_be_occupied');
             }
-
-            member_update_data(array('uid'=>$this->uid), array('email'=>$email));
+            $memberModel->where(array('uid'=>$this->uid))->data(array('email'=>$email))->save();
             $this->showAjaxReturn();
         }
     }
@@ -142,11 +146,13 @@ class MemberController extends BaseController
         if (strlen($newpassword) < 6 || strlen($newpassword) > 20){
             $this->showAjaxError(2, 'new_password_incorrect');
         }
-        $userdata = member_get_data(array('uid'=>$this->uid));
-        if ($userdata['password'] !== getPassword($oldpassword)){
+
+        $memberModel = new MemberModel();
+        $member = $memberModel->where(array('uid'=>$this->uid))->field('password')->getOne();
+        if ($member['password'] !== getPassword($oldpassword)){
             $this->showAjaxError(3, 'password_incorrect');
         }else {
-            member_update_data(array('uid'=>$this->uid), array('password'=>getPassword($newpassword)));
+            $memberModel->where(array('uid'=>$this->uid))->data(array('password'=>getPassword($newpassword)))->save();
             $this->showAjaxReturn();
         }
     }
@@ -158,10 +164,10 @@ class MemberController extends BaseController
         $userinfo = $_GET['userinfo'];
         if ($userinfo && is_array($userinfo)){
             $userinfo['modified'] = time();
-            $res = member_update_info(array('uid'=>$this->uid), $userinfo);
+            $res = (new MemberInfoModel())->where(array('uid'=>$this->uid))->data($userinfo)->save();
             if (!$res) {
                 $userinfo['uid'] = $this->uid;
-                member_add_info($userinfo);
+                (new MemberInfoModel())->data($userinfo)->add();
             }
         }
         $this->showAjaxReturn();

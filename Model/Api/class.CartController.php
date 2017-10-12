@@ -8,12 +8,15 @@
 
 namespace Model\Api;
 
-
 use Data\Cart\CartModel;
 use Data\Item\ItemModel;
 use Data\Member\AddressModel;
+use Data\Member\MemberModel;
 use Data\Shop\ShopModel;
 use Data\Trade\Builder\OrderContentBuilder;
+use Data\Trade\Builder\TradeContentBuilder;
+use Data\Trade\OrderActionModel;
+use Data\Trade\OrderItemModel;
 use Data\Trade\OrderModel;
 use Data\Trade\TradeModel;
 
@@ -176,7 +179,7 @@ class CartController extends BaseController
 
         if ($order_list) {
             foreach ($order_list as $order){
-                if (isset($shop_list[$order['shop_id']])){
+                if (isset($order_item_list[$order['shop_id']])){
                     $order_item_list[$order['shop_id']]['pay_type'] = $order['pay_type'];
                     $order_item_list[$order['shop_id']]['shipping_type'] = $order['shipping_type'];
                     $order_item_list[$order['shop_id']]['remark'] = $order['remark'];
@@ -186,7 +189,10 @@ class CartController extends BaseController
         }
 
         //收货地址
-        $address = (new AddressModel())->where(array('address_id'=>intval($_GET['address_id'])))->getOne();
+        $address = (new AddressModel())->where(array('uid'=>$this->uid,'address_id'=>intval($_GET['address_id'])))->getOne();
+        if (!$address) {
+            $address = (new AddressModel())->where(array('uid'=>$this->uid,'isdefault'=>1))->getOne();
+        }
         $formated_address = $address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'];
         //创建订单
         $orderModel = new OrderModel();
@@ -195,7 +201,7 @@ class CartController extends BaseController
             $trade_no = createTradeNo();
             $order_no = createOrderNo($this->uid);
             //卖家信息
-            $seller = member_get_data(array('uid'=>$order['uid']), 'uid,username');
+            $seller = (new MemberModel())->where(array('uid'=>$order['uid']))->field('uid,username')->getOne();
             //订单金额
             $order_fee = floatval($order['order_fee']);
             //运费
@@ -204,45 +210,40 @@ class CartController extends BaseController
             $order_total_fee = $order_fee + $shipping_fee;
             //创建订单
             $is_commited = $order['pay_type'] == 2 ? 1 : 0;
+            //创建订单
+            $orderObj = new OrderContentBuilder();
+            $orderObj->setBuyer_uid($this->uid);
+            $orderObj->setBuyer_name($this->username);
+            $orderObj->setSeller_uid($seller['uid']);
+            $orderObj->setSeller_name($seller['username']);
+            $orderObj->setShop_id($order['shop_id']);
+            $orderObj->setShop_name($order['shop_name']);
+            $orderObj->setOrder_no($order_no);
+            $orderObj->setOrder_fee($order_fee);
+            $orderObj->setShipping_fee($shipping_fee);
+            $orderObj->setTotal_fee($order_total_fee);
+            $orderObj->setCreate_time(time());
+            $orderObj->setPay_type($order['pay_type']);
+            $orderObj->setShipping_type($order['shipping_type']);
+            $orderObj->setPay_status(0);
+            $orderObj->setShipping_status(0);
+            $orderObj->setReceive_status(0);
+            $orderObj->setReceive_status(0);
+            $orderObj->setConsignee($address['consignee']);
+            $orderObj->setPhone($address['phone']);
+            $orderObj->setAddress($formated_address);
+            $orderObj->setTrade_no($trade_no);
+            $orderObj->setRemark($order['remark']);
+            $orderObj->setIs_commited($is_commited);
+            $orderObj->setIs_accepted(0);
+            $order_id = $orderModel->addObject($orderObj);
 
-            $orderObject = new OrderContentBuilder();
-            $orderObject->setBuyer_uid($this->uid);
-            $orderObject->setBuyer_name($this->username);
-            $orderObject->setSeller_uid($seller['uid']);
-
-            $order_id = order_add_data(array(
-                'buyer_uid'=>$this->uid,
-                'buyer_name'=>$this->username,
-                'seller_uid'=>$seller['uid'],
-                'seller_name'=>$seller['username'],
-                'shop_id'=>$order['shop_id'],
-                'shop_name'=>$order['shop_name'],
-                'order_no'=>$order_no,
-                'order_fee'=>$order_fee,
-                'shipping_fee'=>$shipping_fee,
-                'total_fee'=>$order_total_fee,
-                'create_time'=>time(),
-                'pay_type'=>$order['pay_type'],
-                'shipping_type'=>$order['shipping_type'],
-                'pay_status'=>0,
-                'shipping_status'=>0,
-                'receive_status'=>0,
-                'review_status'=>0,
-                'consignee'=>$address['consignee'],
-                'phone'=>$address['phone'],
-                'address'=>$formated_address,
-                'trade_no'=>$trade_no,
-                'remark'=>$order['remark'],
-                'is_commited'=>$is_commited,
-                'is_accepted'=>0
-            ));
-
-            $shop_total_sold = 0;
             $trade_name = '';
+            $shop_total_sold = 0;
             foreach ($order['items'] as $itemid=>$item){
                 //记录订单商品信息
-                if (!$trade_name) $trade_name = $item['name'];
-                order_add_item(array(
+                if (!$trade_name) $trade_name = $item['title'];
+                (new OrderItemModel())->data(array(
                     'uid'=>$this->uid,
                     'order_id'=>$order_id,
                     'itemid'=>$itemid,
@@ -253,43 +254,49 @@ class CartController extends BaseController
                     'image'=>$item['image'],
                     'shipping_fee'=>$item['shipping_fee'],
                     'total_fee'=>$item['price']*$item['quantity']+$item['shipping_fee']
-                ));
-                item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity']);
+                ))->add();
+                //更新销量并减库存
+                (new ItemModel())->where(array('itemid'=>$itemid))
+                    ->data("`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity'])->save();
                 $shop_total_sold+= $item['quantity'];
 
             }
-            shop_update_data(array('shop_id'=>$shop_id), "`total_sold`=`total_sold`+$shop_total_sold");
+            //更新店铺销量
+            (new ShopModel())->where(array('shop_id'=>$shop_id))->data("`total_sold`=`total_sold`+$shop_total_sold")->save();
 
             //创建订单操作记录
-            order_add_action(array(
+            $orderAction = new OrderActionModel();
+            $orderAction->data(array(
                 'uid'=>$this->uid,
                 'username'=>$this->username,
                 'order_id'=>$order_id,
                 'action_name'=>$order['pay_type'] == 1 ? L('checkout_success') : L('order_commited'),
                 'action_time'=>time()
-            ));
-            if ($pay_type == 1){
+            ))->add();
+
+            if ($order['pay_type'] == 1){
                 //创建支付流水
                 if ($shop_total_sold > 1){
                     $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_sold);
                 }
-                trade_add_data(array(
-                    'payer_uid'=>$this->uid,
-                    'payer_name'=>$this->username,
-                    'payee_uid'=>$seller['uid'],
-                    'payee_name'=>$seller['username'],
-                    'trade_no'=>$trade_no,
-                    'trade_name'=>$trade_name,
-                    'trade_desc'=>$trade_name,
-                    'trade_fee'=>$order_total_fee,
-                    'trade_type'=>'SHOPPING',
-                    'trade_status'=>'UNPAID',
-                    'trade_time'=>time(),
-                    'out_trade_no'=>$trade_no
-                ));
+
+                $tradeObj = new TradeContentBuilder();
+                $tradeObj->setPayer_uid($this->uid);
+                $tradeObj->setPayer_name($this->username);
+                $tradeObj->setPayee_uid($seller['uid']);
+                $tradeObj->setPayee_name($seller['username']);
+                $tradeObj->setTrade_no($trade_no);
+                $tradeObj->setTrade_name($trade_name);
+                $tradeObj->setTrade_desc($trade_name);
+                $tradeObj->setTrade_fee($order_total_fee);
+                $tradeObj->setTrade_type('SHOPPING');
+                $tradeObj->setTrade_time(time());
+                $tradeObj->setOut_trade_no($trade_no);
+                $tradeModel->addObject($tradeObj);
             }
         }
-        cart_delete_data(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)));
+
+        $cartModel->where(array('itemid'=>array('IN', $itemids)))->delete();
         $this->showAjaxReturn();
     }
 }

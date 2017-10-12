@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class ItemsearchController extends BaseController
 {
     /**
@@ -42,9 +45,10 @@ class ItemsearchController extends BaseController
         }
         if (!empty($arr)) $condition[] = "(".implode(' OR ', $arr).")";
 
+        $itemModel = new ItemModel();
         $offset = (G('page') - 1) * 20;
         $fields = 'itemid,uid,shop_id,title,subtitle,price,market_price,sold,thumb';
-        $itemlist = item_get_list($condition, 20, $offset, 'sold DESC', $fields);
+        $itemlist = $itemModel->where($condition)->order('sold DESC')->field($fields)->page(G('page'), 20)->select();
         $shop_ids = array();
         foreach ($itemlist as $item){
             $shop_ids[] = $item['shop_id'];
@@ -54,7 +58,7 @@ class ItemsearchController extends BaseController
         $shop_list = array();
         $shop_ids = $shop_ids ? implodeids($shop_ids) : 0;
         if ($shop_ids) {
-            $shop_list = shop_get_list(array('shop_id'=>array('IN', $shop_ids)), 0, 0, null, 'shop_id,shop_name,city,county');
+            $shop_list = (new ShopModel())->where(array('shop_id'=>array('IN', $shop_ids)))->field('shop_id,shop_name,city,county')->select();
             $datalist = array();
             foreach ($shop_list as $shop){
                 $datalist[$shop['shop_id']] = $shop;

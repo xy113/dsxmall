@@ -9,6 +9,8 @@
 namespace Model\App;
 
 
+use Data\Cart\CartModel;
+
 class CartController extends BaseController
 {
     /**
@@ -16,7 +18,8 @@ class CartController extends BaseController
      */
     public function index(){
         global $_G,$_lang;
-        $cart_item_list = cart_get_list(array('uid'=>$this->uid), 0);
+
+        $cart_item_list = (new CartModel())->where(array('uid'=>$this->uid))->select();
         $totalnum = count($cart_item_list);
         if ($cart_item_list) {
             $datalist = array();

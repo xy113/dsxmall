@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class ShopsearchController extends BaseController
 {
     /**
@@ -29,13 +32,14 @@ class ShopsearchController extends BaseController
      * 获取店铺信息
      */
     public function batchget(){
-        $offset = (G('page') - 1) * 20;
-        $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
+        $shopModel = new ShopModel();
+
         $condition = array('closed'=>'0');
+        $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['shop_name'] = array('LIKE' , trim($q));
 
-        $shop_list = shop_get_list($condition, 20, $offset, null, $fields);
+        $shop_list = $shopModel->where($condition)->field($fields)->page(G('page'), 20)->select();
         $datalist = array();
         foreach ($shop_list as $shop){
             $shop['shop_logo'] = image($shop['shop_logo']);
@@ -44,7 +48,7 @@ class ShopsearchController extends BaseController
             $datalist[$shop['shop_id']] = $shop;
         }
         $shop_ids = implodeids(array_keys($datalist));
-        $itemlist = M('item')->field('shop_id, MIN(price) AS min_price')
+        $itemlist = (new ItemModel())->field('shop_id, MIN(price) AS min_price')
             ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
         foreach ($itemlist as $item){
             $datalist[$item['shop_id']]['min_price'] = formatAmount($item['min_price']);

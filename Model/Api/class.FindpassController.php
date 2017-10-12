@@ -23,8 +23,8 @@ class FindpassController extends BaseController
      *
      */
     public function check_mobile(){
-        $mobile = htmlspecialchars($_GET['mobile']);
         $model = new MemberModel();
+        $mobile = htmlspecialchars($_GET['mobile']);
         $memberdata = $model->where(array('mobile'=>$mobile))->getOne();
         if ($memberdata) {
             $this->showAjaxReturn(array(
@@ -46,12 +46,12 @@ class FindpassController extends BaseController
         if (Validate::ismobile($mobile)){
             $seccode = random(6, 1);
             $verifyModel = new VerifyModel();
-            $verifyModel->add(array(
+            $verifyModel->data(array(
                 'seccode'=>$seccode,
                 'phone'=>$mobile,
                 'dateline'=>time(),
                 'used'=>0
-            ));
+            ))->add();
             $api = new AlismsApi();
             $api->sendSms(setting('sms_signname'), setting('sms_tpl_verify'), $mobile, array('code'=>$seccode));
             $this->showAjaxReturn();
@@ -77,9 +77,9 @@ class FindpassController extends BaseController
             $verifyModel = new VerifyModel();
             $check = $verifyModel->where(array('seccode'=>$seccode, 'phone'=>$mobile))->order('id', 'DESC')->getOne();
             if ((time() - 300) < $check['dateline'] && $check['used'] == 0){
-                $verifyModel->where(array('seccode'=>$seccode))->update(array('used'=>1));
+                $verifyModel->where(array('seccode'=>$seccode))->data(array('used'=>1))->save();
                 $memberModel = new MemberModel();
-                $memberModel->where(array('uid'=>$uid, 'mobile'=>$mobile))->update(array('password'=>$newpassword));
+                $memberModel->where(array('uid'=>$uid, 'mobile'=>$mobile))->data(array('password'=>$newpassword))->save();
                 $this->showAjaxReturn();
             }else {
                 $this->showAjaxError(3, '验证码已失效');

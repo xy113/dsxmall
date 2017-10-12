@@ -9,6 +9,8 @@
 namespace Model\App;
 
 
+use Data\Member\ScanLoginModel;
+
 class ScanloginController extends BaseController
 {
     /**
@@ -27,7 +29,7 @@ class ScanloginController extends BaseController
     public function confirm_login(){
         $uid = intval($_GET['uid']);
         $login_code = trim($_GET['login_code']);
-        M('scan_login')->where(array('login_code'=>$login_code))->update(array('uid'=>$uid, 'scaned'=>1));
+        (new ScanLoginModel())->where(array('login_code'=>$login_code))->data(array('uid'=>$uid, 'scaned'=>1))->save();
         $this->showAjaxReturn();
     }
 }

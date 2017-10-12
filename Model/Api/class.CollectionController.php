@@ -9,6 +9,11 @@
 namespace Model\Api;
 
 
+use Data\Common\CollectionModel;
+use Data\Item\ItemModel;
+use Data\Post\PostItemModel;
+use Data\Shop\ShopModel;
+
 class CollectionController extends BaseController
 {
     /**
@@ -20,48 +25,51 @@ class CollectionController extends BaseController
         $datatype = trim($_GET['datatype']);
         if ($datatype == 'goods') $datatype = 'item';
         if ($dataid && $datatype) {
-            if (collection_get_count(array('uid'=>$this->uid, 'dataid'=>$dataid, 'datatype'=>$datatype))){
+            $model = new CollectionModel();
+            if ($model->where(array('uid'=>$this->uid, 'dataid'=>$dataid, 'datatype'=>$datatype))->count()){
                 $this->showAjaxReturn();
             }else {
                 //商品收藏
                 if ($datatype == 'item'){
-                    $item = item_get_data(array('itemid'=>$dataid), 'title, thumb');
-                    collection_add_data(array(
+                    $itemModel = new ItemModel();
+                    $item = $itemModel->where(array('itemid'=>$dataid))->field('title, thumb')->getOne();
+                    $model->data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,
                         'datatype'=>$datatype,
                         'title'=>$item['title'],
                         'image'=>$item['thumb'],
                         'create_time'=>time()
-                    ));
-                    item_update_data(array('itemid'=>$dataid), '`collection_num`=`collection_num`+1');
+                    ))->add();
+                    $itemModel->where(array('itemid'=>$dataid))->data('`collection_num`=`collection_num`+1')->save();
                 }
 
                 //店铺收藏
                 if ($datatype == 'shop'){
-                    $shop = shop_get_data(array('shop_id'=>$dataid), 'shop_name,shop_logo');
-                    collection_add_data(array(
+                    $shopModel = new ShopModel();
+                    $shop = $shopModel->where(array('shop_id'=>$dataid))->field('shop_name,shop_logo')->getOne();
+                    $model->data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,
                         'datatype'=>$datatype,
                         'title'=>$shop['shop_name'],
                         'image'=>$shop['shop_logo'],
                         'create_time'=>time()
-                    ));
-                    shop_update_data(array('shop_id'=>$dataid), '`collection_num`=`collection_num`+1');
+                    ))->add();
+                    $shopModel->where(array('shop_id'=>$dataid))->data('`collection_num`=`collection_num`+1')->save();
                 }
 
                 //文章收藏
                 if ($datatype == 'article'){
-                    $article = post_get_item(array('id'=>$dataid), 'title,image');
-                    collection_add_data(array(
+                    $article = (new PostItemModel())->where(array('aid'=>$dataid))->field('title,image')->getOne();
+                    $model->data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$dataid,
                         'datatype'=>$datatype,
                         'title'=>$article['title'],
                         'image'=>$article['image'],
                         'create_time'=>time()
-                    ));
+                    ))->add();
                 }
                 $this->showAjaxReturn();
             }

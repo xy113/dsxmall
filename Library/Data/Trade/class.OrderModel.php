@@ -78,7 +78,7 @@ class OrderModel extends Model
             throw new \Exception('Empty consignee value');
         }
 
-        if ($object->getPhone()){
+        if (!$object->getPhone()){
             throw new \Exception('Empty phone value');
         }
 

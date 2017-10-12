@@ -90,7 +90,7 @@ class TradeContentBuilder extends Builder
      * @param $value
      */
     public function setPayee_name($value){
-        $this->data['payer_name'] = $value;
+        $this->data['payee_name'] = $value;
     }
 
     /**

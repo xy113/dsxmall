@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Common\CollectionModel;
+use Data\Item\ItemModel;
+
 class CollectionController extends BaseController
 {
     /**
@@ -29,9 +32,10 @@ class CollectionController extends BaseController
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['title'] = array('LIKE', $q);
 
-        $totalnum  = collection_get_count($condition);
+        $model = new CollectionModel();
+        $totalnum  = $model->where($condition)->count();
         $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $collection_list = collection_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
+        $collection_list = $model->where($condition)->page($_G['page'], $pagesize)->order('id DESC')->select();
         if ($collection_list) {
             $datalist = $itemids = array();
             foreach ($collection_list as $coll){
@@ -43,7 +47,7 @@ class CollectionController extends BaseController
 
             $itemids = $itemids ? implodeids($itemids) : 0;
             if ($itemids) {
-                $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid,title,price,thumb,sold');
+                $itemlist = (new ItemModel())->where(array('itemid'=>array('IN', $itemids)))->field('itemid,title,price,thumb,sold')->select();
                 foreach ($itemlist as $item){
                     $collection_list[$item['itemid']]['title'] = $item['title'];
                     $collection_list[$item['itemid']]['price'] = $item['price'];
@@ -53,7 +57,6 @@ class CollectionController extends BaseController
             }
             unset($itemids, $itemlist, $item);
         }
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", true);
 
         $_G['title'] = $_lang['item_collection'];
         include template('collection_item');
@@ -77,10 +80,10 @@ class CollectionController extends BaseController
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition['title'] = array('LIKE', $q);
 
-        $totalnum  = collection_get_count($condition);
+        $model = new CollectionModel();
+        $totalnum  = $model->where($condition)->count();
         $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $itemlist = collection_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", true);
+        $itemlist  = $model->where($condition)->page($_G['page'], $pagesize)->select();
 
         $_G['title'] = $_lang['shop_collection'];
         include template('collection_shop');

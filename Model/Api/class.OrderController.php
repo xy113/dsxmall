@@ -8,6 +8,16 @@
 
 namespace Model\Api;
 
+use Data\Item\ItemModel;
+use Data\Member\AddressModel;
+use Data\Member\MemberModel;
+use Data\Shop\ShopModel;
+use Data\Trade\OrderActionModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
+use Data\Trade\WalletModel;
+
 class OrderController extends BaseController
 {
     /**
@@ -22,19 +32,19 @@ class OrderController extends BaseController
         $pay_type = intval($_GET['pay_type']) == 3 ? 2 : 1;
 
         $item = $shop = array();
+        $itemModel = new ItemModel();
+        $shopModel = new ShopModel();
         if ($itemid && $quantity) {
-            $item = item_get_data(array('itemid'=>$itemid));
-            $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
+            $item = $itemModel->where(array('itemid'=>$itemid))->getOne();
+            $shop = $shopModel->where(array('shop_id'=>$item['shop_id']))->getOne();
         } else{
             $this->showAjaxError(1,'can_not_buy');
         }
 
-        $trade_no = trade_create_no();
-        $order_no = order_create_no($this->uid);
-        //卖家信息
-        $seller   = member_get_data(array('uid'=>$item['uid']), 'uid,username');
+        $trade_no = createTradeNo();
+        $order_no = createOrderNo($this->uid);
         //收货地址
-        $address  = address_get_data(array('address_id'=>intval($_GET['address_id'])));
+        $address  = (new AddressModel())->where(array('uid'=>$this->uid,'address_id'=>intval($_GET['address_id'])))->getOne();
         //订单金额
         $order_fee = floatval($item['price']) * $quantity;
         //运费
@@ -43,11 +53,11 @@ class OrderController extends BaseController
         $total_fee = $order_fee + $shipping_fee;
         //创建订单
         $is_commited = $pay_type == 2 ? 1 : 0;
-        $order_id = order_add_data(array(
+        $order_id = (new OrderModel())->data(array(
             'buyer_uid'=>$this->uid,
             'buyer_name'=>$this->username,
-            'seller_uid'=>$seller['uid'],
-            'seller_name'=>$seller['username'],
+            'seller_uid'=>$shop['uid'],
+            'seller_name'=>$shop['username'],
             'shop_id'=>$shop['shop_id'],
             'shop_name'=>$shop['shop_name'],
             'order_no'=>$order_no,
@@ -68,9 +78,9 @@ class OrderController extends BaseController
             'remark'=>htmlspecialchars($_GET['remark']),
             'is_commited'=>$is_commited,
             'is_accepted'=>0
-        ));
+        ))->add();
         //记录订单商品信息
-        order_add_item(array(
+        (new OrderItemModel())->data(array(
             'uid'=>$this->uid,
             'order_id'=>$order_id,
             'itemid'=>$item['itemid'],
@@ -81,22 +91,23 @@ class OrderController extends BaseController
             'image'=>$item['image'],
             'shipping_fee'=>$shipping_fee,
             'total_fee'=>$total_fee
-        ));
+        ))->add();
         //创建订单操作记录
-        order_add_action(array(
+        (new OrderActionModel())->data(array(
             'uid'=>$this->uid,
             'username'=>$this->username,
             'order_id'=>$order_id,
             'action_name'=>$pay_type == 1 ? L('checkout_success') : L('order_commited'),
             'action_time'=>time()
-        ));
+        ))->add();
+
         if ($pay_type == 1){
             //创建支付流水
-            trade_add_data(array(
+            (new TradeModel())->data(array(
                 'payer_uid'=>$this->uid,
                 'payer_name'=>$this->username,
-                'payee_uid'=>$seller['uid'],
-                'payee_name'=>$seller['username'],
+                'payee_uid'=>$shop['uid'],
+                'payee_name'=>$shop['username'],
                 'trade_no'=>$trade_no,
                 'trade_name'=>$item['title'],
                 'trade_desc'=>$item['title'],
@@ -105,10 +116,10 @@ class OrderController extends BaseController
                 'trade_status'=>'UNPAID',
                 'trade_time'=>time(),
                 'out_trade_no'=>$trade_no
-            ));
+            ))->add();
         }
-        item_update_data(array('itemid'=>$itemid), "`sold`=`sold`+$quantity,`stock`=`stock`-$quantity");
-        shop_update_data(array('shop_id'=>$shop['shop_id']), "`total_sold`=`total_sold`+$quantity");
+        $itemModel->where(array('itemid'=>$itemid))->data("`sold`=`sold`+$quantity,`stock`=`stock`-$quantity")->save();
+        $shopModel->where(array('shop_id'=>$shop['shop_id']))->data("`total_sold`=`total_sold`+$quantity")->save();
         $this->showAjaxReturn(array('order_id'=>$order_id));
     }
 
@@ -118,10 +129,10 @@ class OrderController extends BaseController
     public function get(){
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id))->getOne();
         if ($order) {
             $order['create_time'] = date('Y-m-d H:i:s', $order['create_time']);
-            $item = order_get_item(array('order_id'=>$order_id));
+            $item = (new OrderItemModel())->where(array('order_id'=>$order_id))->getOne();
             $item['name'] = $item['title'];
             $item['goods_name'] = $item['title'];
             $item['goods_number'] = $item['quantity'];
@@ -149,7 +160,8 @@ class OrderController extends BaseController
 
         $order_id = intval($_GET['order_id']);
         $pay_type = intval($_GET['pay_type']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         if (!$order) {
             $this->showAjaxError(1, 'order_not_exists');
         }
@@ -159,20 +171,21 @@ class OrderController extends BaseController
 
         if ($pay_type == 1){
             //余额支付
-            $wallet = wallet_get_data($this->uid);
+            $walletModel = new WalletModel();
+            $wallet = $walletModel->getWallet($this->uid);
             /*$member = member_get_data(array('uid'=>$this->uid), 'password');
             if ($member['password'] !== getPassword($password)){
                 $this->showAjaxError('FAIL','password_incorrect');
             }*/
 
-            $wallet = wallet_get_data($this->uid);
             if ($wallet['balance'] < $order['total_fee']){
                 $this->showAjaxError(3, 'balance_not_enough');
             }
 
-            if (wallet_cost($this->uid, $order['total_fee'])){
-                order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
-                trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'trade_type'=>'balance'));
+            if ($walletModel->deduction($this->uid, $order['total_fee'])){
+                $orderModel->where(array('order_id'=>$order_id))->data(array('pay_type'=>1, 'pay_status'=>1, 'pay_time'=>time()))->save();
+                $tradeModel = new TradeModel();
+                $tradeModel->where(array('trade_no'=>$order['trade_no']))->data(array('pay_type'=>'balance', 'pay_status'=>'1'))->save();
                 $this->showAjaxReturn(array('order_id'=>$order_id));
             }else {
                 $this->showAjaxError(4, 'balance_not_enough');
@@ -189,28 +202,24 @@ class OrderController extends BaseController
         $this->showAjaxReturn();
     }
 
+    /**
+     * 确认订单
+     */
     public function confirm(){
         $order_id = intval($_GET['order_id']);
         $password = trim($_GET['password']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         if ($order) {
             //验证密码
-            $member = member_get_data(array('uid'=>$this->uid), 'password');
+            $member = (new MemberModel())->where(array('uid'=>$this->uid))->field('password')->getOne();
             if ($member['password'] !== getPassword($password)){
                 $this->showAjaxError(1, 'password_incorrect');
             }
             //验证订单状态
-            if (order_get_trade_status($order) == 3){
-                //更新订单状态
-                order_update_data(array('order_id'=>$order_id),
-                    array(
-                        'receive_status'=>1,
-                        'deal_time'=>time()
-                    ));
-                //打款给卖家
-                if ($order['pay_type'] == 1 || $order['pay_type'] == 2){
-                    wallet_income($order['seller_uid'], $order['total_fee']);
-                }
+            if ($order['is_closed'] == 0 && $order['pay_type'] == 1 && $order['pay_status'] == 1 && $order['shipping_status'] == 1){
+                $orderModel->where(array('order_id'=>$order_id))->data(array('receive_status'=>1, 'deal_time'=>time()))->save();
+                (new WalletModel())->increase($order['seller_uid'], $order['total_fee']);
             }
             $this->showAjaxReturn();
         }else {

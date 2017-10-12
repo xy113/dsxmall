@@ -9,6 +9,11 @@
 namespace Model\App;
 
 
+use Data\Shop\ShopModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\OrderShippingModel;
+
 class OrderController extends BaseController
 {
     public function index(){
@@ -39,13 +44,8 @@ class OrderController extends BaseController
             $condition['evaluate_status'] = 0;
         }
 
-        $pagesize = 10;
-        $offset   = ($_G['page'] - 1) * $pagesize;
-        $totalnum = order_get_count($condition);
-        $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $_G['page'] = min(array($_G['page'], $pagecount));
-        $order_list = order_get_list($condition, $pagesize, $offset, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", 1);
+        $orderModel = new OrderModel();
+        $order_list = $orderModel->where($condition)->order('order_id DESC')->limit(0, 20)->select();
 
         if ($order_list) {
             $datalist = $order_ids = array();
@@ -64,7 +64,7 @@ class OrderController extends BaseController
             $order_ids = array_unique($order_ids);
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $itemlist = order_get_item_list(array('order_id'=>array('IN', $order_ids)));
+                $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->select();
                 foreach ($itemlist as $item){
                     $order_list[$item['order_id']]['item_count']+= $item['quantity'];
                     $order_list[$item['order_id']]['items'][$item['itemid']] = $item;
@@ -84,12 +84,12 @@ class OrderController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
-        $shop  = shop_get_data(array('shop_id'=>$order['shop_id']));
-        $itemlist = order_get_item_list(array('order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
+        $shop  = (new ShopModel())->where(array('shop_id'=>$order['shop_id']))->getOne();
+        $itemlist = (new OrderItemModel())->where(array('order_id'=>$order_id))->select();
         $trade_status = order_get_trade_status($order);
         $trade_status_tips = $_lang['order_trade_status'][$trade_status];
-        if ($trade_status == 3) $shipping = order_get_shipping(array('order_id'=>$order_id));
+        if ($trade_status == 3) $shipping = (new OrderShippingModel())->where(array('order_id'=>$order_id))->getOne();
 
         $_G['title'] = '订单详情';
         include template('order_detail');

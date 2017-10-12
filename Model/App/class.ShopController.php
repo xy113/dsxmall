@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class ShopController extends BaseController
 {
     /**
@@ -24,19 +27,19 @@ class ShopController extends BaseController
      * 获取店铺信息
      */
     public function batchget(){
-        $offset = (G('page') - 1) * 20;
+        $shopModel = new ShopModel();
         $fields = 'shop_id, shop_name, shop_logo, total_sold, city, county';
         $condition = array('closed'=>'0');
-        $shop_list = shop_get_list($condition, 20, $offset, null, $fields);
+        $shoplist = $shopModel->where($condition)->field($fields)->page(G('page'), 20)->select();
         $datalist = array();
-        foreach ($shop_list as $shop){
+        foreach ($shoplist as $shop){
             $shop['shop_logo'] = image($shop['shop_logo']);
             if (!$shop['city']) $shop['city'] = '贵州';
             if (!$shop['county']) $shop['county'] = '六盘水';
             $datalist[$shop['shop_id']] = $shop;
         }
         $shop_ids = implodeids(array_keys($datalist));
-        $itemlist = M('item')->field('shop_id, MIN(price) AS min_price')
+        $itemlist = (new ItemModel())->field('shop_id, MIN(price) AS min_price')
             ->where("`on_sale`=1 AND (shop_id IN($shop_ids))")->group('shop_id')->select();
         foreach ($itemlist as $item){
             $datalist[$item['shop_id']]['min_price'] = formatAmount($item['min_price']);
@@ -53,20 +56,23 @@ class ShopController extends BaseController
 
         $shop = array();
         $shop_id = intval($_GET['shop_id']);
+        $shopModel = new ShopModel();
         if ($shop_id) {
-            $shop = shop_get_data(array('shop_id'=>$shop_id));
+            $shop = $shopModel->where(array('shop_id'=>$shop_id))->getOne();
         }elseif ($_GET['uid']) {
-            $shop = shop_get_data(array('uid'=>intval($_GET['uid'])));
+            $shop = $shopModel->where(array('uid'=>intval($_GET['uid'])))->getOne();
             $shop_id = $shop['shop_id'];
         }
 
         if (!$shop) {
 
         }else {
-            shop_update_data(array('shop_id'=>$shop_id), '`view_num`=`view_num`+1');
+            $shopModel->where(array('shop_id'=>$shop_id))->data('`view_num`=`view_num`+1')->save();
+
+            $itemModel = new ItemModel();
             $condition = array('shop_id'=>$shop_id, 'on_sale'=>1);
-            $itemlist = item_get_list($condition, 0);
-            $shop_item_count = item_get_count(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1));
+            $itemlist = $itemModel->where($condition)->select();
+            $shop_item_count = $itemModel->where(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1))->count();
 
             $_G['title'] = $shop['shop_name'];
             include template('viewshop');

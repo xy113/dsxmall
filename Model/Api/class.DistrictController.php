@@ -9,6 +9,8 @@
 namespace Model\Api;
 
 
+use Data\Common\DistrictModel;
+
 class DistrictController extends BaseController
 {
 
@@ -17,7 +19,7 @@ class DistrictController extends BaseController
      */
     public function batchget(){
         $fid = intval($_GET['fid']);
-        $itemlist = district_get_list(array('fid'=>$fid), 0, 0, null, 'id, fid, name');
-        $this->showAjaxReturn($itemlist);
+        $districtlist = (new DistrictModel())->where(array('fid'=>$fid))->field('id, fid, name')->select();
+        $this->showAjaxReturn($districtlist);
     }
 }

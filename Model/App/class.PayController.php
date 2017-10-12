@@ -9,6 +9,9 @@
 namespace Model\App;
 
 
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+
 class PayController extends BaseController
 {
     public function index(){
@@ -22,18 +25,21 @@ class PayController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
-        $item  = order_get_item(array('order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('order_id'=>$order_id))->getOne();
+        $item  = (new OrderItemModel())->where(array('order_id'=>$order_id))->getOne();
 
         include template('order_query');
     }
 
+    /**
+     *
+     */
     public function order_commited(){
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
-        $item  = order_get_item(array('order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('order_id'=>$order_id))->getOne();
+        $item  = (new OrderItemModel())->where(array('order_id'=>$order_id))->getOne();
 
         include template('order_commited');
     }
