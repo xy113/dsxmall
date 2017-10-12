@@ -29,19 +29,45 @@ abstract class Builder
     }
 
     /**
-     * @param $key
+     * @param $name
      * @param $value
      */
-    public function set($key, $value){
-        $this->data[$key] = $value;
+    function __set($name, $value)
+    {
+        // TODO: Implement __set() method.
+        if (isset($this->data[$name])) {
+            $this->data[$name] = $value;
+        }
     }
 
     /**
-     * @param $key
+     * @param $name
+     * @return bool|mixed
+     */
+    function __get($name)
+    {
+        // TODO: Implement __get() method.
+        if (isset($this->data[$name])){
+            return $this->data[$name];
+        }else {
+            return false;
+        }
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     */
+    public function set($name, $value){
+        $this->__set($name, $value);
+    }
+
+    /**
+     * @param $name
      * @return mixed
      */
-    public function get($key){
-        return $this->data[$key];
+    public function get($name){
+        return $this->__get($name);
     }
 
     /**
@@ -67,6 +93,13 @@ abstract class Builder
      */
     public function getData(){
         return $this->data;
+    }
+
+    /**
+     * 清除数据
+     */
+    public function clearData(){
+        $this->data = array();
     }
 
     /**

@@ -15,14 +15,7 @@ use Data\Item\Builder\ItemContentBuilder;
 class ItemModel extends Model
 {
 
-    /**
-     * ItemModel constructor.
-     * @param string $name
-     */
-    function __construct($name = 'item')
-    {
-        parent::__construct($name);
-    }
+    protected $table = 'item';
 
     /**
      * @param ItemContentBuilder $object
@@ -73,12 +66,12 @@ class ItemModel extends Model
         }
     }
 
+
     /**
-     * @param $itemid
      * @return ItemContentBuilder
      */
-    public function getObject($itemid){
-        $data = $this->where(array('itemid'=>$itemid))->getOne();
+    public function getObject(){
+        $data = $this->getOne();
         $object = new ItemContentBuilder($data);
         return $object;
     }

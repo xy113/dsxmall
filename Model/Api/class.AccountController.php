@@ -30,7 +30,8 @@ class AccountController extends BaseController
 
         $check_sign = md5($account.$password.$timestamp.$appid.$appkey);
         if ($appkey && $check_sign == $_GET['sign']){
-            $member = member_get_data("`username`='$account' OR `mobile`='$account' OR `email`='$account'");
+            $model = new MemberModel();
+            $member = $model->where("`username`='$account' OR `mobile`='$account' OR `email`='$account'")->getOne();
             if ($member) {
                 if ($member['password'] == getPassword($password)){
                     /*
@@ -46,8 +47,10 @@ class AccountController extends BaseController
                         member_add_token($token_data);
                     }
                     */
-                    member_update_cookie($member['uid']);
-                    $info = member_get_info(array('uid'=>$member['uid']));
+                    cookie('uid', $member['uid']);
+                    cookie('username', $member['username']);
+                    //返回用户数据
+                    $info = (new MemberInfoModel())->where(array('uid'=>$member['uid']))->getOne();
                     $this->showAjaxReturn(array(
                         'uid'=>$member['uid'],
                         'username'=>$member['username'],

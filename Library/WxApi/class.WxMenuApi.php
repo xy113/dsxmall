@@ -17,7 +17,7 @@ class WxMenuApi extends WxApi
      */
     public function create($menus){
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=".$this->getAccessToken(), $menus);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -25,6 +25,6 @@ class WxMenuApi extends WxApi
      */
     public function delete(){
         $res = Http::curlGet("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=".$this->getAccessToken());
-        return json_decode($res, true);
+        return $res;
     }
 }

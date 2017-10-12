@@ -21,7 +21,7 @@ class WxMaterialApi extends WxApi
     public function add($type, $data){
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=$access_token&type=$type", $data);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -32,22 +32,17 @@ class WxMaterialApi extends WxApi
         $access_data = json_encode(array('media_id'=>$media_id));
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=$access_token", $access_data);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
      * @param $media_id
-     * @param string $type
      * @return mixed
      */
-    public function get($media_id, $type='image'){
+    public function get($media_id){
         $access_data = json_encode(array('media_id'=>$media_id));
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=".$this->getAccessToken(), $access_data);
-        if ($type == 'image' || $type == 'voice') {
-            return $res;
-        }else {
-            return json_decode($res, true);
-        }
+        return $res;
     }
 
     /**
@@ -55,7 +50,7 @@ class WxMaterialApi extends WxApi
      */
     public function getCount(){
         $res = Http::curlGet("https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=".$this->getAccessToken());
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -72,6 +67,6 @@ class WxMaterialApi extends WxApi
         ));
         $url = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=".$this->getAccessToken();
         $res = Http::curlPost($url, $access_data);
-        return json_decode($res, true);
+        return $res;
     }
 }

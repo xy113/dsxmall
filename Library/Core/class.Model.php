@@ -26,7 +26,7 @@ class Model{
      * Model constructor.
      * @param string $name
      */
-    function __construct($name=''){
+    function __construct($name = ''){
 		$this->db = DB_Mysqli::getInstance();
 		$this->tableName = $name ? $this->db->table($name) : $this->db->table($this->table);
 	}

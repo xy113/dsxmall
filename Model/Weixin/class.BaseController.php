@@ -6,6 +6,7 @@ use Data\Member\MemberConnectModel;
 use Data\Member\MemberInfoModel;
 use Data\Member\MemberModel;
 use Data\Member\MemberStatusModel;
+use WxApi\WxApi;
 use WxApi\WxUserApi;
 
 class BaseController extends Controller{
@@ -22,6 +23,32 @@ class BaseController extends Controller{
             $this->autoLogin();
         }
 	}
+
+
+    /**
+     * 生成JSSDK签名
+     * @return array
+     */
+    protected function createJssdkSign(){
+        $ticket = (new WxApi())->getJsApiTicket();
+        $timestamp = TIMESTAMP;
+        $nonceStr  = random(10);
+        $url = curPageURL();
+        //$timestamp = "$timestamp";
+        // 这里参数的顺序要按照 key 值 ASCII 码升序排序
+        $string = "jsapi_ticket=$ticket&noncestr=$nonceStr&timestamp=$timestamp&url=$url";
+        $signature = sha1($string);
+
+        $signPackage = array(
+            "appid"     => setting('wx_appid'),
+            "noncestr"  => $nonceStr,
+            "timestamp" => $timestamp,
+            "url"       => $url,
+            "signature" => $signature,
+            "rawString" => $string
+        );
+        return $signPackage;
+    }
 	
 	/**
 	 * 微信自动登录

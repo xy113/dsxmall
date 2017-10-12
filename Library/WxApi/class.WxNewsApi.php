@@ -20,7 +20,7 @@ class WxNewsApi extends WxApi
         $access_data = json_encode(array('media_id'=>$media_id));
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=$access_token", $access_data);
-        return json_decode($res, true);
+        return $res;
     }
     /**
      * @param int $offset
@@ -35,7 +35,7 @@ class WxNewsApi extends WxApi
         ));
         $url = "https://api.weixin.qq.com/cgi-bin/material/batchget_material?access_token=".$this->getAccessToken();
         $res = Http::curlPost($url, $access_data);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -58,7 +58,7 @@ class WxNewsApi extends WxApi
     public function add($data){
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/add_news?access_token=$access_token", $data);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -69,7 +69,7 @@ class WxNewsApi extends WxApi
         $access_data = json_encode(array('media_id'=>$media_id));
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=$access_token", $access_data);
-        return json_decode($res, true);
+        return $res;
     }
 
     /**
@@ -92,6 +92,6 @@ class WxNewsApi extends WxApi
     public function update($data){
         $access_token = $this->getAccessToken();
         $res = Http::curlPost("https://api.weixin.qq.com/cgi-bin/material/update_news?access_token=$access_token", $data);
-        return json_decode($res, true);
+        return $res;
     }
 }

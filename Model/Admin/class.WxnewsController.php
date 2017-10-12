@@ -24,15 +24,16 @@ class WxnewsController extends  BaseController{
 			$materials = $_GET['materials'];
 			if ($materials && is_array($materials)) {
 				foreach ($materials as $media_id) {
-
+                    $api->delete($media_id);
 				}
-				$this->showSuccess('delete_succeed');
+				$this->showAjaxReturn();
 			}else {
-				$this->showError('no_select');
+				$this->showAjaxError(1,'no_select');
 			}
 		}else {
 			$pagesize = 20;
 			$data = $api->batchget(($_G['page']-1)*$pagesize, $pagesize);
+			$data = json_decode($data, true);
 			$itemlist = $data['item'];
 			$totalcount = $data['total_count'];
 			$pagecount  = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);

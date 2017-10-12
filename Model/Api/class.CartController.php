@@ -9,6 +9,14 @@
 namespace Model\Api;
 
 
+use Data\Cart\CartModel;
+use Data\Item\ItemModel;
+use Data\Member\AddressModel;
+use Data\Shop\ShopModel;
+use Data\Trade\Builder\OrderContentBuilder;
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
+
 class CartController extends BaseController
 {
     /**
@@ -19,13 +27,16 @@ class CartController extends BaseController
         $quantity = intval($_GET['quantity']);
         if (!$itemid) $itemid = intval($_GET['goods_id']);
         if (!$quantity) $quantity = intval($_GET['goods_number']);
-        $item = item_get_data(array('itemid'=>$itemid));
+
+        $cartModel = new CartModel();
+        $itemModel = new ItemModel();
+        $item = $itemModel->where(array('itemid'=>$itemid))->getOne();
         if ($item) {
-            if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
-                cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
+            if ($cartModel->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->count()){
+                $cartModel->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->data("`quantity`=`quantity`+".$quantity)->save();
             }else {
-                $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
-                cart_add_data(array(
+                $shop = (new ShopModel())->where(array('shop_id'=>$item['shop_id']))->getOne();
+                $cartModel->data(array(
                     'uid'=>$this->uid,
                     'shop_id'=>$shop['shop_id'],
                     'shop_name'=>$shop['shop_name'],
@@ -36,7 +47,7 @@ class CartController extends BaseController
                     'thumb'=>$item['thumb'],
                     'image'=>$item['image'],
                     'create_time'=>time()
-                ));
+                ))->add();
             }
 
             $this->showAjaxReturn();
@@ -46,22 +57,24 @@ class CartController extends BaseController
     }
 
     /**
-     *
+     * 获取结算商品
      */
     public function get_settle_items(){
         $itemids = $_GET['itemids'];
         $cart_item_list = array();
         if (is_array($itemids)) $itemids = implode(',', $itemids);
+
+        $cartModel = new CartModel();
         if (!$itemids || empty($itemids)){
             $this->showAjaxError(1, 'can_not_buy');
         }else {
-            $cart_item_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0);
+            $cart_item_list = $cartModel->where(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)))->select();
         }
 
         $total_num = $total_fee = 0;
         if ($cart_item_list) {
             $price_list = array();
-            $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, 'itemid, price');
+            $itemlist = (new ItemModel())->where(array('itemid'=>array('IN', $itemids)))->field('itemid, price')->select();
             foreach ($itemlist as $item){
                 $price_list[$item['itemid']] = $item['price'];
             }
@@ -117,7 +130,8 @@ class CartController extends BaseController
         $order_item_list = $new_item_list = array();
         $itemids = $itemids ? implodeids($itemids) : 0;
 
-        $cart_item_list = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)), 0);
+        $cartModel = new CartModel();
+        $cart_item_list = $cartModel->where(array('uid'=>$this->uid, 'itemid'=>array('IN', $itemids)))->select();
         if ($cart_item_list) {
             foreach ($cart_item_list as $item){
                 $order_item_list[$item['itemid']]['quantity']  = $item['quantity'];
@@ -129,8 +143,9 @@ class CartController extends BaseController
             $this->showAjaxError(1, '没有选择结算商品');
         }
 
+        $itemModel = new ItemModel();
         $fields = 'itemid,uid,shop_id,price,shipping_fee,title,image,thumb';
-        $itemlist = item_get_list(array('itemid'=>array('IN', $itemids)), 0, 0, null, $fields);
+        $itemlist = $itemModel->where(array('itemid'=>array('IN', $itemids)))->field($fields)->select();
         foreach ($itemlist as $item){
             $new_item_list[$item['itemid']]['uid']  = $item['uid'];
             $new_item_list[$item['itemid']]['itemid'] = $item['itemid'];
@@ -171,12 +186,14 @@ class CartController extends BaseController
         }
 
         //收货地址
-        $address = address_get_data(array('address_id'=>intval($_GET['address_id'])));
+        $address = (new AddressModel())->where(array('address_id'=>intval($_GET['address_id'])))->getOne();
         $formated_address = $address['province'].$address['city'].$address['county'].$address['street'].' '.$address['postcode'];
         //创建订单
+        $orderModel = new OrderModel();
+        $tradeModel = new TradeModel();
         foreach ($order_item_list as $shop_id=>$order) {
-            $trade_no = trade_create_no();
-            $order_no = order_create_no($this->uid);
+            $trade_no = createTradeNo();
+            $order_no = createOrderNo($this->uid);
             //卖家信息
             $seller = member_get_data(array('uid'=>$order['uid']), 'uid,username');
             //订单金额
@@ -187,6 +204,12 @@ class CartController extends BaseController
             $order_total_fee = $order_fee + $shipping_fee;
             //创建订单
             $is_commited = $order['pay_type'] == 2 ? 1 : 0;
+
+            $orderObject = new OrderContentBuilder();
+            $orderObject->setBuyer_uid($this->uid);
+            $orderObject->setBuyer_name($this->username);
+            $orderObject->setSeller_uid($seller['uid']);
+
             $order_id = order_add_data(array(
                 'buyer_uid'=>$this->uid,
                 'buyer_name'=>$this->username,

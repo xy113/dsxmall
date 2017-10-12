@@ -18,10 +18,10 @@ class WxmaterialController extends  BaseController{
     public function index(){
 		global $_G,$_lang;
 
+        $api = new WxMaterialApi();
 		if ($this->checkFormSubmit()) {
 			$materials = $_GET['materials'];
 			if ($materials && is_array($materials)){
-			    $api = new WxMaterialApi();
 			    foreach ($materials as $media_id){
 			        $api->del($media_id);
                 }
@@ -32,9 +32,10 @@ class WxmaterialController extends  BaseController{
 		}else {
 			$pagesize = 20;
 			$type = isset($_GET['type']) ? trim($_GET['type']) : 'image';
-			$data = (new WxMaterialApi())->batchget($type, ($_G['page']-1)*$pagesize, $pagesize);
-			$totalnum = $data['total_count'];
-			$itemlist = $data['item'];
+			$data = $api->batchget($type, ($_G['page']-1)*$pagesize, $pagesize);
+			$data = json_decode($data, true);
+			$totalnum  = $data['total_count'];
+			$itemlist  = $data['item'];
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
 			$pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "type=$type", 1);
 			include template('weixin/material_list');
@@ -52,6 +53,7 @@ class WxmaterialController extends  BaseController{
             $builder->media = C('ATTACHDIR').'image/'.$media;
 			$api = new WxMaterialApi();
 			$res = $api->add($type, $builder->getContent());
+            $res = json_decode($res, true);
 			if ($res['media_id']) {
 			    $this->showAjaxReturn(array('media_id'=>$res['media_id']));
             }else {
@@ -66,6 +68,7 @@ class WxmaterialController extends  BaseController{
 		    $builder->introduction = htmlspecialchars($_GET['introduction']);
 		    $api = new WxMaterialApi();
 		    $res = $api->add('video', $builder->getContent());
+            $res = json_decode($res, true);
             if ($res['media_id']) {
                 $this->showAjaxReturn(array('media_id'=>$res['media_id']));
             }else {
@@ -78,6 +81,7 @@ class WxmaterialController extends  BaseController{
             $builder->media = C('ATTACHDIR').'voice/'.$media;
             $api = new WxMaterialApi();
             $res = $api->add($type, $builder->getContent());
+            $res = json_decode($res, true);
             if ($res['media_id']) {
                 $this->showAjaxReturn(array('media_id'=>$res['media_id']));
             }else {
@@ -92,7 +96,7 @@ class WxmaterialController extends  BaseController{
     public function viewimage(){
 		//ob_end_clean();
 		$media_id = trim($_GET['media_id']);
-		$res = (new WxMaterialApi())->get($media_id, 'image');
+		$res = (new WxMaterialApi())->get($media_id);
 		echo $res;
 		exit();
 	}

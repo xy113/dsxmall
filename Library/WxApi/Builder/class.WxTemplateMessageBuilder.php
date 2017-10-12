@@ -9,7 +9,7 @@
 namespace WxApi\Builder;
 
 
-class WxTemplateMessageContentBuilder
+class WxTemplateMessageBuilder
 {
     public $touser;//接收者openid
     public $template_id;//模板ID

@@ -10,7 +10,7 @@ namespace WxApi;
 
 
 use Core\Http;
-use WxApi\Builder\WxTemplateMessageContentBuilder;
+use WxApi\Builder\WxTemplateMessageBuilder;
 
 class WxTemplateMessageApi extends WxApi
 {
@@ -49,7 +49,7 @@ class WxTemplateMessageApi extends WxApi
 
     /**
      * 发送模板消息
-     * @param WxTemplateMessageContentBuilder $message
+     * @param WxTemplateMessageBuilder $message
      * @return string
      * @throws \Exception
      * 返回示例{
@@ -58,7 +58,7 @@ class WxTemplateMessageApi extends WxApi
         "msgid":200228332
         }
      */
-    public function sendMessage(WxTemplateMessageContentBuilder $message){
+    public function sendMessage(WxTemplateMessageBuilder $message){
         if (!$message->touser) {
             throw new \Exception('Empty touser value');
         }

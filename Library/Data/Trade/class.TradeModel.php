@@ -23,4 +23,8 @@ class TradeModel extends Model
     {
         parent::__construct($name);
     }
+
+    public function createNo(){
+        return date('YmdHis').rand(100,999).rand(100,999);
+    }
 }

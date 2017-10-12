@@ -8,6 +8,8 @@
 
 namespace Model\Api;
 
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
 use Payment\AliPay\AlipayClient;
 use Payment\AliPay\Builder\AlipayTradeAppPayContentBuilder;
 use Payment\AliPay\Builder\AlipayTradeQueryContentBuilder;
@@ -21,10 +23,11 @@ class AlipayController extends BaseController
     public function get_trade_content(){
         $order = $trade = array();
         $order_id = intval($_GET['order_id']);
+        $orderModel = new OrderModel();
         if ($order_id) {
-            $order = order_get_data(array('order_id'=>$order_id));
+            $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no'])))->getOne();
         }
         if (!$order) {
             $this->showAjaxError(1, '订单不存在');
@@ -32,7 +35,9 @@ class AlipayController extends BaseController
         if ($order['pay_status']) {
             $this->showAjaxError(2, '订单已支付，不能重复支付');
         }
-        $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
+
+        $tradeModel = new TradeModel();
+        $trade = $tradeModel->where(array('trade_no'=>$order['trade_no']))->getOne();
 
         $client = new AlipayClient();
         $content = new AlipayTradeAppPayContentBuilder();
@@ -64,14 +69,18 @@ class AlipayController extends BaseController
     public function query(){
         ignore_user_abort(true);
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+
+        $orderModel = new OrderModel();
+        $tradeModel = new TradeModel();
+        $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
+        //订单已支付
         if ($order['pay_status']) $this->showAjaxReturn();
 
         $out_trade_no = $order['trade_no'];
         if ($this->alipayCheckOrder($out_trade_no)){
             //支付成功
-            order_update_data(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
-            trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
+            $orderModel->where(array('trade_no'=>$out_trade_no))->data(array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()))->save();
+            $tradeModel->where(array('trade_no'=>$out_trade_no))->data(array('trade_status'=>'PAID', 'pay_type'=>'alipay'))->save();
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError(1, '订单支付失败');

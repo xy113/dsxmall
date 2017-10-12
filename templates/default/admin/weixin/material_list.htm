@@ -106,7 +106,6 @@
                         loading = DSXUI.showloading('正在上传素材到微信服务器..');
                     },
                     success: function(response){
-                        alert(JSON.stringify(response));
                         loading.close();
                         if(response.errcode === 0){
                             DSXUtil.reFresh();

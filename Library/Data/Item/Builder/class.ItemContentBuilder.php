@@ -34,12 +34,6 @@ class ItemContentBuilder extends Builder
         'shipping_fee'=>''
     );
 
-//    public $itemid = 0;
-//    public $uid = 0;
-//    public $catid = 0;
-//    public $shop_id = 0;
-//    public $title = 0;
-
     /**
      * @param $value
      */

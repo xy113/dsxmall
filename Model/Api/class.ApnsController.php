@@ -9,6 +9,8 @@
 namespace Model\Api;
 
 
+use Data\Common\ApnsTokenModel;
+
 class ApnsController extends BaseController
 {
     public function index(){
@@ -28,26 +30,21 @@ class ApnsController extends BaseController
             $this->showAjaxReturn();
         }
 
+        $model = new ApnsTokenModel();
         if ($old_device_token) {
             if (apns_get_token(array('device_token'=>$old_device_token))){
-                apns_update_token(array('device_token'=>$old_device_token),array(
+                $model->where(array('device_token'=>$old_device_token))->data(array(
                     'uid'=>$this->uid,
                     'device_token'=>$new_device_token
-                ));
+                ))->save();
             }else {
-                apns_add_token(array(
-                    'uid'=>$this->uid,
-                    'device_token'=>$new_device_token
-                ));
+                $model->data(array('uid'=>$this->uid, 'device_token'=>$new_device_token))->add();
             }
         }else {
             if ($this->uid && apns_get_token(array('uid'=>$this->uid))) {
-                apns_update_token(array('uid'=>$this->uid), array('device_token'=>$new_device_token));
+                $model->where(array('uid'=>$this->uid))->data(array('device_token'=>$new_device_token))->save();
             }else {
-                apns_add_token(array(
-                    'uid'=>$this->uid,
-                    'device_token'=>$new_device_token
-                ));
+                $model->data(array('uid'=>$this->uid, 'device_token'=>$new_device_token))->add();
             }
         }
         $this->showAjaxReturn();

@@ -20,6 +20,9 @@ class WalletContentBuilder extends Builder
         'total_cost'=>''
     );
 
+    /**
+     * @param $value
+     */
     public function setUid($value){
         $this->data['uid'] = $value;
     }
