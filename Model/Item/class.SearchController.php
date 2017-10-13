@@ -7,6 +7,7 @@
  */
 namespace Model\Item;
 use Data\Item\ItemCatlogModel;
+use Data\Item\ItemModel;
 
 class SearchController extends BaseController{
     /**
@@ -35,6 +36,7 @@ class SearchController extends BaseController{
             $params['q'] = $q;
             $condition.= " AND (i.title LIKE '%$q%' OR s.shop_name LIKE '%$q%')";
         }
+        $itemModel = new ItemModel();
 
         $pagesize = 20;
         $db = DB();
@@ -66,9 +68,9 @@ class SearchController extends BaseController{
 
         //掌柜热卖
         if ($catid) {
-            $hot_sale_list = item_get_list("`on_sale`=1 AND catid='$catid'", 9, 0, 'sold DESC');
+            $hot_sale_list = $itemModel->where("`on_sale`=1 AND catid='$catid'")->limit(0, 9)->order('sold DESC')->select();
         }else {
-            $hot_sale_list = item_get_list(array('on_sale'=>1), 9, 0, 'sold DESC');
+            $hot_sale_list = $itemModel->where(array('on_sale'=>1))->limit(0, 9)->order('sold DESC')->select();
         }
 
         $_G['title'] = $_lang['search_result'];

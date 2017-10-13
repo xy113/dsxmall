@@ -6,6 +6,9 @@
  * Time: 下午4:53
  */
 namespace Model\Shop;
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class ViewshopController extends BaseController{
     /**
      * 查看店铺详情
@@ -15,10 +18,11 @@ class ViewshopController extends BaseController{
 
         $shop = array();
         $shop_id = intval($_GET['shop_id']);
+        $shopModel = new ShopModel();
         if ($shop_id) {
-            $shop = shop_get_data(array('shop_id'=>$shop_id));
+            $shop = $shopModel->where(array('shop_id'=>$shop_id))->getOne();
         }elseif ($_GET['uid']) {
-            $shop = shop_get_data(array('uid'=>intval($_GET['uid'])));
+            $shop = $shopModel->where(array('uid'=>intval($_GET['uid'])))->getOne();
             $shop_id = $shop['shop_id'];
         }
 
@@ -26,15 +30,15 @@ class ViewshopController extends BaseController{
 
         }else {
             //掌柜热卖
-            $hot_item_list = item_get_list(array('on_sale'=>1, 'shop_id'=>$shop_id), 5, 0, 'sold DESC');
+            $itemModel = new ItemModel();
+            $hot_item_list = $itemModel->where(array('on_sale'=>1, 'shop_id'=>$shop_id))->limit(0, 5)->order('sold DESC')->select();
 
             $pagesize = 20;
             $condition = array('shop_id'=>$shop_id, 'on_sale'=>1);
-            $totalnum  = item_get_count($condition);
+            $totalnum  = $itemModel->where($condition)->count();
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-            $offset = ($_G['page'] - 1) * $pagesize;
-            $itemlist = item_get_list($condition, $pagesize, $offset, 'sold DESC');
-            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "shop_id=$shop_id", true);
+            $itemlist = $itemModel->where($condition)->page($_G['page'], $pagesize)->order('sold DESC')->select();
+            $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "shop_id=$shop_id", true);
 
             $_G['title'] = $shop['shop_name'];
             include template('viewshop');

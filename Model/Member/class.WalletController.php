@@ -1,5 +1,9 @@
 <?php
 namespace Model\Member;
+use Data\Member\MemberModel;
+use Data\Trade\TradeModel;
+use Data\Trade\WalletModel;
+
 class WalletController extends BaseController{
     function __construct()
     {
@@ -35,11 +39,12 @@ class WalletController extends BaseController{
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         if ($q) $condition[] = "(trade_no LIKE '%$q%' OR trade_name LIKE '%$q%')";
 
-        $totalnum    = trade_get_count($condition);
-        $pagecount   = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $_G['page']  = min(array($_G['page'], $pagecount));
-        $itemlist = trade_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "date_range=$date_range&trade_type=$trade_type&pay_type=$pay_type&q=$q");
+        $tradeModel = new TradeModel();
+        $totalnum   = $tradeModel->where($condition)->count();
+        $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
+        $_G['page'] = min(array($_G['page'], $pagecount));
+        $itemlist = $tradeModel->where($condition)->page($_G['page'], $pagesize)->select();
+        $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "date_range=$date_range&trade_type=$trade_type&pay_type=$pay_type&q=$q");
 
         if ($itemlist) {
             $datalist = $uids = array();
@@ -57,11 +62,14 @@ class WalletController extends BaseController{
             $itemlist = $datalist;
             $uids = array_unique($uids);
             $uids = $uids ? implodeids($uids) : 0;
-            $userlist = member_get_list(array('uid'=>array('IN', $uids)), 0);
-            unset($datalist, $uids, $item);
+            $memberModel = new MemberModel();
+            foreach ($memberModel->where(array('uid'=>array('IN', $uids)))->select() as $member){
+                $userlist[$member['uid']] = $member;
+            }
+            unset($datalist, $uids, $item, $member);
         }
 
-		$wallet = wallet_get_data($this->uid);
+		$wallet = (new WalletModel())->getWallet($this->uid);
 		$_G['title'] = $_lang['account_balance'];
 		include template('wallet_index');
 	}

@@ -6,6 +6,11 @@
  * Time: 下午5:02
  */
 namespace Model\Item;
+use Data\Item\ItemDescModel;
+use Data\Item\ItemImageModel;
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class ItemController extends BaseController{
     /**
      * 商品详情
@@ -13,16 +18,17 @@ class ItemController extends BaseController{
     public function index(){
         global $_G,$_lang;
 
+        $itemModel = new ItemModel();
         $itemid = intval($_GET['itemid']);
         if (!$itemid) $itemid = intval($_GET['id']);//兼容老版本
-        $item_data = item_get_data(array('itemid'=>$itemid));
+        $item_data = $itemModel->where(array('itemid'=>$itemid))->getOne();
         if (!$item_data) {
             
         }else {
             $item_data['short_title'] = cutstr($item_data['title'], 20, '...');
-            item_update_data(array('itemid'=>$itemid), '`view_num`=`view_num`+1');
-            $item_desc = item_get_desc(array('itemid'=>$itemid));
-            $gallery = item_get_image_list(array('itemid'=>$itemid));
+            $itemModel->where(array('itemid'=>$itemid))->data('`view_num`=`view_num`+1')->save();
+            $item_desc = (new ItemDescModel())->where(array('itemid'=>$itemid))->getOne();
+            $gallery = (new ItemImageModel())->where(array('itemid'=>$itemid))->select();
             if (!$gallery) {
                 $gallery = array(
                     array(
@@ -32,12 +38,12 @@ class ItemController extends BaseController{
                 );
             }
 
-            $shop = shop_get_data(array('shop_id'=>$item_data['shop_id']));
+            $shop = (new ShopModel())->where(array('shop_id'=>$item_data['shop_id']))->getOne();
             $shop['short_name']  = cutstr($shop['shop_name'], 24);
             $shop['short_username'] = cutstr($shop['username'], 16);
 
             //掌柜热卖
-            $hot_sale_list = item_get_list(array('shop_id'=>$item_data['shop_id'] ,'on_sale'=>1), 5, 0 ,'sold DESC');
+            $hot_sale_list = $itemModel->where(array('shop_id'=>$item_data['shop_id'] ,'on_sale'=>1))->limit(0, 5)->order('sold DESC')->select();
             $_G['title'] = $item_data['title'];
             include template('item');
         }

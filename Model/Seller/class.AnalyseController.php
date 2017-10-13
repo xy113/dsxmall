@@ -9,6 +9,8 @@
 namespace Model\Seller;
 
 
+use Data\Shop\ShopRecordModel;
+
 class AnalyseController extends BaseController
 {
     function __construct()
@@ -31,7 +33,7 @@ class AnalyseController extends BaseController
             $i++;
         }
         $days = array_reverse($days);
-        $record_list = shop_get_record_list(array('shop_id'=>$this->shop_id, 'datestamp'=>array('IN', implodeids($days))), 0);
+        $record_list = (new ShopRecordModel())->where(array('shop_id'=>$this->shop_id, 'datestamp'=>array('IN', implodeids($days))))->select();
 
         $datalist = array();
         foreach ($days as $day){

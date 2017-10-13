@@ -9,6 +9,8 @@
 namespace Model\Buy;
 
 
+use Data\Trade\OrderModel;
+
 class CommitController extends BaseController
 {
     /**
@@ -16,7 +18,7 @@ class CommitController extends BaseController
      */
     public function index(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('order_id'=>$order_id))->getOne();
 
         $_G['title'] = L('order_commited');
         include template('order_commited');

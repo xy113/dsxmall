@@ -297,6 +297,13 @@ class Model{
 	}
 
     /**
+     * @return array
+     */
+    public function getAll(){
+        return $this->select();
+    }
+
+    /**
      * 返回记录数
      * @param string $field
      * @return mixed

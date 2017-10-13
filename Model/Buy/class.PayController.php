@@ -6,6 +6,10 @@
  * Time: 下午2:32
  */
 namespace Model\Buy;
+use Data\Member\MemberModel;
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
+use Data\Trade\WalletModel;
 use Payment\AliPay\AlipayClient;
 use Payment\AliPay\Builder\AlipayTradePagePayContentBuilder;
 use Payment\AliPay\Builder\AlipayTradeQueryContentBuilder;
@@ -23,10 +27,11 @@ class PayController extends BaseController{
 
         $order = array();
         $order_id = intval($_GET['order_id']);
+        $orderModel = new OrderModel();
         if ($order_id) {
-            $order = order_get_data(array('order_id'=>$order_id));
+            $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no'])))->getOne();
         }
 
         //订单不存在或订单状态不匹配
@@ -36,7 +41,7 @@ class PayController extends BaseController{
         if ($order['pay_status'] != 0){
             $this->redirect(U('c=pay&a=order_query&order_id='.$order_id));
         }else {
-            $wallet = wallet_get_data($this->uid);
+            $wallet = (new WalletModel())->getWallet($this->uid);
 
             $_G['step'] = 'pay_order';
             $_G['title'] = $_lang['pay_order'];
@@ -44,15 +49,19 @@ class PayController extends BaseController{
         }
     }
 
+    /**
+     *
+     */
     public function order_query(){
         global $_G,$_lang;
 
         $order = $trade = array();
         $order_id = intval($_GET['order_id']);
+        $orderModel = new OrderModel();
         if ($order_id) {
-            $order = order_get_data(array('order_id'=>$order_id));
+            $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no'])))->getOne();
         }
 
         $_G['step'] = 'pay_order';
@@ -69,24 +78,22 @@ class PayController extends BaseController{
         }
 
         $password = trim($_GET['password']);
-        $member = member_get_data(array('uid'=>$this->uid), 'password');
+        $member = (new MemberModel())->where(array('uid'=>$this->uid))->field('password')->getOne();
         if ($member['password'] !== getPassword($password)){
             $this->showAjaxError('FAIL','password_incorrect');
         }
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+        $orderModel = new OrderModel();
+        $tradeModel = new TradeModel();
+        $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
         if ($order['pay_status'] != 0){
             $this->showAjaxError('FAIL', 'order_have_been_paid');
         }
-//        $wallet = wallet_get_data($this->uid);
-//        if ($wallet['balance'] < $order['total_fee']){
-//            $this->showAjaxError('FAIL', 'balance_not_enough');
-//        }
 
-        if (wallet_cost($this->uid, $order['total_fee'])){
-            order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
-            trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'trade_type'=>'balance'));
+        if ((new WalletModel())->deduction($this->uid, $order['total_fee'])){
+            $orderModel->where(array('order_id'=>$order_id))->data(array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()))->save();
+            $tradeModel->where(array('trade_no'=>$order['trade_no']))->data(array('pay_status'=>1, 'pay_type'=>'balance'))->save();
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError('FAIL', 'balance_not_enough');
@@ -102,11 +109,11 @@ class PayController extends BaseController{
         $order = array();
         $order_id = intval($_GET['order_id']);
         if ($order_id) {
-            $order = order_get_data(array('order_id'=>$order_id));
+            $order = (new OrderModel())->where(array('order_id'=>$order_id))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+            $order = (new OrderModel())->where(array('order_no'=>trim($_GET['order_no'])))->getOne();
         }
-        $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
+        $trade = (new TradeModel())->where(array('trade_no'=>$order['trade_no']))->getOne();
 
         $unifiedOrder = new WxPayUnifiedOrder();
         $unifiedOrder->setProduct_id($trade['trade_id']);
@@ -132,21 +139,22 @@ class PayController extends BaseController{
     public function wxpay_query(){
         $order_id = intval($_GET['order_id']);
         $order = $trade = array();
+        $orderModel = new OrderModel();
+        $tradeModel = new TradeModel();
         if ($order_id) {
-            $order = order_get_data(array('order_id'=>$order_id));
+            $order = $orderModel->where(array('order_id'=>$order_id, 'uid'=>$this->uid))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no']), 'uid'=>$this->uid))->getOne();
         }
 
-        $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
+        $trade = $tradeModel->where(array('trade_no'=>$order['trade_no'], 'uid'=>$this->uid))->getOne();
         if ($order['pay_status'] == 0){
-            $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
             $orderQuery = new WxPayOrderQuery();
             $orderQuery->setOut_trade_no($trade['out_trade_no']);
             $res = WxPayApi::orderQuery($orderQuery);
             if ($res['trade_state'] == 'SUCCESS'){
-                order_update_data(array('order_id'=>$order_id), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
-                trade_update_data(array('trade_no'=>$order['trade_no']), array('trade_status'=>'PAID', 'pay_type'=>'wxpay'));
+                $orderModel->where(array('order_id'=>$order_id))->data(array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()))->save();
+                $tradeModel->where(array('trade_no'=>$order['trade_no']))->data(array('pay_status'=>'1', 'pay_type'=>'wxpay'))->save();
             }
         }
         $this->showAjaxReturn();
@@ -159,30 +167,35 @@ class PayController extends BaseController{
         if ($_GET['sign'] && $_GET['trade_no'] && $_GET['out_trade_no']){
             $trade_no = htmlspecialchars($_GET['trade_no']);
             $out_trade_no = htmlspecialchars($_GET['out_trade_no']);
-            $order = order_get_data(array('trade_no'=>$out_trade_no));
+
+            $orderModel = new OrderModel();
+            $order = $orderModel->where(array('trade_no'=>$out_trade_no))->getOne();
             if ($order['pay_status'] == 0){
                 if ($this->alipayCheckOrder($out_trade_no, $trade_no)){
                     //支付成功
                     $out_trade_no = htmlspecialchars($_GET['out_trade_no']);
-                    order_update_data(array('trade_no'=>$out_trade_no), array('pay_status'=>1,'pay_type'=>2, 'pay_time'=>time()));
-                    trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
+                    $orderModel->where(array('trade_no'=>$out_trade_no))->data(array('pay_status'=>1,'pay_type'=>2, 'pay_time'=>time()))->save();
+                    $tradeModel = new TradeModel();
+                    $tradeModel->where(array('trade_no'=>$out_trade_no))->data(array('pay_status'=>'1', 'pay_type'=>'alipay'))->save();
                     $this->redirect(U('c=pay&a=order_query&order_id='.$order['order_id']));
                 }
             }
         }else {
             $order_id = intval($_GET['order_id']);
             $order = $trade = array();
+            $orderModel = new OrderModel();
+            $tradeModel = new TradeModel();
             if ($order_id) {
-                $order = order_get_data(array('order_id'=>$order_id));
+                $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
             }elseif ($_GET['order_no']) {
-                $order = order_get_data(array('order_no'=>trim($_GET['order_no'])));
+                $order = $orderModel->where(array('order_no'=>trim($_GET['order_no'])))->getOne();
             }
             //已支付订单直接跳转
             if ($order['pay_status'] != 0){
                 $this->redirect(U('c=pay&a=order_query&order_id='.$order_id));
             }
 
-            $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
+            $trade = $tradeModel->where(array('trade_no'=>$order['trade_no']))->getOne();
             //创建支付实例
             $client = new AlipayClient();
             //创建支付订单
@@ -208,13 +221,16 @@ class PayController extends BaseController{
      */
     public function alipay_query(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
+
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'uid'=>$this->uid))->getOne();
         $out_trade_no = $order['trade_no'];
         if ($order['pay_status'] == 0){
             if ($this->alipayCheckOrder($out_trade_no)){
                 //支付成功
-                order_update_data(array('trade_no'=>$out_trade_no), array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()));
-                trade_update_data(array('trade_no'=>$out_trade_no), array('trade_status'=>'PAID', 'pay_type'=>'alipay'));
+                $orderModel->where(array('trade_no'=>$out_trade_no))->data(array('pay_status'=>1, 'pay_type'=>1, 'pay_time'=>time()))->save();
+                $tradeModel = new TradeModel();
+                $tradeModel->where(array('trade_no'=>$out_trade_no))->data(array('pay_status'=>1, 'pay_type'=>'alipay'))->save();
             }
         }
         $this->redirect(U('c=pay&a=order_query&order_id='.$order['order_id']));

@@ -32,8 +32,6 @@ class AvatarController extends BaseController
         if ($size && $fp) {
             header("Content-type: {$size['mime']}");
             fpassthru($fp);
-        } else {
-            // error
         }
         exit();
     }

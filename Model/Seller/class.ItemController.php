@@ -71,7 +71,7 @@ class ItemController extends BaseController{
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
             $itemlist = (new ItemModel())->where($condition)->page($_G['page'], $pagesize)->order('itemid', 'DESC')->select();
-            $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "type=$type", true);
+            $pages = $this->pagination($_G['page'], $pagecount, $totalnum, "type=$type", true);
 
             $_G['title'] = $_lang['on_sale_item'];
             include template('item_list');

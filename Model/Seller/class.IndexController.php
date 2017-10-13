@@ -6,6 +6,9 @@
  * Time: 上午10:13
  */
 namespace Model\Seller;
+use Data\Trade\OrderModel;
+use Data\Trade\WalletModel;
+
 class IndexController extends BaseController{
     /**
      *
@@ -14,10 +17,11 @@ class IndexController extends BaseController{
         global $_G,$_lang;
 
         $shop_data = $this->shop_data;
-        $wallet = wallet_get_data($this->uid);
+        $wallet = (new WalletModel())->getWallet($this->uid);
 
-        $order_data['wait_pay'] = order_get_count(array('pay_status'=>0, 'shop_id'=>$this->shop_id));
-        $order_data['wait_send'] = order_get_count(array('pay_status'=>1, 'shipping_status'=>0, 'shop_id'=>$this->shop_id));
+        $orderModel = new OrderModel();
+        $order_data['wait_pay'] = $orderModel->where(array('pay_status'=>0, 'shop_id'=>$this->shop_id))->count();
+        $order_data['wait_send'] = $orderModel->where(array('pay_status'=>1, 'shipping_status'=>0, 'shop_id'=>$this->shop_id))->count();
         $_G['title'] = '卖家中心';
         include template('index');
     }

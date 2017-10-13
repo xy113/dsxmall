@@ -1,5 +1,12 @@
 <?php
 namespace Model\Member;
+use Data\Member\MemberModel;
+use Data\Trade\OrderClosedModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\OrderShippingModel;
+use Data\Trade\WalletModel;
+
 class OrderController extends BaseController{
     /**
      * OrderController constructor.
@@ -41,11 +48,11 @@ class OrderController extends BaseController{
         if ($q) $condition['order_no'] = $q;
 
 		$pagesize = 10;
-        $totalnum = order_get_count($condition);
+		$orderModel = new OrderModel();
+        $totalnum = $orderModel->where($condition)->count();
         $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $_G['page'] = min(array($_G['page'], $pagecount));
-        $order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "q=$q", 1);
+        $order_list = $orderModel->where($condition)->page($_G['page'], $pagesize)->order('order_id DESC')->select();
+        $pages = $this->pagination($_G['page'], $pagecount, $totalnum, "q=$q", 1);
 
         if ($order_list) {
             $datalist = $order_ids = array();
@@ -63,7 +70,7 @@ class OrderController extends BaseController{
             $order_ids = array_unique($order_ids);
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $itemlist = order_get_item_list(array('order_id'=>array('IN', $order_ids)));
+                $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->select();
                 foreach ($itemlist as $item){
                     $order_list[$item['order_id']]['items'][$item['itemid']] = $item;
                 }
@@ -80,14 +87,10 @@ class OrderController extends BaseController{
      */
     public function delete(){
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         if ($order) {
-            /*order_delete_data(array('order_id'=>$order_id));
-            order_delete_item(array('order_id'=>$order_id));
-            order_delete_action(array('order_id'=>$order_id));
-            order_delete_shipping(array('order_id'=>$order_id));
-            trade_delete_data(array('trade_no'=>$order['trade_no']));*/
-            order_update_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid), array('is_deleted'=>1));
+            $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->data(array('is_deleted'=>1))->save();
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError(1, 'order_delete_fail');
@@ -101,14 +104,15 @@ class OrderController extends BaseController{
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         if (!$order) {
             $this->showError('order_not_exists');
         }
         $trade_status = order_get_trade_status($order);
         $trade_status_tips = $_lang['order_trade_status'][$trade_status];
-        if ($trade_status == 3) $shipping = order_get_shipping(array('order_id'=>$order_id));
-        $itemlist = order_get_item_list(array('order_id'=>$order_id));
+        if ($trade_status == 3) $shipping = (new OrderShippingModel())->where(array('order_id'=>$order_id))->getOne();
+        $itemlist = (new OrderItemModel())->where(array('order_id'=>$order_id))->select();
 
         $_G['title'] = '订单详情';
         include template('order_detail');
@@ -128,24 +132,21 @@ class OrderController extends BaseController{
     public function receipt(){
         $order_id = intval($_GET['order_id']);
         $password = trim($_GET['password']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         if ($order) {
             //验证密码
-            $member = member_get_data(array('uid'=>$this->uid), 'password');
+            $member = (new MemberModel())->where(array('uid'=>$this->uid))->field('password')->getOne();
             if ($member['password'] !== getPassword($password)){
                 $this->showAjaxError('FAIL', 'password_incorrect');
             }
             //验证订单状态
             if (order_get_trade_status($order) == 3){
                 //更新订单状态
-                order_update_data(array('order_id'=>$order_id),
-                    array(
-                        'order_status'=>1,
-                        'deal_time'=>time()
-                    ));
+                $orderModel->where(array('order_id'=>$order_id))->data(array('order_status'=>1, 'deal_time'=>time()))->save();
                 //打款给卖家
                 if ($order['pay_type'] == 1){
-                    wallet_income($order['seller_uid'], $order['total_fee']);
+                    (new WalletModel())->increase($order['seller_uid'], $order['total_fee']);
                 }
             }
             $this->showAjaxReturn();
@@ -154,11 +155,15 @@ class OrderController extends BaseController{
         }
     }
 
+    /**
+     *
+     */
     public function frame_close(){
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id))->getOne();
         if ($this->checkFormSubmit()){
             if ($order['pay_type'] == 1){
                 if (order_get_trade_status($order) != 1){
@@ -170,13 +175,13 @@ class OrderController extends BaseController{
                 }
             }
             $close_reason = $_GET['otherReason'] ? htmlspecialchars($_GET['otherReason']) : htmlspecialchars($_GET['closeReason']);
-            order_update_data(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id), array('is_closed'=>1));
-            order_add_closed(array(
+            $orderModel->where(array('buyer_uid'=>$this->uid, 'order_id'=>$order_id))->data(array('is_closed'=>1))->save();
+            (new OrderClosedModel())->data(array(
                 'uid'=>$this->uid,
                 'order_id'=>$order_id,
                 'close_reason'=>$close_reason,
                 'close_time'=>time()
-            ));
+            ))->add();
             $this->showAjaxReturn();
         }else {
 

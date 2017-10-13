@@ -15,7 +15,6 @@ class BaseController extends Controller{
      */
     function __construct()
     {
-        exit();
         parent::__construct();
         if (!$this->isLogin()){
             member_show_login();

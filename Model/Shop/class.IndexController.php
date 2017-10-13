@@ -6,6 +6,8 @@
  * Time: 下午4:52
  */
 namespace Model\Shop;
+use Data\Shop\ShopModel;
+
 class IndexController extends BaseController{
     /**
      *
@@ -16,12 +18,13 @@ class IndexController extends BaseController{
         $pagesize = 20;
         $condition = array('closed'=>'0');
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-        if ($q) $condition[] = "shop_name LIKE '%$q%'";
+        if ($q) $condition[] = "`shop_name` LIKE '%$q%'";
 
-        $totalnum  = shop_get_count($condition);
-        $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-        $shoplist = shop_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize);
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, "", true);
+        $shopModel = new ShopModel();
+        $totalcount = $shopModel->where($condition)->count();
+        $pagecount = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);
+        $shoplist = $shopModel->where($condition)->page($_G['page'], $pagesize)->select();
+        $pagination = $this->pagination($_G['page'], $pagecount, $totalcount, "q=$q", true);
 
         $_G['title'] = '企业店铺';
         include template('index');

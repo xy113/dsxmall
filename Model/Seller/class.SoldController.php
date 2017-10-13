@@ -8,6 +8,8 @@
 namespace Model\Seller;
 use Core\Download;
 use Core\ExcelXML;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
 
 class SoldController extends BaseController{
     function __construct()
@@ -154,12 +156,13 @@ class SoldController extends BaseController{
             $queryParams['time_end'] = $time_end;
         }
 
+        $orderModel = new OrderModel();
         $pagesize = 10;
-        $totalnum = order_get_count($condition);
+        $totalnum = $orderModel->where($condition)->count();
         $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
         $_G['page'] = min(array($_G['page'], $pagecount));
-        $order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1) * $pagesize, 'order_id DESC');
-        $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
+        $order_list = $orderModel->where($condition)->page($_G['page'], $pagesize)->order('order_id DESC')->select();
+        $pages = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
         unset($queryParams, $condition);
 
         if ($order_list) {
@@ -177,7 +180,7 @@ class SoldController extends BaseController{
             $order_ids = array_unique($order_ids);
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $itemlist = order_get_item_list(array('order_id'=>array('IN', $order_ids)));
+                $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->select();
                 foreach ($itemlist as $item){
                     $order_list[$item['order_id']]['items'][$item['itemid']] = $item;
                 }
@@ -301,8 +304,8 @@ class SoldController extends BaseController{
             $queryParams['time_begin'] = $time_begin;
             //$queryParams['time_end'] = $time_end;
         }
-        $order_list = order_get_list($condition, 100, $offset, 'order_id DESC');
 
+        $order_list = (new OrderModel())->where($condition)->limit($offset, 100)->order('order_id DESC')->select();
         if ($order_list) {
             $uids = $order_ids = $datalist = array();
             foreach ($order_list as $order){
@@ -314,7 +317,7 @@ class SoldController extends BaseController{
 
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $itemlist = M('order_item')->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
+                $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
                 if ($itemlist) {
                     foreach ($itemlist as $item){
                         $order_list[$item['order_id']]['itemid'] = $item['itemid'];

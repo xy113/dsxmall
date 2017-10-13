@@ -6,6 +6,11 @@
  * Time: 下午5:11
  */
 namespace Model\Cart;
+use Data\Cart\CartModel;
+use Data\Common\CollectionModel;
+use Data\Item\ItemModel;
+use Data\Shop\ShopModel;
+
 class IndexController extends BaseController{
     /**
      *
@@ -44,13 +49,14 @@ class IndexController extends BaseController{
     public function add(){
         $itemid = intval($_GET['itemid']);
         $quantity = intval($_GET['quantity']);
-        $item = item_get_data(array('itemid'=>$itemid));
+        $item = (new ItemModel())->where(array('itemid'=>$itemid))->getOne();
+        $cartModel = new CartModel();
         if ($item) {
-            if (cart_get_count(array('uid'=>$this->uid, 'itemid'=>$itemid))){
-                cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), "`quantity`=`quantity`+".$quantity);
+            if ($cartModel->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->count()){
+                $cartModel->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->data("`quantity`=`quantity`+".$quantity)->save();
             }else {
-                $shop = shop_get_data(array('shop_id'=>$item['shop_id']));
-                cart_add_data(array(
+                $shop = (new ShopModel())->where(array('shop_id'=>$item['shop_id']))->getOne();
+                $cartModel->data(array(
                     'uid'=>$this->uid,
                     'itemid'=>$itemid,
                     'quantity'=>$quantity,
@@ -61,9 +67,9 @@ class IndexController extends BaseController{
                     'thumb'=>$item['thumb'],
                     'image'=>$item['image'],
                     'create_time'=>time()
-                ));
+                ))->add();
             }
-            cookie('cart_total_count', cart_get_count(array('uid'=>$this->uid)));
+            cookie('cart_total_count', $cartModel->where(array('uid'=>$this->uid))->count());
             $this->showAjaxReturn();
         }else {
             $this->showAjaxError('FAIL', 'item_not_exists');
@@ -77,7 +83,7 @@ class IndexController extends BaseController{
         $items = $_GET['items'];
         if ($items) {
             foreach (explode(',', $items) as $itemid){
-                cart_delete_data(array('uid'=>$this->uid, 'itemid'=>intval($itemid)));
+                (new CartModel())->where(array('uid'=>$this->uid, 'itemid'=>intval($itemid)))->delete();
             }
         }
         $this->showAjaxReturn();
@@ -90,26 +96,32 @@ class IndexController extends BaseController{
         $itemid = intval($_GET['itemid']);
         $quantity = intval($_GET['quantity']);
 
-        cart_update_data(array('uid'=>$this->uid, 'itemid'=>$itemid), array('quantity'=>$quantity));
+        (new CartModel())->where(array('uid'=>$this->uid, 'itemid'=>$itemid))->data(array('quantity'=>$quantity))->save();
         $this->showAjaxReturn();
     }
 
+    /**
+     * 移动到收藏夹
+     */
     public function move_to_favor(){
         $items = $_GET['items'];
         if ($items) {
-            $itemlist = cart_get_list(array('uid'=>$this->uid, 'itemid'=>array('IN', $items)));
+            $cartModel = new CartModel();
+            $collectionModel = new CollectionModel();
+            $itemlist = $cartModel->where(array('uid'=>$this->uid, 'itemid'=>array('IN', $items)))->select();
             foreach ($itemlist as $item){
-                if (!collection_get_count(array('uid'=>$this->uid, 'dataid'=>$item['itemid'], 'datatype'=>'item'))){
-                    collection_add_data(array(
+                $count = $collectionModel->where(array('uid'=>$this->uid, 'dataid'=>$item['itemid'], 'datatype'=>'item'))->count();
+                if ($count === 0){
+                    $collectionModel->data(array(
                         'uid'=>$this->uid,
                         'dataid'=>$item['itemid'],
                         'datatype'=>'item',
                         'title'=>$item['title'],
                         'image'=>$item['thumb'],
                         'create_time'=>time()
-                    ));
+                    ))->add();
                 }
-                cart_delete_data(array('uid'=>$this->uid, 'itemid'=>$item['itemid']));
+                $cartModel->where(array('uid'=>$this->uid, 'itemid'=>$item['itemid']))->delete();
             }
         }
         $this->showAjaxReturn();

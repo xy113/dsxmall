@@ -6,6 +6,8 @@
  * Time: 上午12:14
  */
 namespace Model\Member;
+use Data\Member\AddressModel;
+
 class AddressController extends BaseController{
     function __construct()
     {
@@ -20,19 +22,20 @@ class AddressController extends BaseController{
         global $_G,$_lang;
 
         $address_id = intval($_GET['address_id']);
+        $model = new AddressModel();
         if ($this->checkFormSubmit()){
 
             $address = $_GET['address'];
             if ($address['consignee'] && $address['phone'] && $address['street']){
                 $address['isdefault'] = intval($address['isdefault']);
                 if ($address['isdefault']) {
-                    address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
+                    $model->where(array('uid'=>$this->uid))->data(array('isdefault'=>0))->save();
                 }
                 if ($address_id) {
-                    address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), $address);
+                    $model->where(array('uid'=>$this->uid, 'address_id'=>$address_id))->data($address)->save();
                 }else {
                     $address['uid'] = $this->uid;
-                    address_add_data($address);
+                    $model->data($address)->add();
                 }
                 $this->redirect(U('c=address&a=index'));
             }else {
@@ -40,8 +43,8 @@ class AddressController extends BaseController{
             }
         }else {
 
-            if ($address_id) $address = address_get_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
-            $itemlist = address_get_list(array('uid'=>$this->uid));
+            if ($address_id) $address = $model->where(array('address_id'=>$address_id, 'uid'=>$this->uid))->getOne();
+            $itemlist = $model->where(array('uid'=>$this->uid))->select();
 
             $_G['title'] = $_lang['address_manage'];
             include template('address');
@@ -53,8 +56,9 @@ class AddressController extends BaseController{
      */
     public function set_default(){
         $address_id = intval($_GET['address_id']);
-        address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
-        address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), array('isdefault'=>1));
+        $model = new AddressModel();
+        $model->where(array('uid'=>$this->uid))->data(array('isdefault'=>0))->save();
+        $model->where(array('uid'=>$this->uid, 'address_id'=>$address_id))->data(array('isdefault'=>1))->save();
         $this->showAjaxReturn();
     }
 
@@ -63,7 +67,7 @@ class AddressController extends BaseController{
      */
     public function delete(){
         $address_id = intval($_GET['address_id']);
-        address_delete_data(array('uid'=>$this->uid, 'address_id'=>$address_id));
+        (new AddressModel())->where(array('uid'=>$this->uid, 'address_id'=>$address_id))->delete();
         $this->showAjaxReturn();
     }
 
@@ -71,7 +75,7 @@ class AddressController extends BaseController{
         global $_G,$_lang;
 
         $address_id = intval($_GET['address_id']);
-        if ($address_id) $address = address_get_data(array('address_id'=>$address_id, 'uid'=>$this->uid));
+        if ($address_id) $address = (new AddressModel())->where(array('address_id'=>$address_id, 'uid'=>$this->uid))->getOne();
         include template('address_frame');
     }
 
@@ -80,16 +84,18 @@ class AddressController extends BaseController{
         $address_id = intval($_GET['address_id']);
         if ($address['consignee'] && $address['phone'] && $address['street']){
             $address['isdefault'] = intval($address['isdefault']);
+
+            $model = new AddressModel();
             if ($address['isdefault']) {
-                address_update_data(array('uid'=>$this->uid), array('isdefault'=>0));
+                $model->where(array('uid'=>$this->uid))->data(array('isdefault'=>0))->save();
             }
             if ($address_id) {
-                address_update_data(array('uid'=>$this->uid, 'address_id'=>$address_id), $address);
+                $model->where(array('uid'=>$this->uid, 'address_id'=>$address_id))->data($address)->save();
             }else {
                 $address['uid'] = $this->uid;
-                $address_id = address_add_data($address);
+                $address_id = $model->data($address)->add();
             }
-            $this->showAjaxReturn(address_get_data(array('address_id'=>$address_id)));
+            $this->showAjaxReturn($model->where(array('address_id'=>$address_id))->getOne());
         }else {
             $this->showAjaxError(1, L('undefined_action'));
         }
@@ -99,7 +105,7 @@ class AddressController extends BaseController{
      * 批量获取地址
      */
     public function batchget(){
-        $itemlist = address_get_list(array('uid'=>$this->uid));
+        $itemlist = (new AddressModel())->where(array('uid'=>$this->uid))->getOne();
         $this->showAjaxReturn($itemlist);
     }
 }

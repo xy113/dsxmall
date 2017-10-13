@@ -9,6 +9,8 @@
 namespace Model\Material;
 
 
+use Data\Common\MaterialModel;
+
 class ImageController extends BaseController
 {
     /**
@@ -24,13 +26,13 @@ class ImageController extends BaseController
     public function plugin(){
         global $_G,$_lang;
 
-        $pagesize = intval($_GET['pagesize']);
-        !$pagesize && $pagesize = 20;
-        $condition = array('uid'=>$this->uid, 'type'=>'image');
-        $totalcount = material_get_count($condition);
+        $model = new MaterialModel();
+        $pagesize = $_GET['pagesize'] ? intval($_GET['pagesize']) : 20;
+        $condition  = array('uid'=>$this->uid, 'type'=>'image');
+        $totalcount = $model->where($condition)->count();
         $pagecount  = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);
-        $image_list = material_get_list(array('uid'=>$this->uid, 'type'=>'image'), $pagesize, (G('page')-1)*$pagesize);
-        $pages = $this->showPages($_G['page'], $pagecount, $totalcount);
+        $imagelist  = $model->where($condition)->page($_G['page'], $pagesize)->select();
+        $pagination = $this->pagination($_G['page'], $pagecount, $totalcount);
 
         include template('image_plugin');
     }
@@ -55,7 +57,9 @@ class ImageController extends BaseController
                 'size'=>$filedata['size'],
                 'dateline'=>TIMESTAMP
             );
-            $data = material_add_data($material, true);
+            $model = new MaterialModel();
+            $id = $model->data($material)->add();
+            $data = $model->where(array('id'=>$id))->getOne();
             $data['image'] = $data['path'];
             $data['imageurl'] = image($data['image']);
             $data['thumburl'] = image($data['thumb']);
@@ -64,7 +68,7 @@ class ImageController extends BaseController
             unset($data['path']);
             $this->showAjaxReturn($data);
         }else {
-            $this->showAjaxError($upload->errno, $_lang['upload_error'][$upload->errno]);
+            $this->showAjaxError($upload->errCode, $_lang['upload_error'][$upload->errCode]);
         }
     }
 }

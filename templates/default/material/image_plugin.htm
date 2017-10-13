@@ -24,7 +24,7 @@
     <div class="content">
         <div class="image-list">
             <ul>
-                {loop $image_list $img}
+                {loop $imagelist $img}
                 <li>
                     <div class="con" rel="item" data-id="{$img[id]}" data-image="{$img[path]}" data-thumb="{$img[thumb]}" data-image-url="{img $img[path]}" data-thumb-url="{img $img[thumb]}">
                         <div class="img bg-cover" style="background-image: url({img $img[thumb]})"></div>
@@ -34,7 +34,7 @@
             </ul>
         </div>
         <div class="action-bar">
-            <div class="pagination">{$pages}</div>
+            <div class="pagination">{$pagination}</div>
         </div>
     </div>
 </div>

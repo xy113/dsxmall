@@ -23,3 +23,10 @@ function createTradeNo(){
 function createOrderNo($uid, $type='6'){
     return $type.time().substr($uid, -5);
 }
+
+/**
+ * @return string
+ */
+function createReundNo(){
+    return '4'.time().rand(100,999);
+}

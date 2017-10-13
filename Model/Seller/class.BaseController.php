@@ -7,6 +7,7 @@
  */
 namespace Model\Seller;
 use Core\Controller;
+use Data\Shop\ShopModel;
 
 class BaseController extends Controller{
     protected $shop_id = 0;
@@ -21,7 +22,7 @@ class BaseController extends Controller{
         if (!$this->isLogin()){
             member_show_login();
         }else {
-            $shop = shop_get_data(array('uid'=>$this->uid));
+            $shop = (new ShopModel())->where(array('uid'=>$this->uid))->getOne();
             if ($shop) {
                 $this->shop_id = $shop['shop_id'];
                 $this->shop_name = $shop['shop_name'];

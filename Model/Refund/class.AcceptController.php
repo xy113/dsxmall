@@ -8,6 +8,12 @@
 
 namespace Model\Refund;
 
+use Data\Shop\ShopModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\OrderRefundModel;
+use Data\Trade\TradeModel;
+use Data\Trade\WalletModel;
 use Payment\AliPay\AlipayClient;
 use Payment\AliPay\Builder\AlipayTradeRefundContentBuilder;
 use Payment\WxPay\WxPayApi;
@@ -22,7 +28,8 @@ class AcceptController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid, 'refund_status'=>1));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid, 'refund_status'=>1))->getOne();
         if (!$order) {
             $this->showError('order_not_exists');
         }
@@ -30,6 +37,7 @@ class AcceptController extends BaseController
             $this->showError('order_can_not_refund');
         }
 
+        $refundModel = new OrderRefundModel();
         if ($this->checkFormSubmit()){
 
             $refund_id = intval($_GET['refund_id']);
@@ -37,10 +45,9 @@ class AcceptController extends BaseController
             $reply_text = htmlspecialchars($_GET['reply_text']);
             if ($accept_type == 1){
                 //同意退款
-
-                $refund = order_get_refund(array('refund_id'=>$refund_id));
-                $trade = trade_get_data(array('trade_no'=>$order['trade_no']));
-                $trade_no = trade_create_no();
+                $refund = $refundModel->where(array('refund_id'=>$refund_id))->getOne();
+                $trade = (new TradeModel())->where(array('trade_no'=>$order['trade_no']))->getOne();
+                $trade_no = createTradeNo();
 
                 $refund_status = 0;
                 if ($trade['pay_type'] == 'wxpay'){
@@ -86,16 +93,14 @@ class AcceptController extends BaseController
 
                 if ($trade['trade_type'] == 'balance'){
                     $refund_status = 1;
-                    wallet_income($refund['buyer_uid'], $refund['refund_fee']);
+                    (new WalletModel())->increase($refund['buyer_uid'], $refund['refund_fee']);
                 }
 
                 if ($refund_status) {
-                    order_update_data(array('seller_uid'=>$this->uid, 'order_id'=>$order_id), array('refund_status'=>2));
-                    order_update_refund(array('seller_uid'=>$this->uid, 'refund_id'=>$refund_id),array(
-                        'seller_accept_type'=>1,'seller_reply_text'=>$reply_text,'seller_accepted'=>1
-                    ));
-
-                    trade_add_data(array(
+                    (new OrderModel())->where(array('seller_uid'=>$this->uid, 'order_id'=>$order_id))->data(array('refund_status'=>2))->save();
+                    $refundModel->where(array('seller_uid'=>$this->uid, 'refund_id'=>$refund_id))
+                        ->data(array('seller_accept_type'=>1,'seller_reply_text'=>$reply_text,'seller_accepted'=>1))->save();
+                    (new TradeModel())->data(array(
                         'payer_uid'=>$trade['payee_uid'],
                         'payer_name'=>$trade['payee_name'],
                         'payee_uid'=>$trade['payer_uid'],
@@ -109,22 +114,21 @@ class AcceptController extends BaseController
                         'trade_status'=>'PAID',
                         'trade_time'=>time(),
                         'out_trade_no'=>$trade_no
-                    ));
+                    ))->add();
                     $this->showSuccess('refund_accept_success');
                 }else {
                     $this->showError('refund_fail');
                 }
 
             }else {
-                order_update_refund(array('seller_uid'=>$this->uid, 'refund_id'=>$refund_id),array(
-                     'seller_accept_type'=>0,'seller_reply_text'=>$reply_text,'seller_accepted'=>1
-                ));
+                $refundModel->where(array('seller_uid'=>$this->uid, 'refund_id'=>$refund_id))
+                    ->data(array('seller_accept_type'=>0,'seller_reply_text'=>$reply_text,'seller_accepted'=>1))->save();
                 $this->showSuccess('refund_accept_success');
             }
         }else {
-            $item = order_get_item(array('order_id'=>$order_id));
-            $shop = shop_get_data(array('shop_id'=>$order['shop_id']));
-            $refund = order_get_refund(array('order_id'=>$order_id,'seller_accepted'=>0, 'seller_uid'=>$this->uid));
+            $item = (new OrderItemModel())->where(array('order_id'=>$order_id))->getOne();
+            $shop = (new ShopModel())->where(array('shop_id'=>$order['shop_id']))->getOne();
+            $refund = $refundModel->where(array('order_id'=>$order_id,'seller_accepted'=>0, 'seller_uid'=>$this->uid))->getOne();
 
             $_G['title'] = $_lang['accept_refund'];
             include template('accept_refund');

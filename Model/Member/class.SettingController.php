@@ -1,5 +1,10 @@
 <?php
 namespace Model\Member;
+use Core\UploadImage;
+use Core\Validate;
+use Data\Member\MemberInfoModel;
+use Data\Member\MemberModel;
+
 class SettingController extends BaseController{
     function __construct()
     {
@@ -16,18 +21,19 @@ class SettingController extends BaseController{
 	 */
 	public function userinfo(){
 		global $_G,$_lang;
-		
+
+		$infoModel = new MemberInfoModel();
 		if ($this->checkFormSubmit()) {
 			$userinfo = $_GET['userinfo'];
 			if ($userinfo && is_array($userinfo)) {
 				$userinfo['modified'] = TIMESTAMP;
-				member_update_info(array('uid'=>$this->uid), $userinfo);
+				$infoModel->where(array('uid'=>$this->uid))->data($userinfo)->save();
 				$this->showAjaxReturn(0);
 			}else {
 				$this->showAjaxError(101, L('invalid_parameter'));
 			}
 		}else {
-			$userinfo = member_get_info(array('uid'=>$this->uid));
+			$userinfo = $infoModel->where(array('uid'=>$this->uid))->getOne();
 				
 			$_G['title'] = $_lang['title_userinfo'];
 			include template('setting_userinfo');
@@ -45,13 +51,13 @@ class SettingController extends BaseController{
 		if (!$this->checkFormSubmit()) {
 			$this->showAjaxError(301, L('undefined_action'));
 		}
-		
-		if (ismobile($mobile)) {
-			if (member_get_num(array('mobile'=>$mobile))){
+
+		if (Validate::ismobile($mobile)) {
+		    $memberModel = new MemberModel();
+			if ($memberModel->where(array('mobile'=>$mobile))->count()){
 				$this->showAjaxError(102, L('mobile_be_occupied'));
 			}else {
-				member_update_data(array('uid'=>$this->uid), array('mobile'=>$mobile));
-				member_update_cookie($this->uid);
+			    $memberModel->where(array('uid'=>$this->uid))->data(array('mobile'=>$mobile))->save();
 				$this->showAjaxReturn(0);
 			}
 		}else {
@@ -71,12 +77,12 @@ class SettingController extends BaseController{
 			$this->showAjaxError(301, L('undefined_action'));
 		}
 		
-		if (isemail($email)) {
-			if (member_get_num(array('email'=>$email))){
+		if (Validate::isemail($email)) {
+            $memberModel = new MemberModel();
+			if ($memberModel->where(array('email'=>$email))->count()){
 				$this->showAjaxError(202, L('email_be_occupied'));
 			}else {
-				member_update_data(array('uid'=>$this->uid), array('email'=>$email));
-				member_update_cookie($this->uid);
+			    $memberModel->where(array('uid'=>$this->uid))->data(array('email'=>$email))->save();
 				$this->showAjaxReturn(0);
 			}
 		}else {
@@ -96,12 +102,13 @@ class SettingController extends BaseController{
 		if (!$this->checkFormSubmit()) {
 			$this->showAjaxError(301, L('undefined_action'));
 		}
-		
-		$userinfo = member_get_data(array('uid'=>$this->uid));
-		if ($userinfo['password'] != getPassword($password)){
+
+        $memberModel = new MemberModel();
+		$member = $memberModel->where(array('uid'=>$this->uid))->getOne();
+		if ($member['password'] !== getPassword($password)){
 			$this->showAjaxError(302, L('password_incorrect'));
 		}else {
-			member_update_data(array('uid'=>$this->uid), array('password'=>getPassword($newpassword)));
+		    $memberModel->where(array('uid'=>$this->uid))->data(array('password'=>getPassword($newpassword)))->save();
 			$this->showAjaxReturn(0);
 		}
 	}
@@ -110,34 +117,34 @@ class SettingController extends BaseController{
 	 * 上传头像
 	 */
 	public function uploadavatar(){
-		if ($filedata = photo_upload_data()){
-		
-			$source = C('IMAGEDIR').$filedata['image'];
-			$avatardir    = C('AVATARDIR').$this->uid;
-			$avatarsmall  = $this->uid.'_avatar_small.jpg';
-			$avatarmiddle = $this->uid.'_avatar_middle.jpg';
-			$avatarbig    = $this->uid.'_avatar_big.jpg';
-				
-			@mkdir($avatardir,0777,true);
-			$image = new \Core\Image($source);
-			if ($image->width() > $image->height()){
-				$x = ($image->width() - $image->height())/2;
-				$y = 0;
-				$w = $h = $image->height();
-			}else {
-				$x = 0;
-				$y = ($image->height() - $image->width())/2;
-				$w = $h = $image->width();
-			}
-			$image->crop($w, $h,$x,$y,320,320);
-			$image->save($avatardir.'/'.$avatarbig);
-			$image->thumb(160, 160);
-			$image->save($avatardir.'/'.$avatarmiddle);
-			$image->thumb(100, 100);
-			$image->save($avatardir.'/'.$avatarsmall);
-			member_update_data(array('uid'=>$this->uid), array('avatarstatus'=>1));
-			$this->showAjaxReturn(array('avatar'=>avatar($this->uid)));
-		}
+	    $upload = new UploadImage();
+	    if ($filedata = $upload->save()){
+            $source = C('IMAGEDIR').$filedata['image'];
+            $avatardir    = C('AVATARDIR').$this->uid;
+            $avatarsmall  = $this->uid.'_avatar_small.jpg';
+            $avatarmiddle = $this->uid.'_avatar_middle.jpg';
+            $avatarbig    = $this->uid.'_avatar_big.jpg';
+
+            @mkdir($avatardir,0777,true);
+            $image = new \Core\Image($source);
+            if ($image->width() > $image->height()){
+                $x = ($image->width() - $image->height())/2;
+                $y = 0;
+                $w = $h = $image->height();
+            }else {
+                $x = 0;
+                $y = ($image->height() - $image->width())/2;
+                $w = $h = $image->width();
+            }
+            $image->crop($w, $h,$x,$y,320,320);
+            $image->save($avatardir.'/'.$avatarbig);
+            $image->thumb(160, 160);
+            $image->save($avatardir.'/'.$avatarmiddle);
+            $image->thumb(100, 100);
+            $image->save($avatardir.'/'.$avatarsmall);
+            (new MemberModel())->where(array('uid'=>$this->uid))->data(array('avatarstatus'=>1))->save();
+            $this->showAjaxReturn(array('avatar'=>avatar($this->uid)));
+        }
 	}
 	
 	public function verify(){
@@ -150,12 +157,15 @@ class SettingController extends BaseController{
 			include template('setting_verify');
 		}
 	}
-	
-	public function security(){
+
+    /**
+     *
+     */
+    public function security(){
 		global $_G,$_lang;
         G('menu', 'security');
 		
-		$userinfo = member_get_data(array('uid'=>$this->uid));
+		$userinfo = (new MemberModel())->where(array('uid'=>$this->uid))->getOne();
 		if ($userinfo['mobile']) {
 			$userinfo['mobile'] = substr($userinfo['mobile'], 0, 3).'****'.substr($userinfo['mobile'], -4, strlen($userinfo['mobile']));
 		}
@@ -166,52 +176,5 @@ class SettingController extends BaseController{
 
 		$_G['title'] = $_lang['title_security'];
 		include template('setting_security');
-	}
-	
-	public function address(){
-		global $_G,$_lang;
-		
-		$addresslist = address_get_list(array('uid'=>$this->uid));
-		
-		$_G['title'] = $_lang['title_address'];
-		include template('setting_address');
-	}
-	
-	/**
-	 * 添加收货地址
-	 */
-	public function saveaddress(){
-		$address = $_GET['address'];
-		$id = intval($_GET['id']);
-		if ($id) {
-			address_update_data(array('uid'=>$this->uid,'id'=>$id), $address);
-			$this->showAjaxReturn(0);
-		}else {
-			$address['uid'] = $this->uid;
-			address_add_data($address);
-			$this->showAjaxReturn(0);
-		}
-	}
-	
-	/**
-	 * 删除收货地址
-	 */
-	public function removeaddress(){
-		$id = intval($_GET['id']);
-		address_delete_data(array('uid'=>$this->uid, 'id'=>$id));
-		$this->showAjaxReturn(0);
-	}
-	
-	/**
-	 * 获取地址信息
-	 */
-	public function getaddress(){
-		$id = intval($_GET['id']);
-		$address = address_get_data(array('uid'=>$this->uid, 'id'=>$id));
-		if ($address) {
-			$this->showAjaxReturn($address);
-		}else {
-			$this->showAjaxError(101);
-		}
 	}
 }

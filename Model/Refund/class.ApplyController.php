@@ -9,6 +9,11 @@
 namespace Model\Refund;
 
 
+use Data\Shop\ShopModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\OrderRefundModel;
+
 class ApplyController extends BaseController
 {
     /**
@@ -18,7 +23,8 @@ class ApplyController extends BaseController
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid, 'refund_status'=>0));
+        $orderModel = new OrderModel();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid, 'refund_status'=>0))->getOne();
         if (!$order) $this->showError('order_not_exists');
         if ($order['pay_type'] != 1 || $order['pay_status'] != 1){
             $this->showError('order_can_not_refund');
@@ -35,17 +41,18 @@ class ApplyController extends BaseController
                 $refund['shop_id'] = $order['shop_id'];
                 $refund['refund_status'] = 1;
                 $refund['order_id'] = $order_id;
-                $refund['refund_no'] = order_create_refund_no();
+                $refund['refund_no'] = createReundNo();
 
-                order_add_refund($refund);
-                order_update_data(array('order_id'=>$order_id),array('refund_status'=>1));
+                (new OrderRefundModel())->data($refund)->add();
+                $orderModel->where(array('order_id'=>$order_id))->data(array('refund_status'=>1))->save();
+
                 $this->showSuccess('refund_apply_commited', null, array(
                     array('text'=>'go_back', 'url'=>U('m=member&c=order&a=index'))
                 ));
             }
         }else {
-            $item = order_get_item(array('order_id'=>$order_id));
-            $shop = shop_get_data(array('shop_id'=>$order['shop_id']));
+            $item = (new OrderItemModel())->where(array('order_id'=>$order_id))->getOne();
+            $shop = (new ShopModel())->where(array('shop_id'=>$order['shop_id']))->getOne();
 
             $_G['title'] = $_lang['apply_refund'];
             include template('apply_refund');

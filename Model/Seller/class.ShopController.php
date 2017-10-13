@@ -6,6 +6,13 @@
  * Time: 下午4:52
  */
 namespace Model\Seller;
+use Data\Item\ItemModel;
+use Data\Shop\ShopAuthModel;
+use Data\Shop\ShopDescModel;
+use Data\Shop\ShopModel;
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
+
 class ShopController extends BaseController{
     function __construct()
     {
@@ -21,28 +28,31 @@ class ShopController extends BaseController{
 
         if ($this->checkFormSubmit()){
             $shop_data = $_GET['shop_data'];
+            $shopModel = new ShopModel();
             if ($shop_data['shop_name'] && $shop_data['phone']){
                 if ($this->shop_id){
                     $shop_data['update_time'] = time();
-                    shop_update_data(array('shop_id'=>$this->shop_id), $shop_data);
+                    $shopModel->where(array('shop_id'=>$this->shop_id))->data($shop_data)->save();
                 }else {
                     $shop_data['uid'] = $this->uid;
                     $shop_data['username'] = $this->username;
                     $shop_data['create_time'] = time();
                     $shop_data['auth_status'] = 'PENDING';
                     $shop_data['closed'] = '1';
-                    $this->shop_id = shop_add_data($shop_data);
+                    $this->shop_id = $shopModel->data($shop_data)->add();
                 }
 
-                $shopContent = htmlspecialchars($_GET['shopContent']);
-                $res = shop_update_desc(array('shop_id'=>$this->shop_id), array('content'=>$shopContent, 'update_time'=>time()));
+                $descModel = new ShopDescModel();
+                $shopContent = trim($_GET['shopContent']);
+                $res = $descModel->where(array('shop_id'=>$this->shop_id, 'uid'=>$this->uid))
+                    ->data(array('content'=>$shopContent, 'update_time'=>time()))->save();
                 if (!$res) {
-                    shop_add_desc(array(
+                    $descModel->data(array(
                         'uid'=>$this->uid,
                         'shop_id'=>$this->shop_id,
                         'content'=>$shopContent,
                         'update_time'=>time()
-                    ));
+                    ))->add();
                 }
                 $this->showSuccess('save_succeed');
             }else {
@@ -50,7 +60,7 @@ class ShopController extends BaseController{
             }
         }else {
             $shop_data = $this->shop_data;
-            $shop_desc = shop_get_desc(array('shop_id'=>$this->shop_id));
+            $shop_desc = (new ShopDescModel())->where(array('shop_id'=>$this->shop_id))->getOne();
             $editorname = 'shopContent';
             $editorcontent = $shop_desc['content'];
             $_G['title'] = '我的店铺';
@@ -64,6 +74,7 @@ class ShopController extends BaseController{
     public function auth(){
         global $_G,$_lang;
 
+        $authModel = new ShopAuthModel();
         if ($this->checkFormSubmit()){
             $auth = $_GET['auth'];
             if ($auth['owner_id'] && $auth['owner_name'] && $auth['id_card_pic_1'] &&
@@ -71,11 +82,11 @@ class ShopController extends BaseController{
                 $auth['update_time'] = time();
                 $auth['auth_status'] = 'PENDING';
                 $auth['shop_id'] = $this->shop_id;
-                $res = shop_update_auth(array('uid'=>$this->uid), $auth);
+                $res = $authModel->where(array('uid'=>$this->uid))->data($auth)->save();
                 if (!$res) {
                     $auth['uid'] = $this->uid;
                     $auth['shop_id'] = $this->shop_id;
-                    shop_add_auth($auth);
+                    $authModel->data($auth)->add();
                 }
                 $this->showSuccess('auth_info_submit_success');
             }else {
@@ -83,7 +94,7 @@ class ShopController extends BaseController{
             }
         }else {
 
-            $auth = shop_get_auth(array('uid'=>$this->uid));
+            $auth = $authModel->where(array('uid'=>$this->uid))->getOne();
             $_G['title'] = '店铺认证';
             include template('shop_auth');
         }
@@ -97,7 +108,7 @@ class ShopController extends BaseController{
         if ($_GET['shop_name']) $data['shop_name'] = htmlspecialchars($_GET['shop_name']);
         if ($_GET['phone']) $data['phone'] = trim($_GET['phone']);
 
-        if ($data) shop_update_data(array('owner_uid'=>$this->uid), $data);
+        if ($data) (new ShopModel())->where(array('owner_uid'=>$this->uid))->data($data)->save();
         $this->showAjaxReturn();
     }
 
@@ -107,11 +118,13 @@ class ShopController extends BaseController{
     public function live_data(){
         global $_G,$_lang;
 
-        $shop = shop_get_data(array('uid'=>$this->uid));
-        $item_count = item_get_count(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1));
-        $order_count = order_get_count(array('shop_id'=>$shop['shop_id']));
-        $payer_count = trade_get_count(array('payee_uid'=>$this->uid, 'trade_status'=>'PAID'));
-        $data = M('trade')->field('SUM(trade_fee) AS total_income')->where(array('payee_uid'=>$this->uid, 'trade_status'=>'PAID'))->getOne();
+        $shop = (new ShopModel())->where(array('uid'=>$this->uid))->getOne();
+        $item_count = (new ItemModel())->where(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1))->getOne();
+        $order_count = (new OrderModel())->where(array('shop_id'=>$shop['shop_id']))->count();
+
+        $tradeModel = new TradeModel();
+        $payer_count = $tradeModel->where(array('payee_uid'=>$this->uid, 'pay_status'=>1))->count();
+        $data = $tradeModel->field('SUM(trade_fee) AS total_income')->where(array('payee_uid'=>$this->uid, 'trade_status'=>'PAID'))->getOne();
         $total_income = floatval($data['total_income']);
         include template('shop_live_data');
     }

@@ -1,5 +1,5 @@
 <?php
-namespace Post;
+namespace Model\Post;
 class IndexController extends BaseController{
 	public function index(){
 		global $G,$lang;
