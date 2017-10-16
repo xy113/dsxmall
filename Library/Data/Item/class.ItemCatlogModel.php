@@ -39,10 +39,9 @@ class ItemCatlogModel extends Model
      * @return bool|mixed
      */
     public function updateCache(){
-        $catloglist = $this->order('displayorder ASC, catid ASC')->select();
-        $datalist = array();
-        foreach ($catloglist as $catlog){
-            $catlog[$catlog['catid']] = $catlog;
+        $catloglist = array();
+        foreach ($this->order('displayorder ASC, catid ASC')->select() as $catlog){
+            $catloglist[$catlog['catid']] = $catlog;
         }
         return cache('item_catlog', $catloglist);
     }
@@ -152,7 +151,7 @@ class ItemCatlogModel extends Model
         if ($curCatlog['fid']) {
             foreach ($catloglist as $catlog){
                 if ($catlog['catid'] == $curCatlog['fid']){
-                    $parents[] = $catlog['catid'];
+                    $parents[] = $catlog;
                     $this->getParents($catlog['catid'], $parents);
                 }
             }

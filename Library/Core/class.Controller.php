@@ -1,6 +1,5 @@
 <?php
 namespace Core;
-use Data\Common\SettingModel;
 
 abstract class Controller{
     protected $var = array();
@@ -22,28 +21,13 @@ abstract class Controller{
         $this->username = trim(cookie('username'));
         if ($this->uid && $this->username){
             $this->islogin = 1;
-
-            $member = unserialize(authcode(cookie('udata'), true));
-            if (is_array($member)) {
-                $this->member = $member;
-            }else {
-                $member = member_get_data(array('uid'=>$this->uid));
-                if ($member) {
-                    unset($member['password']);
-                    $this->member = $member;
-                    cookie('udata', authcode(serialize($member)));
-                }else {
-                    member_logout();
-                    $this->redirect(curPageURL());
-                }
-            }
         }
-        $_G['uid'] = &$this->uid;
-        $_G['username'] = &$this->username;
-        $_G['member']   = &$this->member;
-        $_G['islogin']  = &$this->islogin;
+        $this->var['uid'] = &$this->uid;
+        $this->var['username'] = &$this->username;
+        $this->var['member']   = &$this->member;
+        $this->var['islogin']  = &$this->islogin;
 
-        // php 判断是否为 ajax 请求  http://www.cnblogs.com/sosoft/
+        // php 判断是否为 ajax 请求
         if(isset($_SERVER["HTTP_X_REQUESTED_WITH"]) && strtolower($_SERVER["HTTP_X_REQUESTED_WITH"])=="xmlhttprequest"){
             // ajax 请求的处理方式
             $this->inAjax = 1;
@@ -52,9 +36,9 @@ abstract class Controller{
                 $this->inAjax = 1;
             }
         }
-        $_G['inajax'] = &$this->inAjax;
+        $this->var['inajax'] = &$this->inAjax;
 
-        $_settings = (new SettingModel())->getCache();
+        $_settings = (new \Data\Common\SettingModel())->getCache();
         $this->var['title'] = $_settings['sitename'];
         $this->var['keywords'] = $_settings['keywords'];
         $this->var['description'] = $_settings['description'];
@@ -108,7 +92,7 @@ abstract class Controller{
 			return true;
 		}else {
 			if ($showlogin) {
-				member_show_login();
+				$this->showLogin();
 			}else {
 				return false;
 			}
@@ -123,6 +107,17 @@ abstract class Controller{
 	protected function isLogin($showlogin = 0){
 		return $this->checkLogin($showlogin);
 	}
+
+    /**
+     * 跳转登录页面
+     * @param null $redirect
+     */
+    protected function showLogin($redirect = null){
+	    if (is_null($redirect)) {
+	        $redirect = rawurlencode(curPageURL());
+        }
+        $this->redirect(U("m=account&c=login&a=index&redirect=").$redirect);
+    }
 	
 	/**
 	 * 显示系统信息
@@ -223,7 +218,7 @@ abstract class Controller{
 	 * @param string $url
 	 */
 	protected function redirect($url){
-		@header('location:'.$url);
+		@header("location:$url");
 		exit();
 	}
 

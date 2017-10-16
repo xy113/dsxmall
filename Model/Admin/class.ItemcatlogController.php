@@ -64,7 +64,7 @@ class ItemcatlogController extends BaseController
                 $catlogModel->updateCache();
                 $this->showSuccess('save_succeed', null, array(
                     array('text'=>'continue_add', 'url'=>curPageURL()),
-                    array('text'=>'back_list', 'url'=>U('c=postcatlog&a=index'))
+                    array('text'=>'back_list', 'url'=>U('c=itemcatlog&a=index'))
                 ));
             }else {
                 $this->showError('invalid_parameter');
@@ -95,7 +95,7 @@ class ItemcatlogController extends BaseController
                 $catlogModel->updateCache();
                 $this->showSuccess('update_succeed', null, array(
                     array('text'=>'reedit', 'url'=>curPageURL()),
-                    array('text'=>'back_list', 'url'=>U('c=postcatlog&a=index'))
+                    array('text'=>'back_list', 'url'=>U('c=itemcatlog&a=index'))
                 ));
             }else {
                 $this->showError('invalid_parameter');
@@ -146,7 +146,7 @@ class ItemcatlogController extends BaseController
                 $catlogModel->updateCache();
             }
             $this->showSuccess('delete_succeed', null, array(
-                array('text'=>'back_list', 'url'=>U('c=postcatlog&a=index'))
+                array('text'=>'back_list', 'url'=>U('c=itemcatlog&a=index'))
             ));
         }else {
 
@@ -177,7 +177,7 @@ class ItemcatlogController extends BaseController
                 $catlogModel->updateCache();
             }
             $this->showSuccess('update_succeed', null, array(
-                array('text'=>'back_list', 'url'=>U('c=postcatlog&a=index'))
+                array('text'=>'back_list', 'url'=>U('c=itemcatlog&a=index'))
             ));
         }else {
 
@@ -193,7 +193,9 @@ class ItemcatlogController extends BaseController
         $catid = intval($_GET['catid']);
         $icon = htmlspecialchars($_GET['icon']);
         if ($catid && $icon){
-            (new ItemCatlogModel())->where(array('catid'=>$catid))->data(array('icon'=>$icon))->save();
+            $model = new ItemCatlogModel();
+            $model->where(array('catid'=>$catid))->data(array('icon'=>$icon))->save();
+            $model->updateCache();
         }
         $this->showAjaxReturn();
     }

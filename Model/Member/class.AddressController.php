@@ -105,7 +105,7 @@ class AddressController extends BaseController{
      * 批量获取地址
      */
     public function batchget(){
-        $itemlist = (new AddressModel())->where(array('uid'=>$this->uid))->getOne();
+        $itemlist = (new AddressModel())->where(array('uid'=>$this->uid))->select();
         $this->showAjaxReturn($itemlist);
     }
 }

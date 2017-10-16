@@ -9,6 +9,8 @@
 namespace Model\Admin;
 
 
+use Data\Common\ExpressModel;
+
 class ExpressController extends BaseController
 {
     /**
@@ -17,27 +19,29 @@ class ExpressController extends BaseController
     public function index(){
         global $_G,$_lang;
 
+        $model = new ExpressModel();
         if ($this->checkFormSubmit()){
             $delete = $_GET['delete'];
             if ($delete && is_array($delete)){
-                $deleteids = implodeids($delete);
-                express_delete_data(array('id'=>array('IN', $deleteids)));
+                foreach ($delete as $id){
+                    $model->where(array('id'=>$id))->delete();
+                }
             }
             $express_list = $_GET['express_list'];
             if ($express_list && is_array($express_list)){
                 foreach ($express_list as $id=>$express){
                     if ($express['name']) {
                         if ($id > 0) {
-                            express_update_data(array('id'=>$id), $express);
+                            $model->where(array('id'=>$id))->data($express)->save();
                         }else {
-                            express_add_data($express);
+                            $model->data($express)->add();
                         }
                     }
                 }
             }
             $this->showSuccess('save_succeed');
         }else {
-            $express_list = express_get_list(0, 0);
+            $express_list = $model->select();
             include template('common/express');
         }
     }

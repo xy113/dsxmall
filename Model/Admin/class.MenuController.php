@@ -145,12 +145,16 @@ END;
 			}
 		}
 	}
-	
-	public function setimage(){
+
+    /**
+     *
+     */
+    public function seticon(){
 		$id = intval($_GET['id']);
-		$image = trim($_GET['image']);
-		menu_update_data(array('id'=>$id), array('icon'=>$image));
-		menu_update_cache();
+		$icon = trim($_GET['icon']);
+		$model = new MenuModel();
+		$model->where(array('id'=>$id))->data(array('icon'=>$icon))->save();
+		$model->setCache();
 		$this->showAjaxReturn();
 	}
 

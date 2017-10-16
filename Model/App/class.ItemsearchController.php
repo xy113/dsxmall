@@ -9,6 +9,7 @@
 namespace Model\App;
 
 
+use Data\Item\ItemCatlogModel;
 use Data\Item\ItemModel;
 use Data\Shop\ShopModel;
 
@@ -34,7 +35,10 @@ class ItemsearchController extends BaseController
     public function batchget(){
         $condition = array('on_sale'=>1);
         $catid = intval($_GET['catid']);
-        if ($catid) $condition[] = "`catid`='$catid'";
+        if ($catid) {
+            $childids = (new ItemCatlogModel())->getAllChildIds($catid);
+            $condition[] = "`catid` IN (".implodeids($childids).")";
+        }
         $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
         $q = str_replace(array(',',' ', '、'), '|', $q);
         $arr = array();

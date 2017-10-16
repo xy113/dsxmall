@@ -21,11 +21,15 @@ class RegisterController extends BaseController{
         if ($this->uid) $this->redirect(U('/'));
     }
 
+    /**
+     *
+     */
     public function index(){
+        global $_G,$_lang;
         if ($this->checkFormSubmit()){
             $this->save();
         }else {
-            member_show_register();
+            include template('register');
         }
     }
 

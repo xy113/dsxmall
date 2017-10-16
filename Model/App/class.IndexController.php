@@ -1,5 +1,6 @@
 <?php
 namespace Model\App;
+use Data\Common\BlockModel;
 use Data\Post\PostItemModel;
 
 class IndexController extends BaseController{
@@ -9,9 +10,21 @@ class IndexController extends BaseController{
     public function index(){
 		global $_G,$_lang;
 
-        $menulist = cache('menu_2');
+        $menulist = array();
+        foreach (cache('menu_2') as $menu){
+            if (strpos($menu['url'], 'http://') !== false){
+                $menu['is_url'] = true;
+            }else {
+                $menu['is_url'] = false;
+            }
+            $menulist[] = $menu;
+        }
         $newPostList = (new PostItemModel())->where(array('status'=>1))->order('aid', 'DESC')->limit(0, 6)->select();
-		include template('index');
+
+        $blockModel = new BlockModel();
+        $slide_list = $blockModel->getCache(4);
+        $ad_list = $blockModel->getCache(5);
+        include template('index');
 	}
 
     /**

@@ -7,6 +7,9 @@
  */
 namespace Model\Account;
 use Core\Validate;
+use Data\Member\MemberModel;
+use Data\Member\MemberStatusModel;
+
 class LoginController extends BaseController{
     /**
      * LoginController constructor.
@@ -40,31 +43,20 @@ class LoginController extends BaseController{
             $this->showAjaxError('FAIL', L('undefined_action'));
         }
 
-        if (Validate::isemail($account)){
-            $returns = member_login($account, $password, 'email');
-        }elseif (Validate::ismobile($account)){
-            $returns = member_login($account, $password, 'mobile');
-        }else {
-            $returns = member_login($account, $password, 'username');
-        }
-
-        if ($returns['errcode'] == 0 && $returns['userinfo']){
-            if (G('inajax')) {
+        $model = new MemberModel();
+        $member = $model->where("`username`='$account' OR `mobile`='$account' OR `email`='$account'")->getOne();
+        if ($member) {
+            if ($member['password'] == getPassword($password)){
+                cookie('uid', $member['uid']);
+                cookie('username', $member['username']);
+                (new MemberStatusModel())->where(array('uid'=>$member['uid']))
+                    ->data(array('lastvisit'=>time(), 'lastvisitip'=>getIp()))->save();
                 $this->showAjaxReturn();
             }else {
-                $continue = $_GET['continue'] ? $_GET['continue'] : $_SERVER['HTTP_REFERER'];
-                if ($continue !== curPageURL()){
-                    $this->redirect($continue);
-                }else {
-                    $this->redirect(U(array('m'=>'member')));
-                }
+                $this->showAjaxError('1003', 'password_incorrect');
             }
         }else {
-            if (G('inajax')) {
-                $this->showAjaxError($returns['errcode'], $returns['errmsg']);
-            }else {
-                $this->showError($returns['errmsg']);
-            }
+            $this->showAjaxError(1, 'account_invalid');
         }
     }
 
@@ -117,13 +109,11 @@ class LoginController extends BaseController{
         $login_code = cookie('login_code');
         $check = M('scan_login')->where(array('login_code'=>$login_code, 'scaned'=>1))->getOne();
         if ($check) {
+            $member = (new MemberModel())->where(array('uid'=>$check['uid']))->getOne();
             cookie('login_code', null);
-            member_add_log($check['uid'], 'login');
-            member_update_status(array('uid'=>$check['uid']), array(
-                'lastvisit'=>TIMESTAMP,
-                'lastvisitip'=>getIp()
-            ));
-            member_update_cookie($check['uid']);
+            cookie('uid', $member['uid']);
+            cookie('username', $member['username']);
+            (new MemberStatusModel())->where(array('uid'=>$check['uid']))->data(array('lastvisit'=>TIMESTAMP, 'lastvisitip'=>getIp()))->save();
             M('scan_login')->where(array('login_code'=>$login_code))->delete();
             $this->showAjaxReturn();
         }else {

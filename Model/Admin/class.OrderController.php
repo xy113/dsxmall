@@ -2,6 +2,10 @@
 namespace Model\Admin;
 use Core\Download;
 use Core\ExcelXML;
+use Data\Shop\ShopModel;
+use Data\Trade\OrderItemModel;
+use Data\Trade\OrderModel;
+use Data\Trade\TradeModel;
 
 class OrderController extends BaseController{
     /**
@@ -22,24 +26,20 @@ class OrderController extends BaseController{
      */
     public function itemlist(){
 		global $_G,$_lang;
+
+		$orderModel = new OrderModel();
 		if ($this->checkFormSubmit()){
             $orders = $_GET['orders'];
 			if ($orders && is_array($orders)){
 			    if ($_GET['eventType'] == 'delete'){
 			        foreach ($orders as $order_id){
-                        $order = order_get_data(array('order_id'=>$order_id));
-                        order_delete_data(array('order_id'=>$order_id));
-                        order_delete_item(array('order_id'=>$order_id));
-                        order_delete_action(array('order_id'=>$order_id));
-                        order_delete_shipping(array('order_id'=>$order_id));
-                        order_delete_refund(array('order_id'=>$order_id));
-                        trade_delete_data(array('trade_no'=>$order['trade_no']));
+                        $order = $orderModel->where(array('order_id'=>$order_id))->getOne();
+                        (new TradeModel())->where(array('trade_no'=>$order['trade_no']))->delete();
+                        $orderModel->deleteAllData($order_id);
                     }
-                    //$this->showSuccess('delete_succeed');
                     $this->showAjaxReturn();
                 }
             }else {
-                //$this->showError('no_select');
                 $this->showAjaxError(1, 'no_select');
             }
 		}else {
@@ -190,10 +190,10 @@ class OrderController extends BaseController{
             }
 			
 			$pagesize = 20;
-			$totalnum = order_get_count($condition);
+			$totalnum = $orderModel->where($condition)->count();
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$order_list = order_get_list($condition, $pagesize, ($_G['page'] - 1)*$pagesize, 'order_id DESC');
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
+			$order_list = $orderModel->where($condition)->page($_G['page'], $pagesize)->order('order_id DESC')->select();
+			$pages = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
 			unset($condition, $queryParams);
 			
 			if ($order_list) {
@@ -209,7 +209,7 @@ class OrderController extends BaseController{
 
 				$order_ids = $order_ids ? implodeids($order_ids) : 0;
 				if ($order_ids) {
-                    $itemlist = M('order_item')->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
+                    $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
                     if ($itemlist) {
                         foreach ($itemlist as $item){
                             $order_list[$item['order_id']]['itemid'] = $item['itemid'];
@@ -336,7 +336,7 @@ class OrderController extends BaseController{
             $queryParams['time_begin'] = $time_begin;
             //$queryParams['time_end'] = $time_end;
         }
-        $order_list = order_get_list($condition, 100, $offset, 'order_id DESC');
+        $order_list = (new OrderModel())->where($condition)->limit($offset, 100)->order('order_id DESC')->select();
 
         if ($order_list) {
             $uids = $order_ids = $datalist = array();
@@ -349,7 +349,7 @@ class OrderController extends BaseController{
 
             $order_ids = $order_ids ? implodeids($order_ids) : 0;
             if ($order_ids) {
-                $itemlist = M('order_item')->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
+                $itemlist = (new OrderItemModel())->where(array('order_id'=>array('IN', $order_ids)))->group('order_id')->select();
                 if ($itemlist) {
                     foreach ($itemlist as $item){
                         $order_list[$item['order_id']]['itemid'] = $item['itemid'];
@@ -395,9 +395,9 @@ class OrderController extends BaseController{
         global $_G,$_lang;
 
         $order_id = intval($_GET['order_id']);
-        $order = order_get_data(array('order_id'=>$order_id));
-        $shop = shop_get_data(array('shop_id'=>$order['shop_id']));
-        $itemlist = order_get_item_list(array('order_id'=>$order_id));
+        $order = (new OrderModel())->where(array('order_id'=>$order_id))->getOne();
+        $shop = (new ShopModel())->where(array('shop_id'=>$order['shop_id']))->getOne();
+        $itemlist = (new OrderItemModel())->where(array('order_id'=>$order_id))->select();
 
         $_G['title'] = '订单详情';
         include template('trade/order_detail');

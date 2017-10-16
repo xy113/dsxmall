@@ -235,7 +235,7 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
 .item{display: block; overflow: hidden;}
 .item .item-info{display: block; background-color: #fff; padding: 10px; position: relative;}
 .item .item-info .name{font-size: 16px; font-weight: 400; color: #333; line-height: 1.1; display: block; margin: 0 60px 5px 0;}
-.item .item-info .brief{display: block; line-height: 1.0; font-size: 14px; color: #888; margin-bottom: 5px;}
+.item .item-info .subtitle{display: block; line-height: 1.0; font-size: 14px; color: #888; margin-bottom: 5px; margin-right: 40px;}
 .item .item-info .shop-price{color: #f40; display: block; margin-bottom: 7px;}
 .item .item-info .shop-price span{font-size: 16px; margin-right: 1px;}
 .item .item-info .shop-price strong{font-size: 18px; font-weight: 700;}
@@ -243,7 +243,7 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
 .item .item-info .shipping{display: block; height: 20px; position: relative; color: #888; font-size: 13px; line-height: 20px;}
 .item .item-info .shipping .ship{}
 .item .item-info .shipping .addr{float: right;}
-.item .item-info .shipping .sold{width: 80px; text-align: center; position: absolute; left: 50%; margin-left: -40px; top: 0;}
+.item .item-info .shipping .sold{width: 160px; text-align: center; position: absolute; left: 50%; margin-left: -80px; top: 0;}
 .item .item-info .icon-share{position: absolute; right: 10px; top: 10px; font-size: 24px; color: #888;}
 
 .item .section-title{height: 40px; display: block; position: relative;}
@@ -471,3 +471,16 @@ input,textarea,select{box-sizing:border-box; resize:none; outline:none;}
     border-radius: 5px; text-align: center; height: 45px; line-height: 45px;
     display: block; margin: 20px;
 }
+/*==目录分类==*/
+.catlog{
+    display: block; overflow: hidden;
+    background-color: #f0f0f0; padding: 10px;
+}
+
+.catlog .group{display: block;}
+.catlog .group h3{font-size: 15px; padding: 10px 0; display: block;}
+.catlog .group .grid{display: block; background-color: #fff; padding: 10px 0;}
+.catlog .group dl{width: 25%; float: left; overflow: hidden;}
+.catlog .group dl dt{display: block; text-align: center;}
+.catlog .group dl dt .icon{display: block; margin: 5px auto; background-image: none; width: 60px; height: 60px;}
+.catlog .group dl dd{text-align: center; font-size: 14px; height: 20px; line-height: 20px;}

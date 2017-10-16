@@ -9,6 +9,7 @@
 namespace Model\App;
 
 
+use Data\Common\BlockModel;
 use Data\Item\ItemModel;
 use Data\Shop\ShopModel;
 
@@ -20,6 +21,9 @@ class ShopController extends BaseController
     public function index(){
         global $_G,$_lang;
 
+        $blockModel = new BlockModel();
+        $slide_list = $blockModel->getCache(6);
+        $brand_list = $blockModel->getCache(7);
         include template('shop_index');
     }
 

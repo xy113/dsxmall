@@ -1,5 +1,7 @@
 <?php
 namespace Model\Admin;
+use Data\Member\MemberModel;
+
 class LoginController extends BaseController{
 	function __construct(){
 		parent::__construct();
@@ -15,14 +17,17 @@ class LoginController extends BaseController{
 		if ($this->checkFormSubmit()){
 			$account  = trim($_GET['account_'.FORMHASH]);
 			$password = trim($_GET['password_'.FORMHASH]);
+
+			$memberModel = new MemberModel();
 			if ($this->uid && $this->username){
-				$userdata = member_get_data(array('uid'=>$this->uid));
+				$member = $memberModel->where(array('uid'=>$this->uid))->getOne();
 			}else {
-			    $userdata = member_get_data("`username`='$account' OR `mobile`='$account' OR `email`='$account'");
+			    $member = $memberModel->where("`username`='$account' OR `mobile`='$account' OR `email`='$account'")->getOne();
 			}
-            if ($userdata['admincp'] == 1 && $userdata['password'] == getPassword($password)){
+            if ($member['admincp'] == 1 && $member['password'] === getPassword($password)){
                 cookie('_cplogin', 1 ,7200);
-                member_update_cookie($userdata['uid']);
+                cookie('uid', $member['uid']);
+                cookie('username', $member['username']);
                 $this->showAjaxReturn();
             }else {
                 $this->showAjaxError(101, L('password_incorrect'));

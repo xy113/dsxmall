@@ -101,7 +101,7 @@
 <script type="text/template" id="addressItemTPL">
     <li>
         <a class="edit-address" data-id="{address[address_id]}">修改本地址</a>
-        <input type="radio" class="radio" name="address_id" value="{address[address_id]}"{address[checked]}>
+        <input title="" type="radio" class="radio" name="address_id" value="{address[address_id]}"{address[checked]}>
         <span>{address[province]} {address[city]} {address[county]} {address[street]}  ({address[consignee]} 收) {address[phone]}</span>
     </li>
 </script>
@@ -136,7 +136,7 @@
                             iframe:"{U:('m=member&c=address&a=frame')}&address_id="+address_id,
                             width:'700px',
                             height:'320px',
-                            hideBottom:true
+                            hideFooter:true
                         });
                     });
                 }
@@ -151,7 +151,7 @@
                 iframe:"{U:('m=member&c=address&a=frame')}",
                 width:'700px',
                 height:'320px',
-                hideBottom:true
+                hideFooter:true
             });
         });
 

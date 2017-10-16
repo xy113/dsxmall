@@ -100,6 +100,19 @@ class OrderModel extends Model
     }
 
     /**
+     * @param $order_id
+     */
+    public function deleteAllData($order_id){
+        $condition = array('order_id'=>$order_id);
+        if ($this->where($condition)->delete()){
+            (new OrderItemModel())->where($condition)->delete();
+            (new OrderActionModel())->where($condition)->delete();
+            (new OrderShippingModel())->where($condition)->delete();
+            (new OrderRefundModel())->where($condition)->delete();
+        }
+    }
+
+    /**
      * 生成订单号
      * @param $uid
      * @param string $type

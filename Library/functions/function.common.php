@@ -607,6 +607,17 @@ function template($file, $tpldir = '', $theme='') {
 }
 
 /**
+ * 返回模板文件
+ * @param $file
+ * @param string $model
+ * @param string $theme
+ * @return string
+ */
+function view($file, $model = '', $theme = 'default'){
+    return template($file, $model, $theme);
+}
+
+/**
  * 序列号ID
  * @param mixed $array
  * @return string

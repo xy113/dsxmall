@@ -20,7 +20,7 @@ class BaseController extends Controller{
     {
         parent::__construct();
         if (!$this->isLogin()){
-            member_show_login();
+            $this->showLogin();
         }else {
             $shop = (new ShopModel())->where(array('uid'=>$this->uid))->getOne();
             if ($shop) {

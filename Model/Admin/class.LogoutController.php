@@ -1,9 +1,13 @@
 <?php
 namespace Model\Admin;
 class LogoutController extends BaseController{
-	public function index(){
-		member_logout();
-		cookie('adminlogined',null);
+    /**
+     * 退出登录
+     */
+    public function index(){
+		cookie('_cplogin',null);
+        cookie('uid', null);
+        cookie('username', null);
 		$this->redirect($_SERVER['HTTP_REFERER']);
 	}
 }

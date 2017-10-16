@@ -21,7 +21,7 @@ class BaseController extends Controller{
 	/**
 	 * 显示管理员登录
 	 */
-	protected function showlogin(){
+	protected function showlogin($redirect=null){
 		global $_G, $_lang;
 		include template('admin_login');
 		exit();

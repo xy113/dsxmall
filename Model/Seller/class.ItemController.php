@@ -102,7 +102,7 @@ class ItemController extends BaseController{
 
             $this->redirect(U('c=item&a=publish&catid='.$catid.'&itemid='.$itemid));
         }else {
-            $category_list = item_get_cat_list();
+            $category_list = (new ItemCatlogModel())->getCache();
 
             $_G['menu'] = 'sell';
             $_G['title'] = $_lang['sell_item'];

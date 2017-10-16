@@ -91,7 +91,7 @@
     color: #fff; font-size: 16px; text-align: center; line-height: 40px; border-radius: 4px; cursor: pointer;
 }
 
-.pay-qrcode{display: block; padding: 30px;}
+.pay-qrcode{display: block; padding: 0;}
 .pay-qrcode .qrcode{width: 220px; height: 220px; display: block; margin: 0 auto;}
 .pay-qrcode .tips{padding: 7px 0; text-align: center; font-size: 14px;}
 

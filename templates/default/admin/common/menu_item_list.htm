@@ -83,8 +83,8 @@
                 $(self).attr('src', data.imageurl);
                 $.ajax({
                     type:'POST',
-                    url:"{U:('c=menu&a=setimage')}",
-                    data:{id:$(self).attr('data-id'), image:data.image}
+                    url:"{U:('c=menu&a=seticon')}",
+                    data:{id:$(self).attr('data-id'), icon:data.image}
                 });
             });
         });

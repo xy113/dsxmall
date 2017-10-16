@@ -2,6 +2,7 @@
 namespace Model\Admin;
 use Core\Download;
 use Core\ExcelXML;
+use Data\Trade\TradeModel;
 
 class TradeController extends BaseController{
     /**
@@ -22,12 +23,14 @@ class TradeController extends BaseController{
      */
     public function itemlist(){
 		global $_G,$_lang;
+
+		$tradeModel = new TradeModel();
 		if ($this->checkFormSubmit()){
 			$trades = $_GET['trades'];
 			if ($trades) {
 			    $ids = implodeids($trades);
 			    if ($_GET['eventType'] == 'delete'){
-                    trade_delete_data(array('trade_id'=>array('IN', $ids)));
+                    $tradeModel->where(array('trade_id'=>array('IN', $ids)))->delete();
                 }
                 $this->showAjaxReturn();
             }
@@ -106,10 +109,10 @@ class TradeController extends BaseController{
             }
 			
 			$pagesize = 20;
-			$totalnum = trade_get_count($condition);
+			$totalnum = $tradeModel->where($condition)->count();
 			$pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-			$itemlist = trade_get_list($condition, $pagesize, ($_G['page']-1)*$pagesize, 'trade_id DESC');
-			$pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
+			$itemlist  = $tradeModel->where($condition)->page($_G['page'], $pagesize)->order('trade_id DESC')->select();
+			$pages = $this->pagination($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), 1);
 			unset($condition, $queryParams);
 			
 			include template('trade/trade_list');
@@ -181,7 +184,7 @@ class TradeController extends BaseController{
         }
 
         while (true) {
-            $itemlist = trade_get_list($condition, 50, $offset, 'trade_id DESC');
+            $itemlist = (new TradeModel())->where($condition)->limit($offset,50)->order('trade_id DESC')->select();
             if ($itemlist) {
                 $rows = '';
                 foreach ($itemlist as $item){
@@ -190,7 +193,7 @@ class TradeController extends BaseController{
                         $item['trade_name'],$item['trade_no'],$item['payee_name'],$item['payer_name'],
                         formatAmount($item['trade_fee']),date('Y-m-d H:i:s', $item['trade_time']),
                         $GLOBALS['_lang']['trade_pay_types'][$item['pay_type']],
-                        ($item['trade_status'] == 'PAID' ? '已支付' : '未支付')
+                        ($item['pay_status'] == 1 ? '已支付' : '未支付')
                     ));
                 }
                 file_put_contents($excelfile, $rows, FILE_APPEND);

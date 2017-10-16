@@ -12,11 +12,12 @@ class LogoutController extends BaseController{
      */
     public function index(){
         if ($this->uid && $this->username){
-            member_logout();
-            $contiue = trim($_GET['continue']);
-            $contiue = $contiue ? $contiue : $_SERVER['HTTP_REFERER'];
-            if ($contiue !== curPageURL()){
-                $this->redirect($contiue);
+            cookie('uid', null);
+            cookie('username', null);
+            $redirect = trim($_GET['redirect']);
+            $redirect = $redirect ? $redirect : $_SERVER['HTTP_REFERER'];
+            if ($redirect !== curPageURL()){
+                $this->redirect($redirect);
             }else {
                 $this->redirect(U('m=account&c=login'));
             }

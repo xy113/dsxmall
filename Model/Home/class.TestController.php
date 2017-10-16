@@ -24,6 +24,7 @@ class TestController extends BaseController
      */
     public function index(){
 
-        print_array(ItemModel::getInstance()->limit(0, 10)->select());
+        echo rawurlencode(curPageURL());
+        header('location:'.U('/').rawurlencode(curPageURL()));
     }
 }

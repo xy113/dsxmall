@@ -14,9 +14,8 @@
         <div class="title">卖家必读</div>
         <div class="content">
             <ul class="articles">
-                {eval $itemlist=post_get_item_list(0,6)}
                 {eval $no=0}
-                {loop $itemlist $item}
+                {loop $postItemList $item}
                 {eval $no++}
                 <li><a href="/?m=post&c=detail&id={$item[id]}" target="_blank"><span>{$no}.</span> {$item[title]}</a></li>
                 {/loop}

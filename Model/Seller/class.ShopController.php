@@ -14,6 +14,9 @@ use Data\Trade\OrderModel;
 use Data\Trade\TradeModel;
 
 class ShopController extends BaseController{
+    /**
+     * ShopController constructor.
+     */
     function __construct()
     {
         parent::__construct();

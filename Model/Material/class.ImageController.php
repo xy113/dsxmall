@@ -31,7 +31,7 @@ class ImageController extends BaseController
         $condition  = array('uid'=>$this->uid, 'type'=>'image');
         $totalcount = $model->where($condition)->count();
         $pagecount  = $totalcount < $pagesize ? 1 : ceil($totalcount/$pagesize);
-        $imagelist  = $model->where($condition)->page($_G['page'], $pagesize)->select();
+        $imagelist  = $model->where($condition)->page($_G['page'], $pagesize)->order('id', 'DESC')->select();
         $pagination = $this->pagination($_G['page'], $pagecount, $totalcount);
 
         include template('image_plugin');

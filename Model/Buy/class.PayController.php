@@ -142,12 +142,12 @@ class PayController extends BaseController{
         $orderModel = new OrderModel();
         $tradeModel = new TradeModel();
         if ($order_id) {
-            $order = $orderModel->where(array('order_id'=>$order_id, 'uid'=>$this->uid))->getOne();
+            $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         }elseif ($_GET['order_no']) {
-            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no']), 'uid'=>$this->uid))->getOne();
+            $order = $orderModel->where(array('order_no'=>trim($_GET['order_no']), 'buyer_uid'=>$this->uid))->getOne();
         }
 
-        $trade = $tradeModel->where(array('trade_no'=>$order['trade_no'], 'uid'=>$this->uid))->getOne();
+        $trade = $tradeModel->where(array('trade_no'=>$order['trade_no'], 'payer_uid'=>$this->uid))->getOne();
         if ($order['pay_status'] == 0){
             $orderQuery = new WxPayOrderQuery();
             $orderQuery->setOut_trade_no($trade['out_trade_no']);
@@ -223,7 +223,7 @@ class PayController extends BaseController{
         $order_id = intval($_GET['order_id']);
 
         $orderModel = new OrderModel();
-        $order = $orderModel->where(array('order_id'=>$order_id, 'uid'=>$this->uid))->getOne();
+        $order = $orderModel->where(array('order_id'=>$order_id, 'buyer_uid'=>$this->uid))->getOne();
         $out_trade_no = $order['trade_no'];
         if ($order['pay_status'] == 0){
             if ($this->alipayCheckOrder($out_trade_no)){

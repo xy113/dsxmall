@@ -9,8 +9,7 @@ class BaseController extends Controller{
     {
         parent::__construct();
         if (!$this->islogin) {
-            $redirect = urlencode(urlencode(curPageURL()));
-            $this->redirect(U("m=account&c=login&redirect=$redirect"));
+            $this->showLogin();
         }
     }
 }

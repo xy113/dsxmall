@@ -6,6 +6,7 @@
  * Time: 下午5:02
  */
 namespace Model\Item;
+use Data\Item\ItemCatlogModel;
 use Data\Item\ItemDescModel;
 use Data\Item\ItemImageModel;
 use Data\Item\ItemModel;
@@ -41,6 +42,9 @@ class ItemController extends BaseController{
             $shop = (new ShopModel())->where(array('shop_id'=>$item_data['shop_id']))->getOne();
             $shop['short_name']  = cutstr($shop['shop_name'], 24);
             $shop['short_username'] = cutstr($shop['username'], 16);
+
+            $catlogModel = new ItemCatlogModel();
+            $paths = array_reverse($catlogModel->getParents($item_data['catid']));
 
             //掌柜热卖
             $hot_sale_list = $itemModel->where(array('shop_id'=>$item_data['shop_id'] ,'on_sale'=>1))->limit(0, 5)->order('sold DESC')->select();
