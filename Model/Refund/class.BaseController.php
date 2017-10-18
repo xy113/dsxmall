@@ -18,7 +18,7 @@ class BaseController extends Controller
     {
         parent::__construct();
         if (!$this->islogin){
-            member_show_login();
+            $this->showLogin();
         }
     }
 }

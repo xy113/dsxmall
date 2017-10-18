@@ -17,8 +17,7 @@ class BaseController extends Controller{
         parent::__construct();
         if (!$this->isLogin()) {
             if (G('c') !== 'notify'){
-                $redirect = urlencode(urlencode(curPageURL()));
-                $this->redirect(U('m=account&c=login&redirect='.$redirect));
+                $this->showLogin();
             }
         }
     }

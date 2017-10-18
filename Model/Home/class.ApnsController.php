@@ -10,7 +10,6 @@ namespace Model\Home;
 
 
 use Apns\ApnsNotification;
-use Apns\ApnsOrderActivityNotification;
 use Apns\ApnsPush;
 
 class ApnsController extends BaseController

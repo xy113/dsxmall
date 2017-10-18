@@ -9,6 +9,9 @@
 namespace Model\Shop;
 
 
+use Data\Shop\ShopModel;
+use Data\Shop\ShopRecordModel;
+
 class ServiceController extends BaseController
 {
     /**
@@ -16,15 +19,17 @@ class ServiceController extends BaseController
      */
     public function update_visit(){
         $shop_id = intval($_GET['shop_id']);
+        $shopModel = new ShopModel();
         if ($shop_id) {
-            shop_update_data(array('shop_id'=>$shop_id), '`view_num`=`view_num`+1');
-            $res = shop_update_record(array('shop_id'=>$shop_id, 'datestamp'=>date('Ymd')), "`visit_num`=`visit_num`+1");
+            $shopModel->where(array('shop_id'=>$shop_id))->data('`view_num`=`view_num`+1')->save();
+            $recordModel = new ShopRecordModel();
+            $res = $recordModel->where(array('shop_id'=>$shop_id, 'datestamp'=>date('Ymd')))->data("`visit_num`=`visit_num`+1")->save();
             if (!$res) {
-                shop_add_record(array(
+                $recordModel->data(array(
                     'shop_id'=>$shop_id,
                     'datestamp'=>date('Ymd'),
                     'visit_num'=>1
-                ));
+                ))->add();
             }
         }
         $this->showAjaxReturn();

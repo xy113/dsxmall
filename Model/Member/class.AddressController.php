@@ -7,12 +7,16 @@
  */
 namespace Model\Member;
 use Data\Member\AddressModel;
+use Data\Member\Object\AddressObject;
 
 class AddressController extends BaseController{
+    /**
+     * AddressController constructor.
+     */
     function __construct()
     {
         parent::__construct();
-        G('menu', 'address');
+        $this->var['menu'] = 'address';
     }
 
     /**
@@ -26,7 +30,8 @@ class AddressController extends BaseController{
         if ($this->checkFormSubmit()){
 
             $address = $_GET['address'];
-            if ($address['consignee'] && $address['phone'] && $address['street']){
+            $object = (new AddressObject())->initWithData($address);
+            if ($object->getConsignee() && $object->getPhone() && $object->getStreet()){
                 $address['isdefault'] = intval($address['isdefault']);
                 if ($address['isdefault']) {
                     $model->where(array('uid'=>$this->uid))->data(array('isdefault'=>0))->save();

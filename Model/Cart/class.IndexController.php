@@ -32,7 +32,7 @@ class IndexController extends BaseController{
                     $shop_item_list[$item['shop_id']]['shop_name'] = $item['shop_name'];
                     $shop_item_list[$item['shop_id']]['items'][$item['itemid']] = $item;
                 }else {
-                    cart_delete_data(array('uid'=>$this->uid, 'itemid'=>$item['itemid']));
+                    (new CartModel())->where(array('uid'=>$this->uid, 'itemid'=>$item['itemid']))->delete();
                 }
             }
         }

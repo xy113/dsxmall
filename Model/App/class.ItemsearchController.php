@@ -33,26 +33,34 @@ class ItemsearchController extends BaseController
      * 获取搜索结果
      */
     public function batchget(){
-        $condition = array('on_sale'=>1);
+        $where = "`on_sale`=1";
         $catid = intval($_GET['catid']);
+        $q = htmlspecialchars($_GET['q']);
         if ($catid) {
-            $childids = (new ItemCatlogModel())->getAllChildIds($catid);
-            $condition[] = "`catid` IN (".implodeids($childids).")";
-        }
-        $q = $_GET['q'] ? htmlspecialchars($_GET['q']) : '';
-        $q = str_replace(array(',',' ', '、'), '|', $q);
-        $arr = array();
-        foreach (explode('|', $q) as $key){
-            if ($key) {
-                $arr[] = "`title` LIKE '%$key%'";
+            $catlogModel = new ItemCatlogModel();
+            $childids = $catlogModel->getAllChildIds($catid);
+            $where.= " AND (`catid` IN (".implodeids($childids)."))";
+
+            $catlog = $catlogModel->where(array('catid'=>$catid))->getOne();
+            if ($catlog['name'] == $q){
+                $q = '';
             }
         }
-        if (!empty($arr)) $condition[] = "(".implode(' OR ', $arr).")";
+        $q = str_replace(array(',',' ', '、'), '|', $q);
+        $arr = array();
+        if ($q) {
+            foreach (explode('|', $q) as $key){
+                if ($key) {
+                    $arr[] = "`title` LIKE '%$key%'";
+                }
+            }
+        }
+        if (!empty($arr)) $where.= " AND (".implode(' OR ', $arr).")";
 
         $itemModel = new ItemModel();
         $offset = (G('page') - 1) * 20;
         $fields = 'itemid,uid,shop_id,title,subtitle,price,market_price,sold,thumb';
-        $itemlist = $itemModel->where($condition)->order('sold DESC')->field($fields)->page(G('page'), 20)->select();
+        $itemlist = $itemModel->where($where)->order('sold DESC')->field($fields)->page(G('page'), 20)->select();
         $shop_ids = array();
         foreach ($itemlist as $item){
             $shop_ids[] = $item['shop_id'];

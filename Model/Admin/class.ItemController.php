@@ -6,6 +6,7 @@
  * Time: 下午3:00
  */
 namespace Model\Admin;
+use Data\Item\ItemCatlogModel;
 use Data\Item\ItemDescModel;
 use Data\Item\ItemImageModel;
 use Data\Item\ItemModel;
@@ -42,6 +43,11 @@ class ItemController extends BaseController{
 
                     if ($eventType == 'off_sale'){
                         $this->off_sale();
+                    }
+                    //移动文章
+                    if ($eventType == 'move'){
+                        $this->move();
+                        exit();
                     }
 
                     if ($eventType == 'recommend'){
@@ -105,15 +111,25 @@ class ItemController extends BaseController{
                 $queryParams['itemid'] = $itemid;
             }
 
+            $catid = $_GET['catid'];
+            if ($catid) {
+                $condition['catid'] = intval($catid);
+                $queryParams['catid'] = $catid;
+            }
+
             $pagesize = 20;
             $totalnum = M('item i')->join('shop s', 's.shop_id=i.shop_id')->where($condition)->count();
             $pagecount  = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
             $_G['page'] = min(array($_G['page'], $pagecount));
-            $fileds = 'i.itemid,i.title,i.thumb,i.image,i.price,i.sold,i.on_sale,i.create_time,s.shop_id,s.shop_name';
+            $fileds = 'i.itemid,i.catid,i.title,i.thumb,i.image,i.price,i.sold,i.on_sale,i.create_time,s.shop_id,s.shop_name';
             $itemlist   = M('item i')->field($fileds)->join('shop s', 's.shop_id=i.shop_id')->where($condition)
             ->order('i.itemid DESC')->page($_G['page'], $pagesize)->select();
             $pages = $this->showPages($_G['page'], $pagecount, $totalnum, http_build_query($queryParams), true);
             unset($condition, $queryParams);
+            //商品分类
+            $catlogModel = new ItemCatlogModel();
+            $catloglist = $catlogModel->getCache();
+            $catlogtree = $catlogModel->getCatlogTree();
 
             $_G['title'] = $_lang['item_manage'];
             include template('item/item_list');
@@ -150,6 +166,34 @@ class ItemController extends BaseController{
             $model->where(array('itemid'=>$itemid))->data(array('on_sale'=>0))->save();
         }
         $this->showAjaxReturn();
+    }
+
+    /**
+     * 移动商品
+     */
+    public function move(){
+        global $_G,$_lang;
+
+        if ($this->checkFormSubmit()) {
+            $items = $_GET['items'];
+            $catid = intval($_GET['catid']);
+            if ($items && $catid) {
+                $itemModel = new ItemModel();
+                foreach (explode(',', $items) as $itemid){
+                    $itemModel->where(array('itemid'=>$itemid))->data(array('catid'=>$catid))->save();
+                }
+            }
+            $this->showSuccess('update_succeed', null, array(
+                array('text'=>'back_list', 'url'=>U('c=item&a=index'))
+            ));
+        }else {
+
+            $items = $_GET['items'];
+            $items = is_array($items) ? implode(',', $items) : $items;
+            $catloglist = (new ItemCatlogModel())->getCatlogTree();
+
+            include view('item/item_move');
+        }
     }
 
     /**

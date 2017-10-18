@@ -37,7 +37,7 @@ class ViewshopController extends BaseController{
             $condition = array('shop_id'=>$shop_id, 'on_sale'=>1);
             $totalnum  = $itemModel->where($condition)->count();
             $pagecount = $totalnum < $pagesize ? 1 : ceil($totalnum/$pagesize);
-            $itemlist = $itemModel->where($condition)->page($_G['page'], $pagesize)->order('sold DESC')->select();
+            $itemlist  = $itemModel->where($condition)->page($_G['page'], $pagesize)->order('sold DESC')->select();
             $pagination = $this->pagination($_G['page'], $pagecount, $totalnum, "shop_id=$shop_id", true);
 
             $_G['title'] = $shop['shop_name'];
