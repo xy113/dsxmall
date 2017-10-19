@@ -27,17 +27,42 @@ class ItemCatlogObject extends DSXObject
         'description'=>''
     );
 
-    public $catid;
-    public $fid;
-    public $name;
-    public $identifer;
-    public $icon;
-    public $displayorder;
-    public $level;
-    public $enable;
-    public $available;
-    public $keywords;
-    public $description;
+    private $catid;
+    private $fid;
+    private $name;
+    private $identifer;
+    private $icon;
+    private $displayorder;
+    private $level;
+    private $enable;
+    private $available;
+    private $keywords;
+    private $description;
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return $this
+     */
+    public function setFields($fields)
+    {
+        if (is_array($fields)) {
+            foreach ($fields as $name=>$value){
+                if (isset($this->fields[$name])) {
+                    $this->$name = $value;
+                    $this->fields[$name] = $value;
+                }
+            }
+        }
+        return $this;
+    }
 
     /**
      * @param mixed $catid

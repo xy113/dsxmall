@@ -16,11 +16,13 @@ class OrderRefundModel extends Model
     protected $table = 'order_refund';
 
     /**
-     * OrderRefundModel constructor.
-     * @param string $name
+     * @return OrderRefundModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

@@ -11,32 +11,36 @@
         <form method="post" id="publishForm" autocomplete="off">
             <input type="hidden" name="formsubmit" value="yes">
             <input type="hidden" name="formhash" value="{FORMHASH}">
+            <input type="hidden" name="catid" value="{$catid}">
+            <input type="hidden" name="itemid" value="{$itemid}">
             <table cellspacing="0" cellpadding="0" width="100%" class="formtable">
                 <tbody>
                 <tr>
                     <td class="cell-name" width="80">类目</td>
                     <td>
-                        <span>{$catlog[name]}</span>
+                        {loop $catlogPaths $k $catlog}
+                        {if $k>0}>{/if} <span>{$catlog[name]}</span>
+                        {/loop}
                         <span style="margin-left: 10px;"><a href="{U:('c=item&a=sell&itemid='.$itemid)}" style="color: #0B90EF;">编辑类目</a></span>
                     </td>
                 </tr>
                 <tr>
                     <td class="cell-name" width="80">宝贝名称</td>
-                    <td><input type="text" name="item[title]" id="title" class="input-text w300" value="{$item[title]}"></td>
+                    <td><input title="" type="text" name="item[title]" id="title" class="input-text w300" value="{$item[title]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">宝贝卖点</td>
                     <td>
-                        <textarea class="textarea w300" name="item[subtitle]">{$item[subtitle]}</textarea>
+                        <textarea title="" class="textarea w300" name="item[subtitle]">{$item[subtitle]}</textarea>
                     </td>
                 </tr>
                 <tr>
                     <td class="cell-name">一口价</td>
-                    <td><input type="text" name="item[price]" id="price" class="input-text w300" value="{$item[price]}"></td>
+                    <td><input title="" type="text" name="item[price]" id="price" class="input-text w300" value="{$item[price]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">库存数量</td>
-                    <td><input type="text" name="item[stock]" id="stock" class="input-text w300" value="{$item[stock]}"></td>
+                    <td><input title="" type="text" name="item[stock]" id="stock" class="input-text w300" value="{$item[stock]}"></td>
                 </tr>
                 <tr>
                     <td class="cell-name">宝贝图片</td>
@@ -90,7 +94,7 @@
                 </tr>
                     <tr>
                         <td class="cell-name">运费</td>
-                        <td><input type="text" name="item[shipping_fee]" id="shipping_fee" class="input-text w300" value="{$item[shipping_fee]}"></td>
+                        <td><input title="" type="text" name="item[shipping_fee]" id="shipping_fee" class="input-text w300" value="{$item[shipping_fee]}"></td>
                     </tr>
                     <tr>
                         <td class="cell-name">上架时间</td>

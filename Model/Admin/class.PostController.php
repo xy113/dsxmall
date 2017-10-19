@@ -4,6 +4,9 @@
  */
 namespace Model\Admin;
 use Core\ParseVideoUrl;
+use Data\Post\Object\PostContentObject;
+use Data\Post\Object\PostItemObject;
+use Data\Post\Object\PostMediaObject;
 use Data\Post\PostCatlogModel;
 use Data\Post\PostContentModel;
 use Data\Post\PostImageModel;
@@ -153,48 +156,40 @@ class PostController extends BaseController{
 	/**
 	 * 发布文章
 	 */
-	public function add(){
+	public function publish(){
         global $_G,$_lang;
 
-        $catid = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
-        $type = in_array($_GET['type'], array('image','video', 'voice')) ? $_GET['type'] : 'article';
-        $item['from']    = setting('sitename');
-        $item['fromurl'] = setting('siteurl');
-        $item['author']  = $this->username;
-        $item['price']   = 0;
-        $item['pubtime'] = @date('Y-m-d H:i:s');
+        $aid = intval($_GET['aid']);
+        if ($aid) {
+            $itemModel = new PostItemModel();
+            $item = $itemModel->where(array('aid'=>$aid))->getOne();
+            $item['pubtime'] = $item['pubtime'] ? @date('Y-m-d H:i:s', $item['pubtime']) : @date('Y-m-d H:i:s');
+            $type = in_array($item['type'], array('image','video')) ? $item['type'] : 'article';
+            $catid = $item['catid'];
 
+            $content = (new PostContentModel())->where(array('aid'=>$aid))->getOne();
+            $editorname = "content";
+            $editorcontent = $content['content'];
+            //相册列表
+            $gallery = (new PostImageModel())->where(array('aid'=>$aid))->order('displayorder ASC,id ASC')->select();
+            //获取媒体信息
+            $media = (new PostMediaModel())->where(array('aid'=>$aid))->getOne();
+        }else {
+            $catid = isset($_GET['catid']) ? intval($_GET['catid']) : 0;
+            $type = in_array($_GET['type'], array('image','video', 'voice')) ? $_GET['type'] : 'article';
+            $item['from']    = setting('sitename');
+            $item['fromurl'] = setting('siteurl');
+            $item['author']  = $this->username;
+            $item['price']   = 0;
+            $item['pubtime'] = @date('Y-m-d H:i:s');
+        }
+
+        $object = PostItemModel::getInstance()->where(array('aid'=>$aid))->getObject();;
+        print_array($object);
         $editorname = "content";
         $catloglist = (new PostCatlogModel())->getCatlogTree();
         include template('post/post_form');
 	}
-
-    /**
-     * 编辑文章
-     */
-    public function edit(){
-        global $_G,$_lang;
-
-        $aid = intval($_GET['aid']);
-        $itemModel = new PostItemModel();
-        $item = $itemModel->where(array('aid'=>$aid))->getOne();
-        $item['pubtime'] = $item['pubtime'] ? @date('Y-m-d H:i:s', $item['pubtime']) : @date('Y-m-d H:i:s');
-        $type = in_array($item['type'], array('image','video')) ? $item['type'] : 'article';
-        $catid = $item['catid'];
-
-        $content = (new PostContentModel())->where(array('aid'=>$aid))->getOne();
-        $editorname = "content";
-        $editorcontent = $content['content'];
-        //相册列表
-        $gallery = (new PostImageModel())->where(array('aid'=>$aid))->order('displayorder ASC,id ASC')->select();
-        //获取媒体信息
-        $media = (new PostMediaModel())->where(array('aid'=>$aid))->getOne();
-        //文章分类列表
-        $catloglist = (new PostCatlogModel())->getCatlogTree();
-
-        //载入模板
-        include template('post/post_form');
-    }
 	
 	/**
 	 * 保存文章
@@ -202,45 +197,46 @@ class PostController extends BaseController{
 	public function save(){
 		global $_G;
 
-		$aid = intval($_GET['aid']);
 		$newpost = $_GET['newpost'];
-		$eventType = htmlspecialchars($_GET['eventType']);
+		$content = $_GET['content'];
 		if (is_array ($newpost)) {
-		    if (!$newpost) {
+		    $itemObj = new PostItemObject($newpost);
+		    if (!$itemObj->getTitle()) {
 		        $this->showError('empry_post_title');
             }
-			$newpost['author']  = $newpost['author']  ? $newpost['author']  : $this->username;
-			$newpost['from']    = $newpost['from']    ? $newpost['from']    : setting('sitename');
-			$newpost['fromurl'] = $newpost['fromurl'] ? $newpost['fromurl'] : setting('siteurl');
-			$newpost['tags'] = $newpost['tags'] ? $newpost['tags'] : '';
-			$newpost['allowcomment'] = intval($newpost['allowcomment']);
-			//文章摘要
-			$newpost['summary'] = $newpost['summary'] ? $newpost['summary'] : cutstr(stripHtml($content), 300);
-			$newpost['summary'] = str_replace('&amp;', '&', $newpost['summary']);
-			$newpost['summary'] = str_replace('&nbsp;', '', $newpost['summary']);
-			$newpost['summary'] = str_replace('　', '', $newpost['summary']);
-			$newpost['summary'] = preg_replace('/\s/', '', $newpost['summary']);
-            $newpost['pubtime'] = $newpost['pubtime'] ? strtotime($newpost['pubtime']) : time();
+            if ($itemObj->getFrom()) $itemObj->setFrom(setting('sitename'));
+		    if ($itemObj->getFromurl()) $itemObj->setFromurl(setting('siteurl'));
 
-			$itemModel = new PostItemModel();
-			if ($eventType == 'edit') {
-			    //更新文章信息
-                $newpost['modified'] = time();
-			    $itemModel->where(array('aid'=>$aid))->data($newpost)->save();
+		    $summary = $itemObj->getSummary();
+		    if (!$summary) {
+		        $summary = cutstr(stripHtml($content), 300);
+            }
+			$summary = str_replace('&amp;', '&', $summary);
+            $summary = str_replace('&nbsp;', '', $summary);
+            $summary = str_replace('　', '', $summary);
+            $summary = preg_replace('/\s/', '', $summary);
+            $itemObj->setSummary($summary);
+
+            if ($_GET['aid']) {
+                //修改文章
+                $aid = intval($_GET['aid']);
+                PostItemModel::getInstance()->where(array('aid'=>$aid))->updateObject($itemObj);
             }else {
-			    //添加文章信息
-                $newpost['uid'] = $this->uid;
-                $newpost['username'] = $this->username;
-			    $aid = $itemModel->data($newpost)->add();
+                //添加新文章
+                $itemObj->setUid($this->uid)->setUsername($this->username);
+                $aid = PostItemModel::getInstance()->addObject($itemObj);
             }
 
-            //添加文章内容
-            $contentModel = new PostContentModel();
-			$content = trim($_GET['content']);
-            if ($eventType == 'edit') {
-                $contentModel->where(array('aid'=>$aid))->data(array('content'=>$content))->save();
+            if ($_GET['aid']) {
+                //修改文章内容
+                $contentObj = new PostContentObject();
+                $contentObj->setContent($content);
+                PostContentModel::getInstance()->where(array('aid'=>$aid))->data($contentObj->getBizContent())->save();
             }else {
-                $contentModel->data(array('aid'=>$aid, 'uid'=>$this->uid, 'content'=>$content))->add();
+                //添加文章内容
+                $contentObj = new PostContentObject();
+                $contentObj->setUid($this->uid)->setAid($aid)->setContent($content);
+                PostContentModel::getInstance()->data($contentObj->getBizContent())->add();
             }
 			
             //添加相册
@@ -248,8 +244,8 @@ class PostController extends BaseController{
             //print_array($gallery);exit();
             if ($gallery) {
                 $imageList = array();
-                $imageModel = new PostImageModel();
-                if ($eventType == 'edit') {
+                $imageModel = PostImageModel::getInstance();
+                if ($_GET['aid']) {
                     foreach ($imageModel->where(array('aid'=>$aid))->order('displayorder')->select() as $img){
                         $imageList[$img['id']]['mark'] = 'delete';
                         $imageList[$img['id']]['img'] = $img;
@@ -279,35 +275,32 @@ class PostController extends BaseController{
                     }
                 }
                 //将第一张设为文章图片
-                if (!$newpost['image']) {
+                if (!$itemObj->getImage()) {
                     $image = reset($gallery);
-                    $itemModel->where(array('aid'=>$aid))->data(array('image'=>$image['image']))->save();
+                    PostItemModel::getInstance()->where(array('aid'=>$aid))->data(array('image'=>$image['image']))->save();
                 }
             }
 
             $media = $_GET['media'];
             if ($media && $media['original_url']){
                 if ($source = ParseVideoUrl::ParseUrl($media['original_url'])) {
-                    $media['source'] = $source['swf'];
-                    $media['image'] = $source['img'];
-                    $media['original_url'] = $source['url'];
+                    $mediaObj = new PostMediaObject($media);
+                    $mediaObj->setSource($source['swf'])->setImage($source['img'])->setOriginalUrl($source['url']);
 
-                    $mediaModel = new PostMediaModel();
-                    if ($eventType == 'edit') {
-                        $mediaModel->where(array('aid'=>$aid))->data($media)->save();
+                    if ($_GET['aid']) {
+                        PostMediaModel::getInstance()->where(array('aid'=>$aid))->data($mediaObj->getBizContent())->save();
                     }else {
-                        $media['aid'] = $aid;
-                        $media['uid'] = $this->uid;
-                        $mediaModel->data($media)->add();
+                        $mediaObj->setUid($this->uid)->setAid($aid);
+                        PostMediaModel::getInstance()->data($mediaObj->getBizContent())->add();
                     }
                 }
             }
 
-            if ($eventType == 'edit'){
+            if ($_GET['aid']){
                 $links = array (
                     array (
                         'text' => 'reedit',
-                        'url' => U('c=post&a=edit&aid='.$aid)
+                        'url' => U('c=post&a=publish&aid='.$aid)
                     ),
                     array (
                         'text'=>'view',
@@ -324,7 +317,7 @@ class PostController extends BaseController{
                 $links = array (
                     array (
                         'text' => 'continue_publish',
-                        'url' => U('c=post&a=add&type='.$newpost['type'].'&catid='.$newpost['catid'])
+                        'url' => U('c=post&a=publish&type='.$itemObj->getType().'&catid='.$itemObj->getCatid())
                     ),
                     array (
                         'text'=>'view',

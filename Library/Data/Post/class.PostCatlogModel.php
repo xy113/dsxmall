@@ -16,12 +16,14 @@ class PostCatlogModel extends Model
     protected $table = 'post_catlog';
 
     /**
-     * PostCatlogController constructor.
-     * @param string $name
+     * @return PostCatlogModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

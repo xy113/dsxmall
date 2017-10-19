@@ -14,9 +14,17 @@ use Data\Item\Builder\ItemDescContentBuilder;
 
 class ItemDescModel extends Model
 {
-    function __construct($name = 'item_desc')
-    {
-        parent::__construct($name);
+    protected $table = 'item_desc';
+
+    /**
+     * @return ItemDescModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

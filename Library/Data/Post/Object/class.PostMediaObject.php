@@ -30,6 +30,31 @@ class PostMediaObject extends DSXObject
     private $original_url;
 
     /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return $this
+     */
+    public function setFields($fields)
+    {
+        if (is_array($fields)) {
+            foreach ($fields as $name=>$value){
+                if (isset($this->fields[$name])) {
+                    $this->$name = $value;
+                    $this->fields[$name] = $value;
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param mixed $id
      * @return PostMediaObject
      */

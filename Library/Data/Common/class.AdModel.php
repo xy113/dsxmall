@@ -16,11 +16,13 @@ class AdModel extends Model
     protected $table = 'ad';
 
     /**
-     * AdModel constructor.
-     * @param string $name
+     * @return AdModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

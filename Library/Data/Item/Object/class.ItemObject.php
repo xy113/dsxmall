@@ -36,26 +36,51 @@ class ItemObject extends DSXObject
         'shipping_fee'=>''
     );
 
-    public $itemid;
-    public $uid;
-    public $catid;
-    public $shop_id;
-    public $title;
-    public $subtitle;
-    public $item_sn;
-    public $thumb;
-    public $image;
-    public $price;
-    public $on_sale;
-    public $is_best;
-    public $stock;
-    public $sold;
-    public $view_num;
-    public $collection_num;
-    public $review_num;
-    public $create_time;
-    public $update_time;
-    public $shipping_fee;
+    private $itemid;
+    private $uid;
+    private $catid;
+    private $shop_id;
+    private $title;
+    private $subtitle;
+    private $item_sn;
+    private $thumb;
+    private $image;
+    private $price;
+    private $on_sale;
+    private $is_best;
+    private $stock;
+    private $sold;
+    private $view_num;
+    private $collection_num;
+    private $review_num;
+    private $create_time;
+    private $update_time;
+    private $shipping_fee;
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return $this
+     */
+    public function setFields($fields)
+    {
+        if (is_array($fields)) {
+            foreach ($fields as $name=>$value){
+                if (isset($this->fields[$name])) {
+                    $this->$name = $value;
+                    $this->fields[$name] = $value;
+                }
+            }
+        }
+        return $this;
+    }
 
     /**
      * @param mixed $itemid

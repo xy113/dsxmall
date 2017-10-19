@@ -14,4 +14,15 @@ use Core\Model;
 class BlockItemModel extends Model
 {
     protected $table = 'block_item';
+
+    /**
+     * @return BlockItemModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

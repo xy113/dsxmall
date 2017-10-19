@@ -64,6 +64,31 @@ class PostItemObject extends DSXObject
     private $price;
 
     /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return $this
+     */
+    public function setFields($fields)
+    {
+        if (is_array($fields)) {
+            foreach ($fields as $name=>$value){
+                if (isset($this->fields[$name])) {
+                    $this->$name = $value;
+                    $this->fields[$name] = $value;
+                }
+            }
+        }
+        return $this;
+    }
+
+    /**
      * @param mixed $aid
      * @return PostItemObject
      */
@@ -321,7 +346,7 @@ class PostItemObject extends DSXObject
      */
     public function getAid()
     {
-        return $this->aid;
+        return $this->fields['aid'];
     }
 
     /**
@@ -329,7 +354,7 @@ class PostItemObject extends DSXObject
      */
     public function getUid()
     {
-        return $this->uid;
+        return $this->fields['uid'];
     }
 
     /**
@@ -337,7 +362,7 @@ class PostItemObject extends DSXObject
      */
     public function getUsername()
     {
-        return $this->username;
+        return $this->fields['username'];
     }
 
     /**
@@ -345,7 +370,7 @@ class PostItemObject extends DSXObject
      */
     public function getCatid()
     {
-        return $this->catid;
+        return $this->fields['catid'];
     }
 
     /**
@@ -353,7 +378,7 @@ class PostItemObject extends DSXObject
      */
     public function getAuthor()
     {
-        return $this->author;
+        return $this->fields['author'];
     }
 
     /**
@@ -361,7 +386,7 @@ class PostItemObject extends DSXObject
      */
     public function getType()
     {
-        return $this->type;
+        return $this->fields['type'];
     }
 
     /**
@@ -369,7 +394,7 @@ class PostItemObject extends DSXObject
      */
     public function getTitle()
     {
-        return $this->title;
+        return $this->fields['title'];
     }
 
     /**
@@ -377,7 +402,7 @@ class PostItemObject extends DSXObject
      */
     public function getAlias()
     {
-        return $this->alias;
+        return $this->fields['alias'];
     }
 
     /**
@@ -385,7 +410,7 @@ class PostItemObject extends DSXObject
      */
     public function getSummary()
     {
-        return $this->summary;
+        return $this->fields['summary'];
     }
 
     /**
@@ -393,7 +418,7 @@ class PostItemObject extends DSXObject
      */
     public function getImage()
     {
-        return $this->image;
+        return $this->fields['image'];
     }
 
     /**
@@ -401,7 +426,7 @@ class PostItemObject extends DSXObject
      */
     public function getTags()
     {
-        return $this->tags;
+        return $this->fields['tags'];
     }
 
     /**
@@ -409,7 +434,7 @@ class PostItemObject extends DSXObject
      */
     public function getPubtime()
     {
-        return $this->pubtime;
+        return $this->fields['pubtime'];
     }
 
     /**
@@ -417,7 +442,7 @@ class PostItemObject extends DSXObject
      */
     public function getModified()
     {
-        return $this->modified;
+        return $this->fields['modified'];
     }
 
     /**
@@ -425,7 +450,7 @@ class PostItemObject extends DSXObject
      */
     public function getAllowcomment()
     {
-        return $this->allowcomment;
+        return $this->fields['allowcomment'];
     }
 
     /**
@@ -433,7 +458,7 @@ class PostItemObject extends DSXObject
      */
     public function getCollectionNum()
     {
-        return $this->collection_num;
+        return $this->fields['collection_num'];
     }
 
     /**
@@ -441,7 +466,7 @@ class PostItemObject extends DSXObject
      */
     public function getCommentNum()
     {
-        return $this->comment_num;
+        return $this->fields['collection_num'];
     }
 
     /**

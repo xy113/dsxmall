@@ -16,11 +16,13 @@ class OrderClosedModel extends Model
     protected $table = 'order_closed';
 
     /**
-     * OrderClosedModel constructor.
-     * @param string $name
+     * @return OrderClosedModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

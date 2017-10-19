@@ -14,4 +14,15 @@ use Core\Model;
 class AlbumModel extends Model
 {
     protected $table = 'album';
+
+    /**
+     * @return AlbumModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

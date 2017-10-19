@@ -16,12 +16,14 @@ class MenuModel extends Model
     protected $table = 'menu';
 
     /**
-     * MenuModel constructor.
-     * @param string $name
+     * @return MenuModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

@@ -10,7 +10,6 @@
  * $Date: 2017-07-24
  * $Id: function.common.php
  */
-use Core\DB_Mysqli;
 
 /**
  * 配置全局变量
@@ -83,17 +82,24 @@ function C($name=null, $value=''){
 }
 
 /**
- * 初始化模型
- * @param string $name
+ * 初始化Model类
+ * @param $name
  * @return \Core\Model
  */
 function M($name){
-    return new \Core\Model($name);
+    if (empty($name)) return new \Core\Model();
+    static $_imodels = array();
+    if (isset($_imodels[$name])) {
+        return $_imodels[$name];
+    }else {
+        $_imodels[$name] =  new \Core\Model($name);
+        return $_imodels[$name];
+    }
 }
 
 /**
- * 获取Mysqli 实例
- * @return DB_Mysqli
+ * 获取数据连接单例
+ * @return \Core\DB_Mysqli
  */
 function DB(){
     return \Core\DB_Mysqli::getInstance();

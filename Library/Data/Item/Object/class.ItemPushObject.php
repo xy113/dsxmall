@@ -21,11 +21,36 @@ class ItemPushObject extends DSXObject
         'create_time'=>''
     );
 
-    public $push_id;
-    public $uid;
-    public $itemid;
-    public $groupid;
-    public $create_time;
+    private $push_id;
+    private $uid;
+    private $itemid;
+    private $groupid;
+    private $create_time;
+
+    /**
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * @param array $fields
+     * @return $this
+     */
+    public function setFields($fields)
+    {
+        if (is_array($fields)) {
+            foreach ($fields as $name=>$value){
+                if (isset($this->fields[$name])) {
+                    $this->$name = $value;
+                    $this->fields[$name] = $value;
+                }
+            }
+        }
+        return $this;
+    }
 
     /**
      * @param mixed $push_id

@@ -16,6 +16,17 @@ class SettingModel extends Model
     protected $table = 'setting';
 
     /**
+     * @return SettingModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @return bool|mixed
      */
     public function updateCache(){

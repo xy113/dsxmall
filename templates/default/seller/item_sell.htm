@@ -12,16 +12,15 @@
             <input type="hidden" name="formsubmit" value="yes">
             <input type="hidden" name="formhash" value="{FORMHASH}">
             <input type="hidden" name="catid" value="0" id="J_catid">
-            <table cellspacing="0" cellpadding="0" width="100%" class="cate-sascading">
+            <table cellspacing="0" cellpadding="0" class="cate-sascading" style="margin: 0 auto; width: 500px;">
                 <tbody>
                 <tr>
                     <td width="220">选择分类</td>
                     <td width="220">选择分类</td>
-                    <td>选择分类</td>
                 </tr>
                 <tr>
                     <td>
-                        <select class="select" size="20" id="catid_1">
+                        <select title="" class="select" size="20" id="catid_1">
                             {loop $category_list $cat}
                             {if $cat[fid]==0}
                             <option value="{$cat[catid]}">{$cat[name]}</option>
@@ -30,13 +29,7 @@
                         </select>
                     </td>
                     <td>
-                        <select class="select" size="20" id="catid_2">
-                        </select>
-                    </td>
-                    <td>
-                        <select class="select" size="20" id="catid_3">
-
-                        </select>
+                        <select title="" class="select" size="20" id="catid_2"></select>
                     </td>
                 </tr>
                 </tbody>
@@ -85,21 +78,11 @@
         });
     });
     $("#button-submit").on('click', function () {
-        var catid_1 = $("#catid_1").val();
-        var catid_2 = $("#catid_2").val();
-        var catid_3 = $("#catid_3").val();
-        if (!catid_1 && !catid_2 && !catid_3){
+        var catid = $("#catid_2").val();
+        if (!catid){
             DSXUI.error('请选择宝贝分类');
             return false;
         }else {
-            var catid = 0;
-            if (catid_3) {
-                catid = catid_3;
-            }else if (catid_2){
-                catid = catid_2;
-            }else {
-                catid = catid_1;
-            }
             $("#J_catid").val(catid);
             $("#publishForm").submit();
         }

@@ -16,11 +16,13 @@ class MemberFieldModel extends Model
     protected $table = 'member_field';
 
     /**
-     * MemberFieldModel constructor.
-     * @param string $name
+     * @return MemberFieldModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

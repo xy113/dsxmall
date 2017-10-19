@@ -16,6 +16,17 @@ class MemberGroupModel extends Model
     protected $table = 'member_group';
 
     /**
+     * @return MemberGroupModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @return bool|mixed
      */
     public function updateCache(){

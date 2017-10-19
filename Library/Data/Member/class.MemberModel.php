@@ -17,6 +17,17 @@ class MemberModel extends Model
     protected $table = 'member';
 
     /**
+     * @return MemberModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @param MemberContentBuilder $object
      * @return bool|int|\mysqli_result|string
      * @throws \Exception

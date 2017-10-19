@@ -17,6 +17,17 @@ class AddressModel extends Model
     protected $table = 'address';
 
     /**
+     * @return AddressModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @param AddressObject $object
      * @return bool|int|\mysqli_result|string
      * @throws \Exception

@@ -14,9 +14,18 @@ use Data\Item\Builder\ItemImageContentBuilder;
 
 class ItemImageModel extends Model
 {
-    function __construct($name = 'item_image')
-    {
-        parent::__construct($name);
+
+    protected $table = 'item_image';
+    /**
+     * 单例
+     * @return ItemImageModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

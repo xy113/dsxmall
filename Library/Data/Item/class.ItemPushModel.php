@@ -14,4 +14,15 @@ use Core\Model;
 class ItemPushModel extends Model
 {
     protected $table = 'item_push';
+
+    /**
+     * @return ItemPushModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

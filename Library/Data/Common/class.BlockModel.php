@@ -16,6 +16,17 @@ class BlockModel extends Model
     protected $table = 'block';
 
     /**
+     * @return BlockModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @param $block_id
      * @return bool|mixed
      */

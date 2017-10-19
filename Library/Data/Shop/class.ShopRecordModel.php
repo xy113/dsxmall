@@ -14,4 +14,15 @@ use Core\Model;
 class ShopRecordModel extends Model
 {
     protected $table = 'shop_record';
+
+    /**
+     * @return ShopRecordModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

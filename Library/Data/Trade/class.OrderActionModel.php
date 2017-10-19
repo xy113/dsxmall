@@ -16,11 +16,13 @@ class OrderActionModel extends Model
     protected $table = 'order_action';
 
     /**
-     * OrderActionModel constructor.
-     * @param string $name
+     * @return OrderActionModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

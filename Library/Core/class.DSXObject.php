@@ -9,7 +9,7 @@
 namespace Core;
 
 
-class DSXObject
+abstract class DSXObject
 {
     protected $fields = array();
 

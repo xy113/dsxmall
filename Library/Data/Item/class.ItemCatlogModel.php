@@ -14,13 +14,17 @@ use Data\Item\Builder\ItemCatlogContentBuilder;
 
 class ItemCatlogModel extends Model
 {
+    protected $table = 'item_catlog';
+
     /**
-     * ItemCatlogController constructor.
-     * @param string $name
+     * @return ItemCatlogModel
      */
-    function __construct($name = 'item_catlog')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

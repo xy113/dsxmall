@@ -16,11 +16,13 @@ class MemberTokenModel extends Model
     protected $table = 'member_token';
 
     /**
-     * MemberTokenModel constructor.
-     * @param string $name
+     * @return MemberTokenModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

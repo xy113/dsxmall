@@ -7,6 +7,13 @@
  */
 
 /**
+ * @return string
+ */
+function createItemSn(){
+    return time().rand(100,999).rand(100,999);
+}
+
+/**
  * 生成交易流水号
  * @return string
  */

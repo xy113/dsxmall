@@ -17,6 +17,17 @@ class TradeModel extends Model
     protected $table = 'trade';
 
     /**
+     * @return TradeModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @param TradeContentBuilder $object
      * @return bool|int|\mysqli_result|string
      * @throws \Exception

@@ -10,7 +10,7 @@ namespace Data\Item;
 
 
 use Core\Model;
-use Data\Item\Builder\ItemContentBuilder;
+use Data\Item\Object\ItemObject;
 
 class ItemModel extends Model
 {
@@ -18,62 +18,80 @@ class ItemModel extends Model
     protected $table = 'item';
 
     /**
-     * @param ItemContentBuilder $object
+     * 单例
+     * @return ItemModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
+     * @param ItemObject $object
      * @return bool|int|\mysqli_result|string
      * @throws \Exception
-     * @internal param ItemContentBuilder $item
      */
-    public function insertObject(ItemContentBuilder $object){
-        if (!$object->getUid()){
+    public function addObject(ItemObject $object){
+        if (!$object->getUid()) {
             throw new \Exception('Empty uid value');
         }
-        if (!$object->getShop_id()){
-            throw new \Exception('Empty shop_id value');
-        }
-        if (!$object->getCatid()){
+
+        if (!$object->getCatid()) {
             throw new \Exception('Empty catid value');
         }
 
-        if (!$object->getItem_sn()){
-            $object->setItem_sn($this->createSn());
+        if (!$object->getShopId()) {
+            throw new \Exception('Empty shop_id value');
         }
-        /*
+
         if (!$object->getTitle()) {
             throw new \Exception('Empty title value');
-        }*/
-        if (!$object->getCreate_time()){
-            $object->setCreate_time(time());
         }
-        return $this->add($object->getBizContent(), true);
-    }
 
-    /**
-     * @param $itemid
-     * @param ItemContentBuilder $obejct
-     */
-    public function updateObject($itemid, ItemContentBuilder $obejct){
-        $this->where(array('itemid'=>$itemid))->update($obejct->getBizContent());
-    }
-
-    /**
-     * @param $itemid
-     * @return ItemContentBuilder
-     */
-    public function deleteObject($itemid){
-        if ($this->where(array('itemid'=>$itemid))->delete()){
-            (new ItemImageModel())->where(array('itemid'=>$itemid))->delete();
-            (new ItemDescModel())->where(array('itemid'=>$itemid))->delete();
+        if (!$object->getItemSn()) {
+            //throw new \Exception('Empty item_sn value');
+            $object->setItemSn($this->createSn());
         }
+
+        if (!$object->getThumb()) {
+            throw new \Exception('Empty thumb value');
+        }
+
+        if (!$object->getImage()) {
+            throw new \Exception('Empty image value');
+        }
+
+        if (!$object->getPrice()){
+            throw new \Exception('Empty price value');
+        }
+
+        if (!$object->getCreateTime()) {
+            $object->setCreateTime(time());
+        }
+        return $this->data($object->getBizContent())->add();
     }
 
 
     /**
-     * @return ItemContentBuilder
+     * @param ItemObject $object
+     * @return bool|int
+     */
+    public function updateObject(ItemObject $object){
+        if (!$object->getUpdateTime()) {
+            $object->setUpdateTime(time());
+        }
+        return $this->data($object->getBizContent())->save();
+    }
+
+    /**
+     * @return ItemObject
      */
     public function getObject(){
         $data = $this->getOne();
-        $object = new ItemContentBuilder($data);
-        return $object;
+        return new ItemObject($data);
     }
 
     /**

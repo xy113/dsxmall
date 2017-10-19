@@ -14,4 +14,15 @@ use Core\Model;
 class ScanLoginModel extends Model
 {
     protected $table = 'scan_login';
+
+    /**
+     * @return ScanLoginModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }

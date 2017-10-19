@@ -17,12 +17,14 @@ class WalletModel extends Model
     protected $table = 'wallet';
 
     /**
-     * WalletModel constructor.
-     * @param string $name
+     * @return WalletModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 
     /**

@@ -9,13 +9,9 @@
 namespace Model\Home;
 
 
-use Data\Item\Builder\ItemContentBuilder;
+use Core\DB_Mysqli;
 use Data\Item\ItemModel;
-use WxApi\Builder\WxCustomImageMessageBuilder;
-use WxApi\Builder\WxCustomMpnewsMessageBuilder;
-use WxApi\Builder\WxCustomNewsMessageBuilder;
-use WxApi\Builder\WxCustomTextMessageBuilder;
-use WxApi\WxCustomMessageApi;
+use Prophecy\Exception\Exception;
 
 class TestController extends BaseController
 {
@@ -23,8 +19,15 @@ class TestController extends BaseController
      *
      */
     public function index(){
+        $itemlist = M('item')->where(array('itemid'=>72))->getOne();
+        print_array($itemlist);
+        ItemModel::getInstance()->limit(0, 10)->select();
+        $e = new \Exception('');
 
-        echo rawurlencode(curPageURL());
-        header('location:'.U('/').rawurlencode(curPageURL()));
+        try{
+
+        }catch (\Exception $e){
+
+        }
     }
 }

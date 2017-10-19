@@ -16,11 +16,13 @@ class CartModel extends Model
     protected $table = 'cart';
 
     /**
-     * CartModel constructor.
-     * @param string $name
+     * @return CartModel
      */
-    function __construct($name = '')
-    {
-        parent::__construct($name);
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
     }
 }

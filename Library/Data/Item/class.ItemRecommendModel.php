@@ -16,6 +16,17 @@ class ItemRecommendModel extends Model
     protected $table = 'item_recommend';
 
     /**
+     * @return ItemRecommendModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
+
+    /**
      * @param $itemid
      * @return bool|int|\mysqli_result|string
      */

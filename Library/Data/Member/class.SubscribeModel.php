@@ -14,4 +14,15 @@ use Core\Model;
 class SubscribeModel extends Model
 {
     protected $table = 'subscribe';
+
+    /**
+     * @return SubscribeModel
+     */
+    public static function getInstance(){
+        static $instance;
+        if (!is_object($instance)) {
+            $instance = new self();
+        }
+        return $instance;
+    }
 }
