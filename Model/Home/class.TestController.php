@@ -11,6 +11,7 @@ namespace Model\Home;
 
 use Core\DB_Mysqli;
 use Data\Item\ItemModel;
+use Data\Post\PostItemModel;
 use Prophecy\Exception\Exception;
 
 class TestController extends BaseController
@@ -19,15 +20,6 @@ class TestController extends BaseController
      *
      */
     public function index(){
-        $itemlist = M('item')->where(array('itemid'=>72))->getOne();
-        print_array($itemlist);
-        ItemModel::getInstance()->limit(0, 10)->select();
-        $e = new \Exception('');
-
-        try{
-
-        }catch (\Exception $e){
-
-        }
+        $object = PostItemModel::getInstance()->where(array('aid'=>10336))->getObject();
     }
 }

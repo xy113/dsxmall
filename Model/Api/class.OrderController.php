@@ -12,6 +12,7 @@ use Data\Item\ItemModel;
 use Data\Member\AddressModel;
 use Data\Member\MemberModel;
 use Data\Shop\ShopModel;
+use Data\Trade\Object\OrderObject;
 use Data\Trade\OrderActionModel;
 use Data\Trade\OrderItemModel;
 use Data\Trade\OrderModel;
@@ -20,6 +21,17 @@ use Data\Trade\WalletModel;
 
 class OrderController extends BaseController
 {
+    /**
+     * OrderController constructor.
+     */
+    function __construct()
+    {
+        parent::__construct();
+        if (!$this->uid || !$this->username){
+            $this->showAjaxError(1, 'Not Login');
+        }
+    }
+
     /**
      * 创建订单
      */
@@ -145,12 +157,60 @@ class OrderController extends BaseController
         }
     }
 
-    public function update(){
+    /**
+     * 获取订单列表
+     */
+    public function batchget(){
+        $offset = $_GET['offset'] ? intval($_GET['offset']) : 0;
+        $count = $_GET['count'] ?intval($_GET['count']) : 20;
+        $order_status = $_GET['order_status'] ? trim($_GET['order_status']) : 'all';
 
+        $condition = array('buyer_uid'=>$this->uid);
+
+        $orderList = array();
+        foreach (OrderModel::getInstance()->where($condition)->order('order_id', 'DESC')->select() AS $order){
+            $orderList[$order['order_id']] = $order;
+        }
+
+        $orderIds = $orderList ? array_column($orderList, 'order_id') : 0;
+        if ($orderIds) {
+            $orderIds = implodeids($orderIds);
+            foreach (OrderItemModel::getInstance()->where("`order_id` IN($orderIds)")->select() as $item){
+                $item['thumb'] = image($item['thumb']);
+                $item['image'] = image($item['image']);
+                $orderList[$item['order_id']]['items'][] = $item;
+            }
+        }
+        $this->showAjaxReturn(array_values($orderList));
     }
 
-    public function delete(){
+    /**
+     * 更新订单信息
+     */
+    public function update(){
+        $order_id = intval($_GET['order_id']);
+        $order = $_GET['order'];
+        if ($order_id && is_array($order)) {
+            $orderObj = new OrderObject($order);
+            OrderModel::getInstance()->where(array('uid'=>$this->uid,'order_id'=>$order_id))->data($orderObj->getBizContent())->save();
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError(1, 'invalid parameter');
+        }
+    }
 
+    /**
+     * 删除订单
+     */
+    public function delete(){
+        $order_id = intval($_GET['order_id']);
+        $condition = array('order_id'=>$order_id);
+        if (OrderModel::getInstance()->where($condition)->count()){
+            OrderModel::getInstance()->deleteAllData($order_id);
+            $this->showAjaxReturn(array('order_id'=>$order_id));
+        }else {
+            $this->showAjaxError(1, 'order not exists');
+        }
     }
 
     /**

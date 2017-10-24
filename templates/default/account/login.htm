@@ -10,7 +10,6 @@
     <script src="/static/js/jquery.js" type="text/javascript"></script>
     <script src="/static/js/common.js" type="text/javascript"></script>
     <script src="/static/js/jquery.form.js" type="text/javascript"></script>
-    <script src="/static/js/jquery.dsxui.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="area main-body-div">
@@ -40,7 +39,7 @@
                     </div>
                     <div class="sign-button-div"><button type="submit" id="btnlogin" class="sign-button">登录</button></div>
                     <div class="sign-link">
-                        <span><a href="">忘记密码?</a></span>
+                        <span><a href="{U:('c=findpass&a=index')}">忘记密码?</a></span>
                         <a href="/?m=account&c=register">新用户注册</a>
                     </div>
                 </form>
@@ -51,7 +50,7 @@
         <div class="content" id="saomaView" style="display: none;">
             <h3>手机扫码，安全登录</h3>
             <div class="scan-login">
-                <img id="qrcode" class="qrcode">
+                <img id="qrcode" class="qrcode" title="">
                 <div class="qrcode-desc">打开手机APP 扫一扫登录</div>
             </div>
             <div class="diannao-login" id="diannao-login"></div>

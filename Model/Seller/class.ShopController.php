@@ -122,7 +122,7 @@ class ShopController extends BaseController{
         global $_G,$_lang;
 
         $shop = (new ShopModel())->where(array('uid'=>$this->uid))->getOne();
-        $item_count = (new ItemModel())->where(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1))->getOne();
+        $item_count = (new ItemModel())->where(array('shop_id'=>$shop['shop_id'], 'on_sale'=>1))->count();
         $order_count = (new OrderModel())->where(array('shop_id'=>$shop['shop_id']))->count();
 
         $tradeModel = new TradeModel();

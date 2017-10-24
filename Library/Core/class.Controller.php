@@ -146,15 +146,15 @@ abstract class Controller{
 		if ($links){
 			$newlinks = array();
 			foreach ($links as $link){
-				$link['text'] = $_lang[$link['text']];
+				$link['text'] = isset($_lang[$link['text']]) ? $_lang[$link['text']] : $link['text'];
 				$link['target'] = in_array($link['target'], array('_blank','_top','_self')) ? $link['target'] : '';
 				$newlinks[] = $link;
 			}
 			$links = $newlinks;
 			unset($newlinks);
 		}
-		$msg  = $msg ? $_lang[$msg] : '';
-		$tips = $tips ? $_lang[$tips] : '';
+		$msg  = isset($_lang[$msg]) ? $_lang[$msg] : $msg;
+		$tips = isset($_lang[$tips]) ? $_lang[$tips] : '';
 		$_G['title'] = $_lang['system_message'];
 		include template('message');
 		exit();

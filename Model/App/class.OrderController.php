@@ -25,19 +25,19 @@ class OrderController extends BaseController
      */
     public function itemlist(){
         global $_G,$_lang;
-        $tab = $_GET['tab'] ? htmlspecialchars($_GET['tab']) : 'all';
+        $orderStatus = $_GET['orderStatus'] ? htmlspecialchars($_GET['orderStatus']) : 'all';
 
         $condition = array('buyer_uid'=>$this->uid);
-        if ($tab == 'waitPay'){
+        if ($orderStatus == 'waitPay'){
             $condition['pay_status'] = 0;
-        }elseif ($tab == 'waitSend'){
+        }elseif ($orderStatus == 'waitSend'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 0;
-        }elseif ($tab == 'waitConfirm'){
+        }elseif ($orderStatus == 'waitConfirm'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
             $condition['order_status'] = 0;
-        }elseif ($tab == 'waitRate'){
+        }elseif ($orderStatus == 'waitRate'){
             $condition['pay_status'] = 1;
             $condition['shipping_status'] = 1;
             $condition['order_status'] = 1;

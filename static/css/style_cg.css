@@ -31,6 +31,7 @@
 .global-nav .nav{width: 1180px; display: block; height: 38px; position: relative; margin: 0 auto;}
 .global-nav .nav .cat{width: 160px; height: 38px; line-height: 38px; cursor: pointer; text-align: center; font-size: 14px; float: left; position: relative;}
 .global-nav .nav .cat .iconfont{left: 0; position: absolute; font-size: 18px;}
+.global-nav .nav .cat *{color: #fff;}
 .global-nav .nav ul{float: left;}
 .global-nav .nav ul li{height: 38px; float: left;}
 .global-nav .nav ul li a{display: block; padding: 0 20px; line-height: 38px; color: #fff; font-size: 14px;}
@@ -219,6 +220,18 @@
 /* bigView */
 .preview #bigView{position:absolute;border: 1px solid #959595; overflow: hidden; z-index:999;}
 .preview #bigView img{position:absolute;}
+
+/*相关样式*/
+.preview #showbox { background:#eee;}
+.preview #showbox span { background:url(/static/images/common/whitebg.png) repeat;}
+.preview #showsum { left:25px; margin-top:10px;}
+.preview #showsum span { border:1px solid #ddd;}
+.preview #showsum span.sel { border:1px solid #f60;}
+
+.showpage { width:400px; position:relative;}
+.showpage a { display:block; width:15px; border:1px solid #ddd; height:60px; line-height:60px; background:#eee; text-align:center; font-size:18px; position:absolute; left:0; top:-62px; text-decoration:none; color:#999;}
+.showpage a#shownext { left:auto; right:0;}
+.showpage a:hover { background:#ccc; color:#777;}
 
 .iteminfo-wrap{float: left; margin-left: 30px; width: 530px; font-size: 12px; position: relative;}
 .iteminfo-wrap .item-name{font-size: 16px; line-height: 1.3; padding: 10px 0; color: #333;}
@@ -488,3 +501,28 @@
 .youxuan .item-list li .line{display: block; padding: 10px 0;}
 .youxuan .item-list li .line .price{color: #f40; font-size: 14px;}
 .youxuan .item-list li .line .sold{font-size: 12px; color: #666; float: right;}
+
+/*==产品分类==*/
+.catlog{width: 960px; margin: 20px auto; display: block; overflow: hidden;}
+.catlog .group{padding: 15px 0; font-size: 16px;}
+.catlog .items{display: block;}
+.catlog .items li{width: 80px; float: left; margin: 0 20px 20px 0;}
+.catlog .items li .ico{display: block; margin: 0 auto; text-align: center;}
+.catlog .items li .ico img{width: 60px; height: 60px; border: 0;}
+.catlog .items li .name{text-align: center; margin-top: 5px; display: block; font-size: 14px;}
+
+.page-detail{
+    display: block; margin: 20px 0;
+}
+
+.page-detail .sidebar{width: 160px; float: left; margin-right: 20px; background-color: #f8f8f8;}
+.page-detail .sidebar h3{padding: 7px 15px; font-size: 14px; display: block; border-bottom: 1px #ddd solid;}
+.page-detail .sidebar ul{display: block; padding: 5px 0;}
+.page-detail .sidebar ul li{padding: 5px 15px; font-size: 12px;}
+.page-detail .sidebar ul li a{display: block;}
+.page-detail .main-frame{margin-left: 180px;}
+.page-detail .main-frame .frame-content{display: block; overflow: hidden;}
+.page-detail .main-frame .title{font-size: 18px; padding: 10px 0; text-align: center; margin-bottom: 20px;}
+.page-detail .main-frame .content{font-size: 14px; line-height: 1.5; text-align: justify; display: block; overflow: hidden;}
+.page-detail .main-frame .content *{max-width: 100%;}
+.page-detail .main-frame .content p{margin: 10px 0; display: block;}

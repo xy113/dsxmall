@@ -110,6 +110,18 @@
 .sign-box-div .sign-link a{color:#666;}
 .sign-box-div .err-tips{color:#F00; margin-top:20px; display:none; text-align: center;}
 
+.findpass{
+    display: block; margin: 0 auto;
+    width: 600px; padding: 50px 0;
+}
+.findpass .row{display: block; margin-bottom: 10px;}
+.findpass .row-title{border-bottom: 1px #DDD solid; margin-bottom: 20px;}
+.findpass .row .cell{line-height: 40px; font-size: 14px;}
+.findpass .row .cell-left{width: 200px; float: left; text-align: right;}
+.findpass .row .cell-right{margin-left: 210px;}
+.findpass .row .input-text{height: 35px;}
+.findpass .row .button{height: 35px; line-height: 35px; width: 130px;}
+
 #footer{clear:both; padding:10px 0; margin-top:30px; color:#333;}
 #footer .bottomNav{text-align:center; color:#f0f0f0;}
 #footer .bottomNav a{color:#333; margin:0 3px;}

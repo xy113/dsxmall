@@ -184,8 +184,6 @@ class PostController extends BaseController{
             $item['pubtime'] = @date('Y-m-d H:i:s');
         }
 
-        $object = PostItemModel::getInstance()->where(array('aid'=>$aid))->getObject();;
-        print_array($object);
         $editorname = "content";
         $catloglist = (new PostCatlogModel())->getCatlogTree();
         include template('post/post_form');
@@ -216,6 +214,15 @@ class PostController extends BaseController{
             $summary = str_replace('　', '', $summary);
             $summary = preg_replace('/\s/', '', $summary);
             $itemObj->setSummary($summary);
+
+            //发布时间设置
+            $pubtime = $itemObj->getPubtime();
+            if ($pubtime) {
+                $pubtime = strtotime($pubtime);
+                $itemObj->setPubtime($pubtime);
+            }else {
+                $itemObj->setPubtime(time());
+            }
 
             if ($_GET['aid']) {
                 //修改文章

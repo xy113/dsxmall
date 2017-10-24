@@ -17,7 +17,7 @@
                 {eval $no=0}
                 {loop $postItemList $item}
                 {eval $no++}
-                <li><a href="/?m=post&c=detail&id={$item[id]}" target="_blank"><span>{$no}.</span> {$item[title]}</a></li>
+                <li><a href="/?m=post&c=detail&aid={$item[aid]}" target="_blank"><span>{$no}.</span> {$item[title]}</a></li>
                 {/loop}
             </ul>
         </div>

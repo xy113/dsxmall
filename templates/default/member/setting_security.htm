@@ -50,7 +50,7 @@
 
 <script type="text/x-template" id="J-bind-mobile-tpl">
 <div style="padding:20px;">
-<form method="post" id="J-bind-mobile-form" action="/?m={$G[m]}&c={$G[c]}&a=bindmobile">
+<form method="post" id="J-bind-mobile-form" action="{U:('c=setting&a=bindmobile')}">
 	<input type="hidden" name="formsubmit" value="yes">
 	<input type="hidden" name="formhash" value="{FORMHASH}">
   	<table width="100%" cellpadding="0" cellspacing="0" border="0" class="formtable">
@@ -75,7 +75,7 @@
 </script>
 <script type="text/x-template" id="J-bind-email-tpl">
 <div style="padding:20px;">
-<form method="post" id="J-bind-email-form" action="/?m={$G[m]}&c={$G[c]}&a=bindemail">
+<form method="post" id="J-bind-email-form" action="{U:('c=setting&a=bindemail')}">
 	<input type="hidden" name="formsubmit" value="yes">
 	<input type="hidden" name="formhash" value="{FORMHASH}">
   	<table width="100%" cellpadding="0" cellspacing="0" border="0" class="formtable">
@@ -100,7 +100,7 @@
 </script>
 <script type="text/x-template" id="J-modi-password-tpl">
 <div style="padding:20px;">
-<form method="post" id="J-modi-password-form" action="/?m={$G[m]}&c={$G[c]}&a=password">
+<form method="post" id="J-modi-password-form" action="{U:('c=setting&a=password')}">
 	<input type="hidden" name="formsubmit" value="yes">
 	<input type="hidden" name="formhash" value="{FORMHASH}">
   	<table width="100%" cellpadding="0" cellspacing="0" border="0" class="formtable">
@@ -196,7 +196,7 @@ $("#a-modi-password").click(function(e) {
 							DSXUI.success('修改成功', DSXUtil.reFresh);
 						}else {
 							DSXUI.error(json.errmsg);
-							$("#J-captcha").attr("src","/?m=common&c=captcha&t="+Math.random());
+							$("#J-captcha").attr("src","/?m=plugin&c=captcha&t="+Math.random());
 						}
 					}
 				});

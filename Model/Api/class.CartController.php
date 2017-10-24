@@ -15,6 +15,10 @@ use Data\Member\MemberModel;
 use Data\Shop\ShopModel;
 use Data\Trade\Builder\OrderContentBuilder;
 use Data\Trade\Builder\TradeContentBuilder;
+use Data\Trade\Object\OrderActionObject;
+use Data\Trade\Object\OrderItemObject;
+use Data\Trade\Object\OrderObject;
+use Data\Trade\Object\TradeObject;
 use Data\Trade\OrderActionModel;
 use Data\Trade\OrderItemModel;
 use Data\Trade\OrderModel;
@@ -60,10 +64,65 @@ class CartController extends BaseController
     }
 
     /**
+     * 从购物测删除宝贝
+     */
+    public function delete(){
+        $itemid = intval($_GET['itemid']);
+        CartModel::getInstance()->where(array('itemid'=>$itemid, 'uid'=>$this->uid))->delete();
+        $this->showAjaxReturn();
+    }
+
+    /**
+     * 更新宝贝信息
+     */
+    public function update(){
+        $itemid = intval($_GET['itemid']);
+        $item = $_GET['item'];
+
+        if ($itemid && is_array($item)) {
+            CartModel::getInstance()->where(array('itemid'=>$itemid,'uid'=>$this->uid))->data($item)->save();
+            $this->showAjaxReturn();
+        }else {
+            $this->showAjaxError(1, 'invalid_parameter');
+        }
+    }
+
+    /**
+     * 获取购物车商品列表
+     */
+    public function get_item_list(){
+        $fileds = 'c.itemid,c.title,c.shop_id,c.shop_name,c.quantity,c.thumb,c.image,i.price,i.title AS ori_title';
+        $itemlist = M('cart c')->join('item i', 'i.itemid=c.itemid')->field($fileds)->where("c.uid=".$this->uid)->select();
+        $cartItemList = array();
+        foreach ($itemlist as $item){
+            if (!$item['ori_title']) {
+                CartModel::getInstance()->where(array('itemid'=>$item['itemid'], 'uid'=>$this->uid))->delete();
+            }else {
+                unset($item['ori_title']);
+                $item['thumb'] = image($item['thumb']);
+                $item['image'] = image($item['image']);
+
+                $cartItemList[$item['shop_id']]['shop_id'] = $item['shop_id'];
+                $cartItemList[$item['shop_id']]['shop_name'] = $item['shop_name'];
+                $cartItemList[$item['shop_id']]['items'][] = array(
+                    'itemid'=>$item['itemid'],
+                    'quantity'=>$item['quantity'],
+                    'thumb'=>image($item['thumb']),
+                    'image'=>image($item['image']),
+                    'price'=>$item['price'],
+                    'title'=>$item['title']
+                );
+            }
+        }
+        $this->showAjaxReturn(array_values($cartItemList));
+    }
+
+    /**
      * 获取结算商品
      */
     public function get_settle_items(){
         $itemids = $_GET['itemids'];
+        if (!$itemids) $itemids = $_GET['items'];
         $cart_item_list = array();
         if (is_array($itemids)) $itemids = implode(',', $itemids);
 
@@ -211,68 +270,82 @@ class CartController extends BaseController
             //创建订单
             $is_commited = $order['pay_type'] == 2 ? 1 : 0;
             //创建订单
-            $orderObj = new OrderContentBuilder();
-            $orderObj->setBuyer_uid($this->uid);
-            $orderObj->setBuyer_name($this->username);
-            $orderObj->setSeller_uid($seller['uid']);
-            $orderObj->setSeller_name($seller['username']);
-            $orderObj->setShop_id($order['shop_id']);
-            $orderObj->setShop_name($order['shop_name']);
-            $orderObj->setOrder_no($order_no);
-            $orderObj->setOrder_fee($order_fee);
-            $orderObj->setShipping_fee($shipping_fee);
-            $orderObj->setTotal_fee($order_total_fee);
-            $orderObj->setCreate_time(time());
-            $orderObj->setPay_type($order['pay_type']);
-            $orderObj->setShipping_type($order['shipping_type']);
-            $orderObj->setPay_status(0);
-            $orderObj->setShipping_status(0);
-            $orderObj->setReceive_status(0);
-            $orderObj->setReceive_status(0);
+            $orderObj = new OrderObject();
+            $orderObj->setBuyerUid($this->uid);
+            $orderObj->setBuyerName($this->username);
+            $orderObj->setSellerUid($seller['uid']);
+            $orderObj->setSellerName($seller['username']);
+            $orderObj->setShopId($order['shop_id']);
+            $orderObj->setShopName($order['shop_name']);
+            $orderObj->setOrderNo($order_no);
+            $orderObj->setOrderFee($order_fee);
+            $orderObj->setShippingFee($shipping_fee);
+            $orderObj->setTotalFee($order_total_fee);
+            $orderObj->setCreateTime(time());
+            $orderObj->setPayType($order['pay_type']);
+            $orderObj->setShippingType($order['shipping_type']);
+            $orderObj->setPayStatus(0);
+            $orderObj->setShippingStatus(0);
+            $orderObj->setReceiveStatus(0);
             $orderObj->setConsignee($address['consignee']);
             $orderObj->setPhone($address['phone']);
             $orderObj->setAddress($formated_address);
-            $orderObj->setTrade_no($trade_no);
+            $orderObj->setTradeNo($trade_no);
             $orderObj->setRemark($order['remark']);
-            $orderObj->setIs_commited($is_commited);
-            $orderObj->setIs_accepted(0);
-            $order_id = $orderModel->addObject($orderObj);
+            $orderObj->setIsCommited($is_commited);
+            $orderObj->setIsAccepted(0);
+
+            $order_id = 0;
+            try{
+                $order_id = $orderModel->addObject($orderObj);
+            }catch (\Exception $e) {
+                $this->showAjaxError(1, $e->getMessage());
+            }
 
             $trade_name = '';
             $shop_total_sold = 0;
             foreach ($order['items'] as $itemid=>$item){
                 //记录订单商品信息
                 if (!$trade_name) $trade_name = $item['title'];
-                (new OrderItemModel())->data(array(
-                    'uid'=>$this->uid,
-                    'order_id'=>$order_id,
-                    'itemid'=>$itemid,
-                    'title'=>$item['title'],
-                    'price'=>$item['price'],
-                    'quantity'=>$item['quantity'],
-                    'thumb'=>$item['thumb'],
-                    'image'=>$item['image'],
-                    'shipping_fee'=>$item['shipping_fee'],
-                    'total_fee'=>$item['price']*$item['quantity']+$item['shipping_fee']
-                ))->add();
+                $itemObj = new OrderItemObject();
+                $itemObj->setUid($this->uid)
+                    ->setOrderId($order_id)
+                    ->setItemid($itemid)
+                    ->setTitle($item['title'])
+                    ->setPrice($item['price'])
+                    ->setQuantity($item['quantity'])
+                    ->setThumb($item['thumb'])
+                    ->setImage($item['image'])
+                    ->setShippingFee($item['shipping_fee'])
+                    ->setTotalFee($item['price']*$item['quantity']+$item['shipping_fee']);
+
+                try {
+                    OrderItemModel::getInstance()->addObject($itemObj);
+                }catch (\Exception $e){
+                    $this->showAjaxError(2, $e->getMessage());
+                }
+
                 //更新销量并减库存
-                (new ItemModel())->where(array('itemid'=>$itemid))
+                ItemModel::getInstance()->where(array('itemid'=>$itemid))
                     ->data("`sold`=`sold`+".$item['quantity'].",`stock`=`stock`-".$item['quantity'])->save();
                 $shop_total_sold+= $item['quantity'];
-
             }
             //更新店铺销量
-            (new ShopModel())->where(array('shop_id'=>$shop_id))->data("`total_sold`=`total_sold`+$shop_total_sold")->save();
+            ShopModel::getInstance()->where(array('shop_id'=>$shop_id))->data("`total_sold`=`total_sold`+$shop_total_sold")->save();
 
             //创建订单操作记录
-            $orderAction = new OrderActionModel();
-            $orderAction->data(array(
-                'uid'=>$this->uid,
-                'username'=>$this->username,
-                'order_id'=>$order_id,
-                'action_name'=>$order['pay_type'] == 1 ? L('checkout_success') : L('order_commited'),
-                'action_time'=>time()
-            ))->add();
+            $actionObj = new OrderActionObject();
+            $actionObj->setUid($this->uid)
+                ->setUsername($this->username)
+                ->setOrderId($order_id)
+                ->setActionName($order['pay_type'] == 1 ? L('checkout_success') : L('order_commited'))
+                ->setActionTime(time());
+            try {
+                OrderActionModel::getInstance()->addObject($actionObj);
+            }catch (\Exception $e){
+                $this->showAjaxError(3, $e->getMessage());
+            }
+
 
             if ($order['pay_type'] == 1){
                 //创建支付流水
@@ -280,19 +353,25 @@ class CartController extends BaseController
                     $trade_name = sprintf(L('trade_name_formater'), $trade_name, $shop_total_sold);
                 }
 
-                $tradeObj = new TradeContentBuilder();
-                $tradeObj->setPayer_uid($this->uid);
-                $tradeObj->setPayer_name($this->username);
-                $tradeObj->setPayee_uid($seller['uid']);
-                $tradeObj->setPayee_name($seller['username']);
-                $tradeObj->setTrade_no($trade_no);
-                $tradeObj->setTrade_name($trade_name);
-                $tradeObj->setTrade_desc($trade_name);
-                $tradeObj->setTrade_fee($order_total_fee);
-                $tradeObj->setTrade_type('SHOPPING');
-                $tradeObj->setTrade_time(time());
-                $tradeObj->setOut_trade_no($trade_no);
-                $tradeModel->addObject($tradeObj);
+                $tradeObj = new TradeObject();
+                $tradeObj->setPayerUid($this->uid)
+                    ->setPayerName($this->username)
+                    ->setPayeeUid($seller['uid'])
+                    ->setPayeeName($seller['username'])
+                    ->setTradeNo($trade_no)
+                    ->setTradeName($trade_name)
+                    ->setTradeDesc($trade_name)
+                    ->setTradeFee($order_total_fee)
+                    ->setTradeType('SHOPPING')
+                    ->setTradeTime(time())
+                    ->setOutTradeNo($trade_no)
+                    ->setPayStatus(0);
+
+                try{
+                    $tradeModel->addObject($tradeObj);
+                }catch (\Exception $e) {
+                    $this->showAjaxError(4, $e->getMessage());
+                }
             }
         }
 

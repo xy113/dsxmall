@@ -10,6 +10,7 @@ namespace Data\Trade;
 
 
 use Core\Model;
+use Data\Trade\Object\OrderItemObject;
 
 class OrderItemModel extends Model
 {
@@ -24,5 +25,13 @@ class OrderItemModel extends Model
             $instance = new self();
         }
         return $instance;
+    }
+
+    /**
+     * @param OrderItemObject $object
+     * @return bool|int|\mysqli_result|string
+     */
+    public function addObject(OrderItemObject $object){
+        return $this->data($object->getBizContent())->add();
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Page;
+namespace Model\Page;
 use Core\Controller;
 
 class BaseController extends Controller{

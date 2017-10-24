@@ -10,7 +10,7 @@ namespace Data\Trade;
 
 
 use Core\Model;
-use Data\Trade\Builder\TradeContentBuilder;
+use Data\Trade\Object\TradeObject;
 
 class TradeModel extends Model
 {
@@ -27,54 +27,55 @@ class TradeModel extends Model
         return $instance;
     }
 
+
     /**
-     * @param TradeContentBuilder $object
+     * @param TradeObject $object
      * @return bool|int|\mysqli_result|string
      * @throws \Exception
      */
-    public function addObject(TradeContentBuilder $object){
-        if (!$object->getPayer_uid()){
+    public function addObject(TradeObject $object){
+        if (!$object->getPayerUid()){
             throw new \Exception('Empty payer_uid value');
         }
 
-        if (!$object->getPayer_name()){
+        if (!$object->getPayerName()){
             throw new \Exception('Empty payer_name value');
         }
 
-        if (!$object->getPayee_uid()){
+        if (!$object->getPayeeUid()){
             throw new \Exception('Empty payee_uid value');
         }
 
-        if (!$object->getPayee_name()){
+        if (!$object->getPayeeName()){
             throw new \Exception('Empty payee_name value');
         }
 
-        if (!$object->getPay_status()){
-            $object->setPay_status(0);
+        if (!$object->getPayStatus()){
+            $object->setPayStatus(0);
         }
 
-        if (!$object->getTrade_no()){
+        if (!$object->getTradeNo()){
             throw new \Exception('Empty trade_no value');
         }
 
-        if (!$object->getTrade_name()){
+        if (!$object->getTradeName()){
             throw new \Exception('Empty trade_name value');
         }
 
-        if (!$object->getTrade_desc()){
+        if (!$object->getTradeDesc()){
             throw new \Exception('Empty trade_desc value');
         }
 
-        if (!$object->getTrade_fee()){
+        if (!$object->getTradeFee()){
             throw new \Exception('Empty trade_fee value');
         }
 
-        if (!$object->getTrade_type()){
+        if (!$object->getTradeType()){
             throw new \Exception('Empty trade_type value');
         }
 
-        if (!$object->getTrade_time()){
-            $object->setTrade_time(time());
+        if (!$object->getTradeTime()){
+            $object->setTradeTime(time());
         }
         return $this->data($object->getBizContent())->add();
     }

@@ -12,19 +12,6 @@
     </div>
 </div>
 <div style="height: 10px; clear: both;"></div>
-<style type="text/css">
-    /*相关样式*/
-    #showbox { background:#eee;}
-    #showbox span { background:url(/static/images/common/whitebg.png) repeat;}
-    #showsum { left:25px; margin-top:10px;}
-    #showsum span { border:1px solid #ddd;}
-    #showsum span.sel { border:1px solid #f60;}
-
-    .showpage { width:400px; position:relative;}
-    .showpage a { display:block; width:15px; border:1px solid #ddd; height:60px; line-height:60px; background:#eee; text-align:center; font-size:18px; position:absolute; left:0; top:-62px; text-decoration:none; color:#999;}
-    .showpage a#shownext { left:auto; right:0;}
-    .showpage a:hover { background:#ccc; color:#777;}
-</style>
 <div class="area">
     <div class="preview-wrap">
         <div class="preview">
@@ -59,18 +46,8 @@
         <h1 class="item-name">{$item_data[title]}</h1>
         <div class="item-brief">{$item_data[subtitle]}</div>
         <div class="price-wrap">
-            <div class="item-group" style="padding: 5px 10px;">
-                <div class="label">市 场 价</div>
-                <div class="info">
-                    {if $item_data[market_price]}
-                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$item_data[market_price]}</s></span>
-                    {else}
-                    <span style="font-size: 16px; color: #666;"><s>￥{amount:$item_data[price]}</s></span>
-                    {/if}
-                </div>
-            </div>
-            <div class="item-group" style="padding: 5px 10px;">
-                <div class="label">粗 耕 价</div>
+            <div class="item-group" style="height: 60px; line-height: 60px; padding-top: 20px;">
+                <div class="label">价　　格</div>
                 <div class="info">
                     <div class="p-price">
                         <span>￥</span>

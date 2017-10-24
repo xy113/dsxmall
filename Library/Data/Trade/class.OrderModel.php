@@ -11,6 +11,7 @@ namespace Data\Trade;
 
 use Core\Model;
 use Data\Trade\Builder\OrderContentBuilder;
+use Data\Trade\Object\OrderObject;
 
 class OrderModel extends Model
 {
@@ -27,61 +28,56 @@ class OrderModel extends Model
         return $instance;
     }
 
-    /**
-     * @param OrderContentBuilder $object
-     * @return bool|int|\mysqli_result|string
-     * @throws \Exception
-     */
-    public function addObject(OrderContentBuilder $object){
-        if (!$object->getBuyer_uid()) {
+    public function addObject(OrderObject $object){
+        if (!$object->getBuyerUid()) {
             throw new \Exception('Empty buyer_uid value');
         }
 
-        if (!$object->getBuyer_name()){
+        if (!$object->getBuyerName()){
             throw new \Exception('Empty buyer_name value');
         }
 
-        if (!$object->getSeller_uid()){
+        if (!$object->getSellerUid()){
             throw new \Exception('Empty seller_uid value');
         }
 
-        if (!$object->getSeller_name()){
+        if (!$object->getSellerName()){
             throw new \Exception('Empty seller_name value');
         }
 
-        if (!$object->getShop_id()){
+        if (!$object->getShopId()){
             throw new \Exception('Empty shop_id value');
         }
 
-        if (!$object->getShop_name()){
+        if (!$object->getShopName()){
             throw new \Exception('Empty shop_name value');
         }
 
-        if (!$object->getOrder_no()){
+        if (!$object->getOrderNo()){
             throw new \Exception('Empty order_no value');
         }
 
-        if (!$object->getOrder_fee()){
+        if (!$object->getOrderFee()){
             throw new \Exception('Empty order_fee value');
         }
 
-        if (!$object->getTotal_fee()){
+        if (!$object->getTotalFee()){
             throw new \Exception('Empty total_fee value');
         }
 
-        if (!$object->getPay_type()){
+        if (!$object->getPayType()){
             throw new \Exception('Empty pay_type value');
         }
 
-        if (!$object->getPay_status()){
-            $object->setPay_status(0);
+        if (!$object->getPayStatus()){
+            $object->setPayStatus(0);
         }
 
-        if (!$object->getCreate_time()){
-            $object->setCreate_time(time());
+        if (!$object->getCreateTime()){
+            $object->setCreateTime(time());
         }
 
-        if (!$object->getTrade_no()){
+        if (!$object->getTradeNo()){
             throw new \Exception('Empty trade_no value');
         }
 
